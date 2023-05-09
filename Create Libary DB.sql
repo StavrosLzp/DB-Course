@@ -14,3 +14,13 @@ CREATE TABLE School (
   KEY idx_school_admin_id (school_admin_id)
   )ENGINE=InnoDB DEFAULT CHARSET=utf8;
   
+CREATE TABLE User (
+  user_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  username VARCHAR(20) NOT NULL,
+  user_password VARCHAR(16) NOT NULL,
+  user_first_name VARCHAR(45) NOT NULL,
+  user_last_name VARCHAR(45) NOT NULL,
+  PRIMARY KEY (user_id)
+  )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  
+  
