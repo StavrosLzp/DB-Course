@@ -10,7 +10,6 @@ CREATE TABLE School (
   city VARCHAR(40) NOT NULL,
   school_phone_number VARCHAR(10) NOT NULL,
   school_email VARCHAR(50) NOT NULL,
-  last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (school_id),
   KEY idx_school_admin_id (school_admin_id)
   )ENGINE=InnoDB DEFAULT CHARSET=utf8;
