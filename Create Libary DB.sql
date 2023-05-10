@@ -27,7 +27,7 @@ CREATE TABLE Library_User_Role (
   role_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   role_name VARCHAR(45) NOT NULL,
   role_description VARCHAR(200) NOT NULL,
-  PRIMARY KEY (role_id),
+  PRIMARY KEY (role_id)
   )ENGINE=InnoDB DEFAULT CHARSET=utf8;
   
 CREATE TABLE Book (
@@ -40,7 +40,7 @@ CREATE TABLE Book (
   book_language VARCHAR(45) NOT NULL,
   -- book_keywords
   PRIMARY KEY (book_ISBN),
-  KEY idx_book_title (book_title),
+  KEY idx_book_title (book_title)
   )ENGINE=InnoDB DEFAULT CHARSET=utf8;
   
 CREATE TABLE Author (
