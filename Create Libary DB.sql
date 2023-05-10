@@ -23,4 +23,43 @@ CREATE TABLE User (
   PRIMARY KEY (user_id)
   )ENGINE=InnoDB DEFAULT CHARSET=utf8;
   
+CREATE TABLE Role (
+  role_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  role_name VARCHAR(45) NOT NULL,
+  role_description VARCHAR(200) NOT NULL,
+  PRIMARY KEY (role_id),
+  )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  
+CREATE TABLE Book (
+  book_ISBN INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  book_title VARCHAR(60) NOT NULL,
+  book_page_no INT UNSIGNED NOT NULL,
+  -- book_abstract 
+  -- book_picture
+  book_subject VARCHAR(45) NOT NULL,
+  book_language VARCHAR(45) NOT NULL,
+  -- book_keywords
+  PRIMARY KEY (book_ISBN),
+  KEY idx_book_title (book_title),
+  )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  
+CREATE TABLE Author (
+  author_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  author_last_name VARCHAR(45) NOT NULL,
+  author_first_name VARCHAR(45) NOT NULL,
+  PRIMARY KEY (author_id),
+  KEY idx_author_last_name (author_last_name)
+  )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  
+CREATE TABLE Publisher (
+  publisher_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  publisher_name VARCHAR(45) NOT NULL,
+  PRIMARY KEY (publisher_id)
+  )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  
+CREATE TABLE Review (
+  review_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  review_text VARCHAR(150),
+  PRIMARY KEY (review_id)
+  )ENGINE=InnoDB DEFAULT CHARSET=utf8;
   
