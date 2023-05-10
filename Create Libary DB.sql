@@ -14,7 +14,7 @@ CREATE TABLE School (
   KEY idx_school_admin_id (school_admin_id)
   )ENGINE=InnoDB DEFAULT CHARSET=utf8;
   
-CREATE TABLE User (
+CREATE TABLE Library_User (
   user_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   username VARCHAR(20) NOT NULL,
   user_password VARCHAR(16) NOT NULL,
@@ -23,7 +23,7 @@ CREATE TABLE User (
   PRIMARY KEY (user_id)
   )ENGINE=InnoDB DEFAULT CHARSET=utf8;
   
-CREATE TABLE Role (
+CREATE TABLE Library_User_Role (
   role_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   role_name VARCHAR(45) NOT NULL,
   role_description VARCHAR(200) NOT NULL,
