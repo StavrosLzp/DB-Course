@@ -31,7 +31,7 @@ CREATE TABLE Library_User_Role (
   )ENGINE=InnoDB DEFAULT CHARSET=utf8;
   
 CREATE TABLE Book (
-  book_ISBN INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  book_ISBN INT UNSIGNED NOT NULL,
   book_title VARCHAR(60) NOT NULL,
   book_page_no INT UNSIGNED NOT NULL,
   -- book_abstract 
@@ -61,5 +61,17 @@ CREATE TABLE Review (
   review_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   review_text VARCHAR(150),
   PRIMARY KEY (review_id)
+  )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE Reservation (
+  reservation_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  reservation_date DATE NOT NULL,
+  reservation_return_date DATE NOT NULL,
+  user_id INT UNSIGNED NOT NULL,
+  book_ISBN INT UNSIGNED NOT NULL,
+  PRIMARY KEY (reservation_id),
+  UNIQUE KEY  (user_id,book_ISBN),
+  KEY idx_fk_user_id (user_id),
+  KEY idx_fk_book_ISBN (book_ISBN)
   )ENGINE=InnoDB DEFAULT CHARSET=utf8;
   
