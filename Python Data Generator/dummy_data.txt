@@ -1,7 +1,3 @@
-USE library;
-
-DELETE FROM author;
-
 INSERT INTO author (author_id,author_first_name,author_last_name) VALUES ("3119000","Anthony", "Miller");
 INSERT INTO author (author_id,author_first_name,author_last_name) VALUES ("3119001","Πυθαγόρας", "Tapia");
 INSERT INTO author (author_id,author_first_name,author_last_name) VALUES ("3119002","Θεοχαρούλα", "Μαυρουδής");
@@ -22,5 +18,3 @@ INSERT INTO author (author_id,author_first_name,author_last_name) VALUES ("31190
 INSERT INTO author (author_id,author_first_name,author_last_name) VALUES ("3119017","Erika", "Γουργουλής");
 INSERT INTO author (author_id,author_first_name,author_last_name) VALUES ("3119018","Γαβριήλ", "Stevens");
 INSERT INTO author (author_id,author_first_name,author_last_name) VALUES ("3119019","Έκτορας", "Κουράκος");
-
-select * from author;

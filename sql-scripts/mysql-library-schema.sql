@@ -20,8 +20,8 @@ USE `library` ;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `author` (
   `author_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `author_last_name` VARCHAR(45) NOT NULL,
   `author_first_name` VARCHAR(45) NOT NULL,
+  `author_last_name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`author_id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
