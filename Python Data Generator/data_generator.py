@@ -17,14 +17,13 @@ fake = faker.Faker(locales)
 
 number = 20
 table_name = "author"
-table_columns = ["author_id", "author_first_name", "author_last_name",]
+table_columns = ["author_first_name", "author_last_name",]
 content = ""
 
 for i in range(number):
-    ID = 3119000 + i
     firstName = fake.first_name()
     lastName = fake.last_name()
-    content += f'INSERT INTO {table_name} ({",".join(table_columns)}) VALUES ("{ID}","{firstName}", "{lastName}");\n'
+    content += f'INSERT INTO {table_name} ({",".join(table_columns)}) VALUES ("{firstName}", "{lastName}");\n'
 
 
 
