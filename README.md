@@ -1,3 +1,3 @@
 # DB-Course
 
-![image](https://github.com/StavrosLzp/DB-Course/assets/73658190/70676dc8-e461-4a68-8065-0062c082a338)
+![image](https://github.com/StavrosLzp/DB-Course/assets/73658190/1dc18466-c621-4e9c-ba10-472f97abee1b)
