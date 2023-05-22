@@ -5,6 +5,9 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
 -- Schema library
 -- -----------------------------------------------------
 DROP SCHEMA IF EXISTS `library` ;
@@ -24,6 +27,7 @@ CREATE TABLE IF NOT EXISTS `author` (
   `author_last_name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`author_id`))
 ENGINE = InnoDB
+AUTO_INCREMENT = 21
 DEFAULT CHARACTER SET = utf8mb3;
 
 CREATE INDEX `idx_author_last_name` ON `author` (`author_last_name` ASC) VISIBLE;
@@ -227,6 +231,38 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 CREATE INDEX `fk_school_book_book1_idx` ON `school_book` (`book_book_ISBN` ASC) VISIBLE;
+
+
+-- -----------------------------------------------------
+-- Table `category`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `category` (
+  `category_id` INT UNSIGNED NOT NULL,
+  `category_name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`category_id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `book_category`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `book_category` (
+  `book_book_ISBN` INT UNSIGNED NOT NULL,
+  `category_category_id` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`book_book_ISBN`, `category_category_id`),
+  CONSTRAINT `fk_book_category_book1`
+    FOREIGN KEY (`book_book_ISBN`)
+    REFERENCES `book` (`book_ISBN`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_book_category_category1`
+    FOREIGN KEY (`category_category_id`)
+    REFERENCES `category` (`category_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_book_category_category1_idx` ON `book_category` (`category_category_id` ASC) VISIBLE;
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
