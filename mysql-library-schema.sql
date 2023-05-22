@@ -16,10 +16,22 @@ CREATE SCHEMA IF NOT EXISTS `library` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8
 USE `library` ;
 
 -- -----------------------------------------------------
+-- Table `author`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `author` (
+  `author_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `author_last_name` VARCHAR(45) NOT NULL,
+  `author_first_name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`author_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
+
+CREATE INDEX `idx_author_last_name` ON `author` (`author_last_name` ASC) VISIBLE;
+
+
+-- -----------------------------------------------------
 -- Table `book`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `book` ;
-
 CREATE TABLE IF NOT EXISTS `book` (
   `book_ISBN` INT UNSIGNED NOT NULL,
   `book_title` VARCHAR(60) NOT NULL,
@@ -34,34 +46,8 @@ CREATE INDEX `idx_book_title` ON `book` (`book_title` ASC) VISIBLE;
 
 
 -- -----------------------------------------------------
--- Table `author`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `author` ;
-
-CREATE TABLE IF NOT EXISTS `author` (
-  `author_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `author_last_name` VARCHAR(45) NOT NULL,
-  `author_first_name` VARCHAR(45) NOT NULL,
-  `book_ISBN` INT UNSIGNED NOT NULL,
-  PRIMARY KEY (`author_id`),
-  CONSTRAINT `fk_author_book_ISBN`
-    FOREIGN KEY (`book_ISBN`)
-    REFERENCES `book` (`book_ISBN`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE)
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb3;
-
-CREATE INDEX `fk_author_book_ISBN` ON `author` (`book_ISBN` ASC) VISIBLE;
-
-CREATE INDEX `idx_author_last_name` ON `author` (`author_last_name` ASC) VISIBLE;
-
-
--- -----------------------------------------------------
 -- Table `book_author`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `book_author` ;
-
 CREATE TABLE IF NOT EXISTS `book_author` (
   `author_author_id` INT UNSIGNED NOT NULL,
   `book_book_ISBN` INT UNSIGNED NOT NULL,
@@ -84,8 +70,6 @@ CREATE INDEX `fk_book_author_book1_idx` ON `book_author` (`book_book_ISBN` ASC) 
 -- -----------------------------------------------------
 -- Table `library_user_role`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `library_user_role` ;
-
 CREATE TABLE IF NOT EXISTS `library_user_role` (
   `role_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `role_name` VARCHAR(45) NOT NULL,
@@ -98,8 +82,6 @@ DEFAULT CHARACTER SET = utf8mb3;
 -- -----------------------------------------------------
 -- Table `school`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `school` ;
-
 CREATE TABLE IF NOT EXISTS `school` (
   `school_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `school_name` VARCHAR(50) NOT NULL,
@@ -113,16 +95,14 @@ CREATE TABLE IF NOT EXISTS `school` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
-CREATE INDEX `idx_school_admin_id` ON `school` (`school_admin_name` ASC) VISIBLE;
-
 CREATE UNIQUE INDEX `school_name_UNIQUE` ON `school` (`school_name` ASC) VISIBLE;
+
+CREATE INDEX `idx_school_admin_id` ON `school` (`school_admin_name` ASC) VISIBLE;
 
 
 -- -----------------------------------------------------
 -- Table `library_user`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `library_user` ;
-
 CREATE TABLE IF NOT EXISTS `library_user` (
   `user_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(20) NOT NULL,
@@ -151,42 +131,8 @@ CREATE INDEX `fk_user_school_id` ON `library_user` (`school_id` ASC) VISIBLE;
 
 
 -- -----------------------------------------------------
--- Table `borrowing`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `borrowing` ;
-
-CREATE TABLE IF NOT EXISTS `borrowing` (
-  `borrowing_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `borrowing_date` DATE NOT NULL,
-  `borrowing_return_date` DATE NOT NULL,
-  `user_id` INT UNSIGNED NOT NULL,
-  `book_ISBN` INT UNSIGNED NOT NULL,
-  PRIMARY KEY (`borrowing_id`),
-  CONSTRAINT `fk_borrowing_book_ISBN`
-    FOREIGN KEY (`book_ISBN`)
-    REFERENCES `book` (`book_ISBN`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_borrowing_user_id`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `library_user` (`user_id`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE)
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb3;
-
-CREATE UNIQUE INDEX `user_id` ON `borrowing` (`user_id` ASC, `book_ISBN` ASC) VISIBLE;
-
-CREATE INDEX `idx_fk_user_id` ON `borrowing` (`user_id` ASC) VISIBLE;
-
-CREATE INDEX `idx_fk_book_ISBN` ON `borrowing` (`book_ISBN` ASC) VISIBLE;
-
-
--- -----------------------------------------------------
 -- Table `publisher`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `publisher` ;
-
 CREATE TABLE IF NOT EXISTS `publisher` (
   `publisher_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `publisher_name` VARCHAR(45) NOT NULL,
@@ -206,12 +152,10 @@ CREATE INDEX `idx_fk_book_ISBN` ON `publisher` (`book_ISBN` ASC) VISIBLE;
 -- -----------------------------------------------------
 -- Table `reservation`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `reservation` ;
-
 CREATE TABLE IF NOT EXISTS `reservation` (
   `reservation_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `reservation_date` DATE NOT NULL,
-  `reservation_return_date` DATE NOT NULL,
+  `status` ENUM('on-hold', 'active', 'returned', 'due') NULL DEFAULT NULL,
   `user_id` INT UNSIGNED NOT NULL,
   `book_ISBN` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`reservation_id`),
@@ -238,8 +182,6 @@ CREATE INDEX `idx_fk_book_ISBN` ON `reservation` (`book_ISBN` ASC) VISIBLE;
 -- -----------------------------------------------------
 -- Table `review`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `review` ;
-
 CREATE TABLE IF NOT EXISTS `review` (
   `review_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `review_text` VARCHAR(150) NULL DEFAULT NULL,
@@ -269,24 +211,20 @@ CREATE INDEX `idx_fk_book_ISBN` ON `review` (`book_ISBN` ASC) VISIBLE;
 -- -----------------------------------------------------
 -- Table `school_book`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `school_book` ;
-
 CREATE TABLE IF NOT EXISTS `school_book` (
   `school_school_id` INT UNSIGNED NOT NULL,
   `book_book_ISBN` INT UNSIGNED NOT NULL,
   `school_book_amount` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`school_school_id`, `book_book_ISBN`),
-  CONSTRAINT `fk_school_book_school1`
-    FOREIGN KEY (`school_school_id`)
-    REFERENCES `school` (`school_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
   CONSTRAINT `fk_school_book_book1`
     FOREIGN KEY (`book_book_ISBN`)
-    REFERENCES `book` (`book_ISBN`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    REFERENCES `book` (`book_ISBN`),
+  CONSTRAINT `fk_school_book_school1`
+    FOREIGN KEY (`school_school_id`)
+    REFERENCES `school` (`school_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 CREATE INDEX `fk_school_book_book1_idx` ON `school_book` (`book_book_ISBN` ASC) VISIBLE;
 
