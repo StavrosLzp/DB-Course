@@ -5,15 +5,15 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema libary
+-- Schema library
 -- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `libary` ;
+DROP SCHEMA IF EXISTS `library` ;
 
 -- -----------------------------------------------------
--- Schema libary
+-- Schema library
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `libary` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
-USE `libary` ;
+CREATE SCHEMA IF NOT EXISTS `library` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
+USE `library` ;
 
 -- -----------------------------------------------------
 -- Table `book`
@@ -290,12 +290,12 @@ CREATE TABLE IF NOT EXISTS `book_author` (
   PRIMARY KEY (`author_author_id`, `book_book_ISBN`),
   CONSTRAINT `fk_book_author_author1`
     FOREIGN KEY (`author_author_id`)
-    REFERENCES `libary`.`author` (`author_id`)
+    REFERENCES `library`.`author` (`author_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_book_author_book1`
     FOREIGN KEY (`book_book_ISBN`)
-    REFERENCES `libary`.`book` (`book_ISBN`)
+    REFERENCES `library`.`book` (`book_ISBN`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
