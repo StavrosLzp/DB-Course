@@ -5,22 +5,17 @@ import os
 
 path = os.getcwd() + "/Python Data Generator/"
 
-locales = OrderedDict([
-    ('el-GR', 7),
-    ('en-US', 2),
-    ('el-CY', 4)
-])
-fake = faker.Faker(locales)
+fake = faker.Faker()
 
 
 # Author 
 
-number = 20
+DUMMY_DATA_NUMBER = 20
 table_name = "author"
 table_columns = ["author_first_name", "author_last_name",]
 content = ""
 
-for i in range(number):
+for i in range(DUMMY_DATA_NUMBER):
     firstName = fake.first_name()
     lastName = fake.last_name()
     content += f'INSERT INTO {table_name} ({",".join(table_columns)}) VALUES ("{firstName}", "{lastName}");\n'
