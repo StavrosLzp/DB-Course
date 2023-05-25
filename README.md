@@ -1,6 +1,6 @@
 # DB-Course
 
-![image](https://github.com/StavrosLzp/DB-Course/assets/73658190/29e9574d-b4ca-4bea-bcb3-5a812534cb4f)
+![image](https://github.com/StavrosLzp/DB-Course/assets/73658190/bef9176a-6e15-45db-8e74-659af32d169e)
 
 ![image](https://github.com/StavrosLzp/DB-Course/assets/73658190/e7474e0b-8c2d-4067-86ef-844b6d689a00)
 
