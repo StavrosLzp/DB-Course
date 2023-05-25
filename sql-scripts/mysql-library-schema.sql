@@ -272,6 +272,38 @@ COLLATE = utf8mb4_0900_ai_ci;
 CREATE INDEX `fk_school_book_book1_idx` ON `school_book` (`book_book_id` ASC) VISIBLE;
 
 
+-- -----------------------------------------------------
+-- Table `keyword`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `keyword` (
+  `keyword_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `keyword_name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`keyword_id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `book_keyword`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `book_keyword` (
+  `keyword_keyword_id` INT UNSIGNED NOT NULL,
+  `book_book_id` INT NOT NULL,
+  PRIMARY KEY (`keyword_keyword_id`, `book_book_id`),
+  CONSTRAINT `fk_table1_keyword1`
+    FOREIGN KEY (`keyword_keyword_id`)
+    REFERENCES `keyword` (`keyword_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_table1_book1`
+    FOREIGN KEY (`book_book_id`)
+    REFERENCES `book` (`book_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_table1_book1_idx` ON `book_keyword` (`book_book_id` ASC) VISIBLE;
+
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
