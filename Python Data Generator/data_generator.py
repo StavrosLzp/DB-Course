@@ -1,8 +1,8 @@
-import faker
+import faker, os, random
 from datetime import datetime
 from collections import OrderedDict
-import os
-from faker.providers import isbn
+from faker.providers import isbn, lorem
+from faker_education import SchoolProvider
 
 path = os.getcwd() + "/Python Data Generator/"
 
@@ -32,10 +32,11 @@ table_columns = ["book_ISBN", "book_title","book_page_no","book_subject","book_l
 content = ""
 
 for i in range(DUMMY_DATA_NUMBER):
-    isbn = fake.isbn10()
-    title = fake
+    isbn_var = fake.isbn10()
+    title = fake.sentence(nb_words=5, variable_nb_words=True)
+    page_no = random.randint(50, 5000)
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-        VALUES ("{isbn}", "{lastName}");\n'
+        VALUES ("{isbn_var}", "{title}", "{page_no}", "{title}");\n'
 
 
 
