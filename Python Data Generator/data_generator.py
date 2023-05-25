@@ -28,15 +28,17 @@ for i in range(DUMMY_DATA_NUMBER):
 
 DUMMY_DATA_NUMBER = 100
 table_name = "book"
-table_columns = ["book_ISBN", "book_title","book_page_no","book_subject","book_language",]
+table_columns = ["book_ISBN", "book_title","book_page_no","book_language"]
 content = ""
+lang = ["English", "Greek", "German", "Frech"]
 
 for i in range(DUMMY_DATA_NUMBER):
     isbn_var = fake.isbn10()
     title = fake.sentence(nb_words=5, variable_nb_words=True)
     page_no = random.randint(50, 5000)
+    language = random.choice(lang)
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-        VALUES ("{isbn_var}", "{title}", "{page_no}", "{title}");\n'
+        VALUES ("{isbn_var}", "{title}", "{page_no}", "{language}");\n'
 
 
 
