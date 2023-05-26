@@ -89,6 +89,20 @@ content += f"DELETE FROM {table_name};\n"
 for category in book_categories:
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
         VALUES ("{category}");\n'
+    
+# Book_Category
+
+#DUMMY_DATA_NUMBER = Books
+table_name = "book_category"
+table_columns = ["book_book_id", "category_category_id"]
+content += f"DELETE FROM {table_name};\n"
+
+for book_id in range(1,DUMMY_DATA_NUMBER+1):
+    cat_amount = random.randint(2,6)
+    cats = random.sample(range(1,len(book_categories)+1), cat_amount)
+    for cat in cats:
+        content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
+            VALUES ("{book_id}", "{cat}");\n'
 
 
 
