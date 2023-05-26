@@ -126,7 +126,6 @@ CREATE TABLE IF NOT EXISTS `school` (
   `school_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `school_name` VARCHAR(50) NOT NULL,
   `school_principal_name` VARCHAR(50) NOT NULL,
-  `school_admin_name` VARCHAR(50) NOT NULL,
   `library_admin_user_id` INT UNSIGNED NOT NULL,
   `school_mail_address` VARCHAR(70) NOT NULL,
   `city` VARCHAR(40) NOT NULL,
@@ -143,8 +142,6 @@ DEFAULT CHARACTER SET = utf8mb3;
 
 CREATE UNIQUE INDEX `school_name_UNIQUE` ON `school` (`school_name` ASC) VISIBLE;
 
-CREATE INDEX `idx_school_admin_id` ON `school` (`school_admin_name` ASC) VISIBLE;
-
 CREATE UNIQUE INDEX `library_admin_user_id_UNIQUE` ON `school` (`library_admin_user_id` ASC) VISIBLE;
 
 
@@ -157,8 +154,8 @@ CREATE TABLE IF NOT EXISTS `library_user` (
   `user_password` VARCHAR(16) NOT NULL,
   `user_first_name` VARCHAR(45) NOT NULL,
   `user_last_name` VARCHAR(45) NOT NULL,
-  `role_id` INT UNSIGNED NOT NULL,
-  `school_id` INT UNSIGNED NOT NULL,
+  `role_id` INT UNSIGNED NULL,
+  `school_id` INT UNSIGNED NULL,
   PRIMARY KEY (`user_id`),
   CONSTRAINT `fk_user_role_id`
     FOREIGN KEY (`role_id`)

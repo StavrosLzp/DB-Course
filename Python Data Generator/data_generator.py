@@ -110,34 +110,88 @@ for book_id in range(1,DUMMY_DATA_NUMBER+1):
 table_name = "library_user_role"
 table_columns = ["role_name", "role_description"]
 content += f"DELETE FROM {table_name};\n"
-roles = ["Central Admin",""]
+roles = ["Central Admin","School Admin","Teacher","Student"]
+role_desc = [ 
+    "Has Controll of the database and all possible permissions",
+    "Is responsible at a school level for managing the users, books, reservations",
+    "Can borrow/reserve up to one book per week and edit personal info",
+    "Can borrow/reserve up to two books per week"
+]
 
-'''
+for i in range(len(roles)):
+     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
+        VALUES ("{roles[i]}", "{role_desc[i]}");\n'
+    
 
-To Do
+
+# library_user ------------------------ Admins
 
 
-'''
+SchoolNum = 5
+DUMMY_DATA_NUMBER = SchoolNum+1
+table_name = "library_user"
+table_columns = ["username", "user_password","user_first_name","user_last_name","role_id","school_id"]
+content += f"DELETE FROM {table_name};\n"
 
+
+# First Admin created is Central admin
+for i in range(DUMMY_DATA_NUMBER):
+    username = fake.sentence(nb_words=1)
+    password = fake.sentence(nb_words=1)
+    firstName = fake.first_name()
+    lastName = fake.last_name()
+    if i == 0 :
+        role_id = 0 #Central Admin
+        content += f'INSERT INTO {table_name} ({",".join(table_columns[:-1])})\
+            VALUES ("{username}", "{password}", "{firstName}", "{lastName}", "{role_id}");\n'
+    else:
+        role_id = 1 # school admin
+        school_id = i
+        content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
+            VALUES ("{username}", "{password}", "{firstName}", "{lastName}", "{role_id}", "{school_id}");\n'
 
 
 
 # School ---------------------------
 table_name = "school"
-table_columns = ["school_name", "school_principal_name", "school_admin_name", "school_mail_address", "city", "school_phone_number", "school_email", ]
+table_columns = ["school_name", "school_principal_name", "library_admin_user_id", \
+    "school_mail_address", "city", "school_phone_number", "school_email", ]
 content += f"DELETE FROM {table_name};\n"
 
-for _ in range(5):
+for i in range(SchoolNum): #as many schools as school admins
     school_name = fake.company()
     school_principal_name = fake.name()
-    school_admin_name = fake.name()
+    school_admin_user_id = i+2 
     school_mail_address = fake.email()
     city = fake.city()
     school_phone_number = str(random.randint(210,290)) + ("%07d" % random.randint(0,9999999))
     school_email = fake.email()
 
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-        VALUES ("{school_name}", "{school_principal_name}", "{school_admin_name}", "{school_mail_address}", "{city}", "{school_phone_number}", "{school_email}");\n'
+        VALUES ("{school_name}", "{school_principal_name}", "{school_admin_user_id}", \
+            "{school_mail_address}", "{city}", "{school_phone_number}", "{school_email}");\n'
     
 f = open(path + "dummy_data.txt", "w", encoding="utf-8")
 f.write(content)
+
+
+
+
+# library_user ------------------------ Students
+
+DUMMY_DATA_NUMBER = 30
+table_name = "library_user"
+table_columns = ["username", "user_password","user_first_name","user_last_name","role_id","school_id"]
+content += f"DELETE FROM {table_name};\n"
+
+
+
+for i in range(DUMMY_DATA_NUMBER):
+    username = fake.sentence(nb_words=1)
+    password = fake.sentence(nb_words=1)
+    firstName = fake.first_name()
+    lastName = fake.last_name()
+    role_id = 4 #student
+    school_id = random.randint(1,SchoolNum)
+    content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
+        VALUES ("{username}", "{password}", "{firstName}", "{lastName}", "{role_id}", "{school_id}");\n'
