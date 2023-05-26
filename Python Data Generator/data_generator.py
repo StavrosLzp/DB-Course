@@ -58,6 +58,38 @@ for book_id in range(1,DUMMY_DATA_NUMBER+1):
 
 
 
+# Category
+
+book_categories = [
+    "Fiction",
+    "Nonfiction",
+    "Mystery",
+    "Thriller",
+    "Romance",
+    "Science Fiction",
+    "Fantasy",
+    "Horror",
+    "Biography",
+    "History",
+    "Self-help",
+    "Poetry",
+    "Comedy",
+    "Drama",
+    "Action and Adventure",
+    "Young Adult",
+    "Children's",
+    "Science",
+    "Art",
+    "Cooking"
+]
+table_name = "category"
+table_columns = ["category_name"]
+content += f"DELETE FROM {table_name};\n"
+
+for category in book_categories:
+    content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
+        VALUES ("{category}");\n'
+
 
 
 

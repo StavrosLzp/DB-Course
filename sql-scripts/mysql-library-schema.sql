@@ -24,7 +24,6 @@ CREATE TABLE IF NOT EXISTS `author` (
   `author_last_name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`author_id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 41
 DEFAULT CHARACTER SET = utf8mb3;
 
 CREATE INDEX `idx_author_last_name` ON `author` (`author_last_name` ASC) VISIBLE;
@@ -50,19 +49,19 @@ CREATE INDEX `idx_book_title` ON `book` (`book_title` ASC) VISIBLE;
 -- Table `book_author`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `book_author` (
-  `author_author_id` INT UNSIGNED NOT NULL,
   `book_book_id` INT NOT NULL,
-  PRIMARY KEY (`author_author_id`, `book_book_id`),
+  `author_author_id` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`book_book_id`, `author_author_id`),
   CONSTRAINT `fk_book_author_author1`
     FOREIGN KEY (`author_author_id`)
     REFERENCES `author` (`author_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_book_author_book1`
     FOREIGN KEY (`book_book_id`)
     REFERENCES `book` (`book_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -76,7 +75,7 @@ CREATE INDEX `fk_book_author_book1_idx` ON `book_author` (`book_book_id` ASC) VI
 -- Table `category`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `category` (
-  `category_id` INT UNSIGNED NOT NULL,
+  `category_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `category_name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`category_id`))
 ENGINE = InnoDB
