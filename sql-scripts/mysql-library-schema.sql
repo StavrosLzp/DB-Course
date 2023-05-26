@@ -127,17 +127,25 @@ CREATE TABLE IF NOT EXISTS `school` (
   `school_name` VARCHAR(50) NOT NULL,
   `school_principal_name` VARCHAR(50) NOT NULL,
   `school_admin_name` VARCHAR(50) NOT NULL,
+  `library_admin_user_id` INT UNSIGNED NOT NULL,
   `school_mail_address` VARCHAR(70) NOT NULL,
   `city` VARCHAR(40) NOT NULL,
   `school_phone_number` VARCHAR(10) NOT NULL,
   `school_email` VARCHAR(50) NOT NULL,
-  PRIMARY KEY (`school_id`))
+  PRIMARY KEY (`school_id`),
+  CONSTRAINT `fk_school_library_admin1`
+    FOREIGN KEY (`library_admin_user_id`)
+    REFERENCES `library_user` (`user_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
 CREATE UNIQUE INDEX `school_name_UNIQUE` ON `school` (`school_name` ASC) VISIBLE;
 
 CREATE INDEX `idx_school_admin_id` ON `school` (`school_admin_name` ASC) VISIBLE;
+
+CREATE UNIQUE INDEX `library_admin_user_id_UNIQUE` ON `school` (`library_admin_user_id` ASC) VISIBLE;
 
 
 -- -----------------------------------------------------

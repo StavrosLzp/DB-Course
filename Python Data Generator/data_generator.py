@@ -10,7 +10,7 @@ fake = faker.Faker()
 content = ""
 content += f"USE library;\n"
 
-# Author 
+# Author ---------------------------
 
 DUMMY_DATA_NUMBER = 20
 table_name = "author"
@@ -25,7 +25,7 @@ for i in range(DUMMY_DATA_NUMBER):
 
 
 
-# Book
+# Book ---------------------------
 
 DUMMY_DATA_NUMBER = 100
 table_name = "book"
@@ -42,7 +42,7 @@ for i in range(DUMMY_DATA_NUMBER):
         VALUES ("{isbn_var}", "{title}", "{page_no}", "{language}");\n'
     
 
-# Book_Author
+# Book_Author ---------------------------
 
 #DUMMY_DATA_NUMBER = Books
 table_name = "book_author"
@@ -58,7 +58,7 @@ for book_id in range(1,DUMMY_DATA_NUMBER+1):
 
 
 
-# Category
+# Category ---------------------------
 
 book_categories = [
     "Fiction",
@@ -106,6 +106,38 @@ for book_id in range(1,DUMMY_DATA_NUMBER+1):
 
 
 
+# library_user_role
+table_name = "library_user_role"
+table_columns = ["role_name", "role_description"]
+content += f"DELETE FROM {table_name};\n"
+roles = ["Central Admin",""]
 
+'''
+
+To Do
+
+
+'''
+
+
+
+
+# School ---------------------------
+table_name = "school"
+table_columns = ["school_name", "school_principal_name", "school_admin_name", "school_mail_address", "city", "school_phone_number", "school_email", ]
+content += f"DELETE FROM {table_name};\n"
+
+for _ in range(5):
+    school_name = fake.company()
+    school_principal_name = fake.name()
+    school_admin_name = fake.name()
+    school_mail_address = fake.email()
+    city = fake.city()
+    school_phone_number = str(random.randint(210,290)) + ("%07d" % random.randint(0,9999999))
+    school_email = fake.email()
+
+    content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
+        VALUES ("{school_name}", "{school_principal_name}", "{school_admin_name}", "{school_mail_address}", "{city}", "{school_phone_number}", "{school_email}");\n'
+    
 f = open(path + "dummy_data.txt", "w", encoding="utf-8")
 f.write(content)
