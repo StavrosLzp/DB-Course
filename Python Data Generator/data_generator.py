@@ -171,7 +171,27 @@ for i in range(SchoolNum): #as many schools as school admins
     
     # Set school_admin's school_id to correct value
     content += f'UPDATE library_user SET school_id = {i+1} WHERE user_id = {school_admin_user_id};\n'
-    
+
+
+
+# school_book -----------------------------------
+table_name = "school_book"
+table_columns = ["school_school_id", "book_book_id", "school_book_amount"]
+content += f"\n"
+
+school_book_amount = 1
+for i in range(SchoolNum):
+    school_id = i+1
+    for i in range(DUMMY_DATA_NUMBER_BOOKS):
+        book_id = i+1
+        content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
+        VALUES ("{school_id}", "{book_id}", "{school_book_amount}");\n'
+
+
+
+
+
+
 
 
 # library_user ------------------------ Students

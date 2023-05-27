@@ -200,28 +200,26 @@ CREATE INDEX `fk_publisher_book1_idx` ON `publisher` (`book_book_id` ASC) VISIBL
 CREATE TABLE IF NOT EXISTS `reservation` (
   `reservation_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `reservation_date` DATE NOT NULL,
-  `status` ENUM('on-hold', 'active', 'returned', 'due') NULL DEFAULT NULL,
-  `user_id` INT UNSIGNED NOT NULL,
+  `status` ENUM('awaiting_pick_up', 'on_hold') NOT NULL,
   `book_book_id` INT NOT NULL,
-  PRIMARY KEY (`reservation_id`),
-  CONSTRAINT `fk_reservation_user_id`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `library_user` (`user_id`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
+  `library_user_user_id` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`reservation_id`, `library_user_user_id`),
   CONSTRAINT `fk_reservation_book1`
     FOREIGN KEY (`book_book_id`)
     REFERENCES `book` (`book_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_reservation_library_user1`
+    FOREIGN KEY (`library_user_user_id`)
+    REFERENCES `library_user` (`user_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
-CREATE UNIQUE INDEX `user_id` ON `reservation` (`user_id` ASC) VISIBLE;
-
-CREATE INDEX `idx_fk_user_id` ON `reservation` (`user_id` ASC) VISIBLE;
-
 CREATE INDEX `fk_reservation_book1_idx` ON `reservation` (`book_book_id` ASC) VISIBLE;
+
+CREATE INDEX `fk_reservation_library_user1_idx` ON `reservation` (`library_user_user_id` ASC) VISIBLE;
 
 
 -- -----------------------------------------------------
@@ -307,6 +305,84 @@ ENGINE = InnoDB;
 
 CREATE INDEX `fk_table1_book1_idx` ON `book_keyword` (`book_book_id` ASC) VISIBLE;
 
+
+-- -----------------------------------------------------
+-- Table `borrowing`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `borrowing` (
+  `borrowing_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `borrowing_date` DATE NOT NULL,
+  `status` ENUM('active', 'returned') NOT NULL,
+  `book_book_id` INT NOT NULL,
+  `library_user_user_id` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`borrowing_id`),
+  CONSTRAINT `fk_borrowing_book1`
+    FOREIGN KEY (`book_book_id`)
+    REFERENCES `book` (`book_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_borrowing_library_user1`
+    FOREIGN KEY (`library_user_user_id`)
+    REFERENCES `library_user` (`user_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
+
+CREATE INDEX `fk_borrowing_book1_idx` ON `borrowing` (`book_book_id` ASC) VISIBLE;
+
+CREATE INDEX `fk_borrowing_library_user1_idx` ON `borrowing` (`library_user_user_id` ASC) VISIBLE;
+
+USE `library`;
+
+DELIMITER $$
+USE `library`$$
+CREATE TRIGGER enforce_borrowing_limit
+BEFORE INSERT ON borrowing
+FOR EACH ROW
+BEGIN
+    DECLARE user_id_var INT;
+    DECLARE borrowing_count INT;
+    DECLARE user_role_id_var INT;
+    DECLARE borrowing_limit INT;
+    DECLARE book_id_var INT;
+    
+    -- Get the user ID and role ID of the borrower and the book id
+    SELECT library_user_user_id, book_book_id INTO user_id_var,  book_id_var
+    FROM borrowing
+    WHERE borrowing_id = NEW.borrowing_id;
+    
+    SELECT role_id into user_role_id_var
+    FROM library_user
+    WHERE user_id = user_id_var;
+    
+    IF (SELECT COUNT(borrowing_id) FROM borrowing WHERE book_book_id = book_id_var) > 1 THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Book is not available for reservation.';
+    END IF;
+    
+    -- Get the total number of books borrowed by the user in the current week
+    SELECT COUNT(*) INTO borrowing_count
+    FROM borrowing
+    WHERE library_user_user_id = user_id_var;
+   -- AND YEARWEEK(borrowing_date) = YEARWEEK(NEW.borrowing_date);
+    
+    -- Determine the borrowing limit based on the user's role
+    IF user_role_id_var = 4 THEN -- Student role
+        SET borrowing_limit = 2;
+    ELSEIF user_role_id_var = 3 THEN -- Professor role
+        SET borrowing_limit = 1;
+    END IF;
+    
+    -- Check if the borrowing limit has been reached
+    IF borrowing_count >= borrowing_limit THEN
+        INSERT INTO reservation (reservation_date, status, library_user_user_id, book_book_id)
+        VALUES (CURDATE(),  'on_hold', user_id_var, book_id_var);
+    END IF;
+END$$
+
+
+DELIMITER ;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
