@@ -114,12 +114,13 @@ for book_id in range(1,DUMMY_DATA_NUMBER_BOOKS+1):
 # library_user_role
 table_name = "library_user_role"
 table_columns = ["role_name", "role_description"]
-roles = ["Central Admin","School Admin","Teacher","Student"]
+roles = ["Central Admin","School Admin","Teacher","Student","Awaiting Confirmation"]
 role_desc = [ 
     "Has Controll of the database and all possible permissions",
     "Is responsible at a school level for managing the users, books, reservations",
     "Can borrow/reserve up to one book per week and edit personal info",
-    "Can borrow/reserve up to two books per week"
+    "Can borrow/reserve up to two books per week",
+    "User waiting aproval from admin"
 ]
 content += f"\n"
 
@@ -195,6 +196,28 @@ for i in range(DUMMY_DATA_NUMBER):
     lastName = fake.last_name()
     role_id = 4 #student
     school_id = floor(i / studentsPerSchool) +1
+    content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
+        VALUES ("{username}", "{password}", "{firstName}", "{lastName}", "{role_id}", "{school_id}");\n'
+
+
+
+# library_user ------------------------ Teachers
+
+TeachersPerSchool = 4
+DUMMY_DATA_NUMBER = SchoolNum * TeachersPerSchool
+table_name = "library_user"
+table_columns = ["username", "user_password","user_first_name","user_last_name","role_id","school_id"]
+content += f"\n"
+
+
+
+for i in range(DUMMY_DATA_NUMBER):
+    username = fake.sentence(nb_words=1).replace(".","").replace(" ","_")
+    password = fake.sentence(nb_words=1).replace(".","").replace(" ","_")
+    firstName = fake.first_name()
+    lastName = fake.last_name()
+    role_id = 3 #teacher
+    school_id = floor(i / TeachersPerSchool) +1
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
         VALUES ("{username}", "{password}", "{firstName}", "{lastName}", "{role_id}", "{school_id}");\n'
 

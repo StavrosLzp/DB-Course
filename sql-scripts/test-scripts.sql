@@ -38,6 +38,8 @@ SELECT COUNT(borrowing_id) FROM borrowing WHERE book_book_id = 3;
 select * from reservation;
 delete from reservation Where book_book_id = 1 AND reservation_status = 'awaiting_pick_up';
 
+select * from library_user WHERE role_id = 4;
+
 
 select * from school_book;
 

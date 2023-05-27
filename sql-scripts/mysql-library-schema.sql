@@ -156,7 +156,7 @@ CREATE TABLE IF NOT EXISTS `library_user` (
   `user_password` VARCHAR(16) NOT NULL,
   `user_first_name` VARCHAR(45) NOT NULL,
   `user_last_name` VARCHAR(45) NOT NULL,
-  `role_id` INT UNSIGNED NULL,
+  `role_id` INT UNSIGNED NOT NULL,
   `school_id` INT UNSIGNED NULL,
   PRIMARY KEY (`user_id`),
   CONSTRAINT `fk_user_role_id`
@@ -340,6 +340,16 @@ CREATE INDEX `fk_borrowing_library_user1_idx` ON `borrowing` (`library_user_user
 USE `library`;
 
 DELIMITER $$
+USE `library`$$
+CREATE TRIGGER user_Role_default
+BEFORE INSERT ON library_user
+FOR EACH ROW
+BEGIN
+    if NEW.role_id = NULL THEN
+		SET NEW.role_id = 5;
+	END IF;
+END$$
+
 USE `library`$$
 CREATE TRIGGER enforce_reservation_limit
 BEFORE INSERT ON reservation
