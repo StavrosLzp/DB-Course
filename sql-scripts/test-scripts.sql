@@ -22,17 +22,25 @@ JOIN category c ON bc.category_category_id = c.category_id
 WHERE b.book_id = 2;
 
 INSERT INTO borrowing (borrowing_date, borrowing_status, book_book_id, library_user_user_id)
-VALUES (CURDATE(), 'active', 13, 15);
+VALUES (CURDATE(), 'active', 12, 15);
 
-INSERT INTO reservation (reservation_date, book_book_id, library_user_user_id)
-VALUES (CURDATE(), 3, 14);
+INSERT INTO reservation (reservation_date, book_book_id, library_user_user_id)VALUES (CURDATE(), 1, 11);
+INSERT INTO reservation (reservation_date, book_book_id, library_user_user_id)VALUES (CURDATE(), 1, 12);
+INSERT INTO reservation (reservation_date, book_book_id, library_user_user_id)VALUES (CURDATE(), 1, 13);
+INSERT INTO reservation (reservation_date, book_book_id, library_user_user_id)VALUES (CURDATE(), 1, 14);
+select * from reservation;
+
 
 
 select * from library_user WHERE school_id = 1;
 select * from borrowing;
 SELECT COUNT(borrowing_id) FROM borrowing WHERE book_book_id = 3;
 select * from reservation;
+delete from reservation Where book_book_id = 1 AND reservation_status = 'awaiting_pick_up';
+
 
 select * from school_book;
+
+select * from library_user;
 
 

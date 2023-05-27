@@ -205,7 +205,7 @@ CREATE TABLE IF NOT EXISTS `reservation` (
   `reservation_status` ENUM('awaiting_pick_up', 'on_hold') NOT NULL,
   `book_book_id` INT NOT NULL,
   `library_user_user_id` INT UNSIGNED NOT NULL,
-  PRIMARY KEY (`reservation_id`, `library_user_user_id`),
+  PRIMARY KEY (`reservation_id`),
   CONSTRAINT `fk_reservation_book1`
     FOREIGN KEY (`book_book_id`)
     REFERENCES `book` (`book_id`)
@@ -229,29 +229,28 @@ CREATE INDEX `fk_reservation_library_user1_idx` ON `reservation` (`library_user_
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `review` (
   `review_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `review_text` VARCHAR(150) NULL DEFAULT NULL,
+  `review_text` VARCHAR(350) NULL DEFAULT NULL,
   `review_rating` INT NOT NULL,
-  `user_id` INT UNSIGNED NOT NULL,
+  `review_date` DATE NOT NULL,
   `book_book_id` INT NOT NULL,
+  `library_user_user_id` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`review_id`),
-  CONSTRAINT `fk_review_user_id`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `library_user` (`user_id`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE,
   CONSTRAINT `fk_review_book1`
     FOREIGN KEY (`book_book_id`)
     REFERENCES `book` (`book_id`)
     ON DELETE RESTRICT
-    ON UPDATE CASCADE)
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_review_library_user1`
+    FOREIGN KEY (`library_user_user_id`)
+    REFERENCES `library_user` (`user_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
-CREATE UNIQUE INDEX `user_id` ON `review` (`user_id` ASC) VISIBLE;
-
-CREATE INDEX `idx_fk_user_id` ON `review` (`user_id` ASC) VISIBLE;
-
 CREATE INDEX `fk_review_book1_idx` ON `review` (`book_book_id` ASC) VISIBLE;
+
+CREATE INDEX `fk_review_library_user1_idx` ON `review` (`library_user_user_id` ASC) VISIBLE;
 
 
 -- -----------------------------------------------------
@@ -393,6 +392,8 @@ BEGIN
 		AND book_book_id = NEW.book_book_id;
         SET NEW.reservation_status = 'awaiting_pick_up';
 	END IF;
+
+    SET NEW.reservation_date = CURDATE();
 END$$
 
 USE `library`$$
@@ -400,6 +401,7 @@ CREATE TRIGGER reservation_delete_update_availability
 BEFORE DELETE ON reservation
 FOR EACH ROW
 BEGIN
+	
 	IF OLD.reservation_status = 'awaiting_pick_up' THEN
 		UPDATE school_book set school_book_amount = school_book_amount + 1
 		WHERE school_school_id = (SELECT school_id from library_user WHERE user_id = OLD.library_user_user_id)
@@ -413,6 +415,8 @@ BEGIN
 	IF (NEW.review_rating > 5 OR NEW.review_rating < 0) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'review rating between 0 and 5';
     END IF;
+    
+    SET NEW.review_date = CURDATE();
 END$$
 
 USE `library`$$
@@ -471,6 +475,9 @@ BEGIN
 		WHERE school_school_id = (SELECT school_id from library_user WHERE user_id = NEW.library_user_user_id)
 		AND book_book_id = NEW.book_book_id;
 	END IF;
+    
+    SET NEW.borrowing_status = 'active';
+    SET NEW.borrowing_date = CURDATE();
 END$$
 
 USE `library`$$
