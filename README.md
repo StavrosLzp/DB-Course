@@ -8,6 +8,7 @@ DELETE FROM reservation
 * κουμπί για έλεγχο reservation on hold -> awaiting pick up
 
 
+https://www.youtube.com/watch?v=-O9NMdvWmE8
 
 ![image](https://github.com/StavrosLzp/DB-Course/assets/73658190/c7e988e9-dc65-48a6-bcf9-fb0981eb9828)
 
