@@ -21,8 +21,11 @@ JOIN book_category bc ON b.book_id = bc.book_book_id
 JOIN category c ON bc.category_category_id = c.category_id
 WHERE b.book_id = 2;
 
-INSERT INTO borrowing (borrowing_date, status, book_book_id, library_user_user_id)
-VALUES ('2023-05-27', 'active', 2, 14);
+INSERT INTO borrowing (borrowing_date, borrowing_status, book_book_id, library_user_user_id)
+VALUES (CURDATE(), 'active', 2, 2);
+
+INSERT INTO reservation (reservation_date, reservation_status, book_book_id, library_user_user_id)
+VALUES (CURDATE(), 'active', 2, 2);
 
 
 select * from library_user WHERE school_id = 1;

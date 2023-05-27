@@ -1,4 +1,4 @@
-USE library;
+USE library;
 
 INSERT INTO author (author_first_name,author_last_name)        VALUES ("Sarah", "Drake");
 INSERT INTO author (author_first_name,author_last_name)        VALUES ("Stephanie", "Taylor");
