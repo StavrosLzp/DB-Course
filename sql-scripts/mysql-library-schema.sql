@@ -207,13 +207,13 @@ CREATE TABLE IF NOT EXISTS `reservation` (
   CONSTRAINT `fk_reservation_book1`
     FOREIGN KEY (`book_book_id`)
     REFERENCES `book` (`book_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_reservation_library_user1`
     FOREIGN KEY (`library_user_user_id`)
     REFERENCES `library_user` (`user_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
@@ -240,8 +240,8 @@ CREATE TABLE IF NOT EXISTS `review` (
   CONSTRAINT `fk_review_book1`
     FOREIGN KEY (`book_book_id`)
     REFERENCES `book` (`book_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
@@ -320,13 +320,13 @@ CREATE TABLE IF NOT EXISTS `borrowing` (
   CONSTRAINT `fk_borrowing_book1`
     FOREIGN KEY (`book_book_id`)
     REFERENCES `book` (`book_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_borrowing_library_user1`
     FOREIGN KEY (`library_user_user_id`)
     REFERENCES `library_user` (`user_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
@@ -337,18 +337,6 @@ CREATE INDEX `fk_borrowing_library_user1_idx` ON `borrowing` (`library_user_user
 USE `library`;
 
 DELIMITER $$
-USE `library`$$
-CREATE TRIGGER reservation_delete_update_availability
-BEFORE DELETE ON reservation
-FOR EACH ROW
-BEGIN
-	IF OLD.reservation_status = 'awaiting_pick_up' THEN
-		UPDATE school_book set school_book_amount = school_book_amount + 1
-		WHERE school_school_id = (SELECT school_id from library_user WHERE user_id = OLD.library_user_user_id)
-		AND book_book_id = OLD.book_book_id;
-	END IF;
-END$$
-
 USE `library`$$
 CREATE TRIGGER enforce_reservation_limit
 BEFORE INSERT ON reservation
@@ -400,6 +388,18 @@ BEGIN
 		WHERE school_school_id = (SELECT school_id from library_user WHERE user_id = NEW.library_user_user_id)
 		AND book_book_id = NEW.book_book_id;
         SET NEW.reservation_status = 'awaiting_pick_up';
+	END IF;
+END$$
+
+USE `library`$$
+CREATE TRIGGER reservation_delete_update_availability
+BEFORE DELETE ON reservation
+FOR EACH ROW
+BEGIN
+	IF OLD.reservation_status = 'awaiting_pick_up' THEN
+		UPDATE school_book set school_book_amount = school_book_amount + 1
+		WHERE school_school_id = (SELECT school_id from library_user WHERE user_id = OLD.library_user_user_id)
+		AND book_book_id = OLD.book_book_id;
 	END IF;
 END$$
 
