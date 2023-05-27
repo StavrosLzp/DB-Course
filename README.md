@@ -1,6 +1,8 @@
 # DB-Course
 
-Για διαγραφή παλιών reservations κουμπί: 
+# To Do :
+
+*Για διαγραφή παλιών reservations κουμπί: 
 DELETE FROM reservation
     WHERE DATEDIFF(NEW.reservation_date, reservation_date) > 7;
 
