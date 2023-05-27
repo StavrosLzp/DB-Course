@@ -92,12 +92,14 @@ CREATE TABLE IF NOT EXISTS `book_category` (
   PRIMARY KEY (`category_category_id`, `book_book_id`),
   CONSTRAINT `fk_book_category_category1`
     FOREIGN KEY (`category_category_id`)
-    REFERENCES `category` (`category_id`),
+    REFERENCES `category` (`category_id`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_book_category_book1`
     FOREIGN KEY (`book_book_id`)
     REFERENCES `book` (`book_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -135,8 +137,8 @@ CREATE TABLE IF NOT EXISTS `school` (
   CONSTRAINT `fk_school_library_admin1`
     FOREIGN KEY (`library_admin_user_id`)
     REFERENCES `library_user` (`user_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
@@ -186,8 +188,8 @@ CREATE TABLE IF NOT EXISTS `publisher` (
   CONSTRAINT `fk_publisher_book1`
     FOREIGN KEY (`book_book_id`)
     REFERENCES `book` (`book_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
@@ -262,12 +264,14 @@ CREATE TABLE IF NOT EXISTS `school_book` (
   PRIMARY KEY (`school_school_id`, `book_book_id`),
   CONSTRAINT `fk_school_book_school1`
     FOREIGN KEY (`school_school_id`)
-    REFERENCES `school` (`school_id`),
+    REFERENCES `school` (`school_id`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_school_book_book1`
     FOREIGN KEY (`book_book_id`)
     REFERENCES `book` (`book_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -295,13 +299,13 @@ CREATE TABLE IF NOT EXISTS `book_keyword` (
   CONSTRAINT `fk_table1_keyword1`
     FOREIGN KEY (`keyword_keyword_id`)
     REFERENCES `keyword` (`keyword_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_table1_book1`
     FOREIGN KEY (`book_book_id`)
     REFERENCES `book` (`book_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 CREATE INDEX `fk_table1_book1_idx` ON `book_keyword` (`book_book_id` ASC) VISIBLE;
