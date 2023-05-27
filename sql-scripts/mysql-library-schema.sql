@@ -228,6 +228,7 @@ CREATE INDEX `fk_reservation_library_user1_idx` ON `reservation` (`library_user_
 CREATE TABLE IF NOT EXISTS `review` (
   `review_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `review_text` VARCHAR(150) NULL DEFAULT NULL,
+  `review_rating` INT NOT NULL,
   `user_id` INT UNSIGNED NOT NULL,
   `book_book_id` INT NOT NULL,
   PRIMARY KEY (`review_id`),
@@ -337,15 +338,22 @@ USE `library`;
 
 DELIMITER $$
 USE `library`$$
+CREATE TRIGGER reservation_delete_update_availability
+BEFORE DELETE ON reservation
+FOR EACH ROW
+BEGIN
+	IF OLD.reservation_status = 'awaiting_pick_up' THEN
+		UPDATE school_book set school_book_amount = school_book_amount + 1
+		WHERE school_school_id = (SELECT school_id from library_user WHERE user_id = OLD.library_user_user_id)
+		AND book_book_id = OLD.book_book_id;
+	END IF;
+END$$
+
+USE `library`$$
 CREATE TRIGGER enforce_reservation_limit
 BEFORE INSERT ON reservation
 FOR EACH ROW
 BEGIN
-	-- Delete reservations older than one week
-	DELETE FROM reservation
-    WHERE DATEDIFF(NEW.reservation_date, reservation_date) > 7;
-
-
     SET @reserve_count = NULL;
     SET @user_role_id_var = NULL;
     SET @reservation_limit = NULL;
@@ -354,8 +362,8 @@ BEGIN
     FROM library_user
     WHERE user_id = NEW.library_user_user_id;
 
-    
-    IF (SELECT COUNT(borrowing_id) FROM borrowing WHERE book_book_id =  NEW.book_book_id AND library_user_user_id = NEW.library_user_user_id) >= 1 THEN
+    -- Prevent users from reserve book that they currently have borrowed
+    IF (SELECT COUNT(borrowing_id) FROM borrowing WHERE book_book_id =  NEW.book_book_id AND library_user_user_id = NEW.library_user_user_id AND borrowing_status = 'active') >= 1 THEN
         SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Cannot reserve a copy of a Book that the same user has borrowed';
     END IF;
@@ -363,7 +371,8 @@ BEGIN
     -- Get the total number of books reserved by the user in the current week
     SELECT COUNT(*) INTO @reserve_count
     FROM reservation
-    WHERE library_user_user_id = NEW.library_user_user_id;
+    WHERE library_user_user_id = NEW.library_user_user_id
+    AND DATEDIFF(NEW.reservation_date, reservation_date) <= 7;
     
     -- Determine the borrowing limit based on the user's role
     IF @user_role_id_var = 4 THEN -- Student role
@@ -385,7 +394,7 @@ BEGIN
     WHERE book_book_id =  NEW.book_book_id
     AND school_school_id = (SELECT school_id from library_user WHERE user_id = NEW.library_user_user_id)) < 1 THEN
 		-- No books available  status -> on hold 
-        SET NEW.reservation_status = 'on hold';
+        SET NEW.reservation_status = 'on_hold';
 	ELSE -- Remove one book from school and status -> waiting for pick up
 		UPDATE school_book set school_book_amount = school_book_amount - 1
 		WHERE school_school_id = (SELECT school_id from library_user WHERE user_id = NEW.library_user_user_id)
@@ -395,15 +404,11 @@ BEGIN
 END$$
 
 USE `library`$$
-CREATE TRIGGER reservation_delete_update_availability
-BEFORE DELETE ON reservation
-FOR EACH ROW
+CREATE DEFINER = CURRENT_USER TRIGGER `library`.`review_BEFORE_INSERT` BEFORE INSERT ON `review` FOR EACH ROW
 BEGIN
-	IF OLD.reservation_status = 'awaiting_pick_up' THEN
-		UPDATE school_book set school_book_amount = school_book_amount + 1
-		WHERE school_school_id = (SELECT school_id from library_user WHERE user_id = OLD.library_user_user_id)
-		AND book_book_id = OLD.book_book_id;
-	END IF;
+	IF (NEW.review_rating > 5 OR NEW.review_rating < 0) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'review rating between 0 and 5';
+    END IF;
 END$$
 
 USE `library`$$
