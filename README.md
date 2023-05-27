@@ -2,9 +2,10 @@
 
 # To Do :
 
-*Για διαγραφή παλιών reservations κουμπί: 
+* Για διαγραφή παλιών reservations κουμπί: 
 DELETE FROM reservation
     WHERE DATEDIFF(NEW.reservation_date, reservation_date) > 7;
+* κουμπί για έλεγχο reservation on hold -> awaiting pick up
 
 
 
