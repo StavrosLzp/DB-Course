@@ -312,10 +312,6 @@ for book_id in range(1,DUMMY_DATA_NUMBER_BOOKS+1):
             VALUES ("{book_id}", "{cat}");\n'
 
 
-
-
-
-
 #-----------------------------------------------------------------------------------#
 f = open(path + "dummy_data.txt", "w", encoding="utf-8")
 f.write(content)
