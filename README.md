@@ -1,5 +1,13 @@
 # DB-Course
 
+# To Do :
+
+*Για διαγραφή παλιών reservations κουμπί: 
+DELETE FROM reservation
+    WHERE DATEDIFF(NEW.reservation_date, reservation_date) > 7;
+
+
+
 ![image](https://github.com/StavrosLzp/DB-Course/assets/73658190/c7e988e9-dc65-48a6-bcf9-fb0981eb9828)
 
 ![image](https://github.com/StavrosLzp/DB-Course/assets/73658190/e7474e0b-8c2d-4067-86ef-844b6d689a00)
