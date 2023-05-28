@@ -1,0 +1,32 @@
+{% extends "global_layout.html" %}
+{% block content %}
+<div class="container" id="row-container">
+    {% include "flash_messages.html" %}
+    <div class="row" id="row">
+        <!-- 4.1.1 -->
+        <div class="col-md-4">
+            <div class="card" id="card-container-layout">
+                <div class="card-body d-flex flex-column" id="card">
+                    <h4 class="card-title">View Loans</h4>
+                    <p class="card-text" id="paragraph">Show Loans, usiing search criteria<br></p>
+                    <div class="mt-auto">
+                    <a class="btn btn-primary" id="show-btn" href="/Loans">Show</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 4.1.2 -->
+        <div class="col-md-4">
+            <div class="card" id="card-container-layout">
+                <div class="card-body d-flex flex-column" id="card">
+                    <h4 class="card-title">Category info</h4>
+                    <p class="card-text" id="paragraph">For a given book category find which authors belong to it and which teachers have borrowed books from that category in the last year<br></p>
+                    <div class="mt-auto">
+                    <a class="btn btn-primary" id="show-btn" href="/category_info">Show</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -45,7 +45,7 @@ select * from school_book;
 
 select * from library_user;
 
-select role_id FROM library_urer
-WHERE 
+select role_id FROM library_user
+WHERE username = 'Up' AND user_password = 'Pass';
 
 

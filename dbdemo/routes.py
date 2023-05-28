@@ -20,19 +20,33 @@ def index():
                 WHERE username = '{username}' AND user_password = '{password}';
                 """
         cur.execute(query)
-        role_id = cur.fetchall()[0][0]
+        result = cur.fetchall()
+        if result:
+            role_id = result[0][0]
         cur.close()
         form.username.data = ""
         form.password.data = ""
-    if role_id == 0 :
+    if role_id == 1:
+        return redirect('/admin_dash')
+    elif role_id == 2:
+        return redirect('/operator_dash')
+    elif role_id == 3 or role_id == 4:
+        return redirect('/user_dash')
+    else :
         return render_template("landing.html", pageTitle="Landing Page",
             username = username, password = password, form = form)
-    elif role_id == 1:
-        return redirect('/admin_dash')
         
 @app.route("/admin_dash")
 def admin():
-    return render_template("admin.html", pageTitle="Admin Dash")
+    return render_template("dash_admin.html", pageTitle="Admin Dashboard")
+
+@app.route("/operator_dash")
+def operator():
+    return render_template("dash_operator.html", pageTitle="Operator Dashboard")
+
+@app.route("/user_dash")
+def user():
+    return render_template("dash_user.html", pageTitle="User Dashboard")
 
 @app.errorhandler(404)
 def page_not_found(e):
