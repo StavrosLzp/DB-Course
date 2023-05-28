@@ -40,6 +40,28 @@ def index():
 def admin():
     return render_template("dash_admin.html", pageTitle="Admin Dashboard")
 
+@app.route("/Loans")
+def loans():
+    try:
+        form = loans_view()
+        cur = db.connection.cursor()
+        query = """
+        SELECT s.school_id, s.school_name, COUNT(b.borrowing_id) AS borrowings_count
+        FROM school s
+        LEFT JOIN library_user u ON s.school_id = u.school_id
+        LEFT JOIN borrowing b ON u.user_id = b.library_user_user_id
+        WHERE b.borrowing_status ='active'
+        GROUP BY s.school_id;
+        """
+        cur.execute(query)
+        column_names = [i[0] for i in cur.description]
+        loans = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+        cur.close()
+        return render_template("loans.html", pageTitle="View Loans", loans = loans, form = form)
+    except Exception as e:
+        flash(str(e), "danger")
+        abort(500)
+
 @app.route("/operator_dash")
 def operator():
     return render_template("dash_operator.html", pageTitle="Operator Dashboard")

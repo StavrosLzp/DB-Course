@@ -30,7 +30,7 @@ INSERT INTO reservation (reservation_date, book_book_id, library_user_user_id)VA
 INSERT INTO reservation (reservation_date, book_book_id, library_user_user_id)VALUES (CURDATE(), 1, 14);
 select * from reservation;
 
-
+INSERT INTO  borrowing (borrowing_date, book_book_id, library_user_user_id)VALUES (CURDATE(), 1, 14);
 
 select * from library_user WHERE school_id = 1;
 select * from borrowing;
@@ -48,4 +48,13 @@ select * from library_user;
 select role_id FROM library_user
 WHERE username = 'Up' AND user_password = 'Pass';
 
+
+SELECT s.school_id, s.school_name, COUNT(b.borrowing_id) AS borrowings_count
+FROM school s
+LEFT JOIN library_user u ON s.school_id = u.school_id
+LEFT JOIN borrowing b ON u.user_id = b.library_user_user_id
+WHERE b.borrowing_status ='active'
+GROUP BY s.school_id;
+
+select * from school;
 

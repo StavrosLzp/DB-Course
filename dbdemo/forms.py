@@ -12,3 +12,12 @@ class login(FlaskForm):
     password = StringField(label = "Password", validators = [DataRequired(message = "Password is a required field.")])
 
     submit = SubmitField("Login")
+    
+class loans_view(FlaskForm):
+    school_name = StringField(label = "School name", validators = [DataRequired(message = "School name is a required field.")])
+
+    loan_count = StringField(label = "Loan count", validators = [DataRequired(message = "Borrowing_count is a required field.")])
+
+    submit = SubmitField("Create")
+
+

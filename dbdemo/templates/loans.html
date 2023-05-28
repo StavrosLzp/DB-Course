@@ -1,0 +1,54 @@
+{% extends "global_layout.html" %}
+{% block content %}
+<div class="container">
+    {% include "flash_messages.html" %}
+    <div class="row" id="row">
+        <div class="col-md-12">
+            <div class="card" id="card-container">
+                <div class="card-body" id="card">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>School ID</th>
+                                <th>School Name</th>
+                                <th>Number of Loans</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for loan in loans %}
+                            <tr>
+                                <td> {{ loan.school_id }} </td>
+                                <td> {{ loan.school_name }} </td>
+                                <td> {{ loan.borrowings_count }} </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function setModalFields(row) {
+        document.getElementById("school_id").value = row.getAttribute("data-id");
+        document.getElementById("school_name").value = row.getAttribute("data-name");
+        document.getElementById("borrowings_count").value = row.getAttribute("data-number");
+        // document.getElementById("modal-form").action = "/students/update/" + row.getAttribute("data-id");
+        document.getElementById("modal-form").method = "POST";
+        // document.getElementById("submit").addEventListener("click", (e) => {e.preventDefault();});
+        // commented line above would prevent the default behavior of the submit button, that is, sending the
+        // form data with a post request to the determined address and subsequently closing the pop-up
+    }
+/*
+    function setDeleteModalFields(row) {
+        document.getElementById("delete-modal-form").action = "/students/delete/" + row.getAttribute("data-id");
+        document.getElementById("delete-modal-form").method = "POST";
+    }
+    */ 
+</script>
+
+{% endblock content %}
