@@ -1,0 +1,18 @@
+{% extends "global_layout.html" %}
+{% block content %}
+
+<div class = "container">
+    <h2>
+    500: Internal Server Error
+    </h2>
+
+    <!-- https://www.google.com/images/errors/robot.png -->
+    <div>
+        <img src = "{{ url_for('static', filename = 'images/errors/500.png') }}" alt = "">
+    </div>
+    <div>
+    A team of expertly trained code monkeys has been dispatched to deal with the situation.
+    </div>
+</div>
+
+{% endblock content %}

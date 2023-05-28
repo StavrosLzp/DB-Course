@@ -14,7 +14,7 @@ select a.author_first_name from author a
     on a.author_id = ba.author_author_id
     inner join book b
 	on b.book_id = ba.book_book_id
-where b.book_id = 1;
+where b.book_id = 3;
 
 SELECT c.category_name FROM book b
 JOIN book_category bc ON b.book_id = bc.book_book_id
@@ -38,11 +38,14 @@ SELECT COUNT(borrowing_id) FROM borrowing WHERE book_book_id = 3;
 select * from reservation;
 delete from reservation Where book_book_id = 1 AND reservation_status = 'awaiting_pick_up';
 
-select * from library_user WHERE role_id = 4;
+select * from library_user WHERE role_id = 3;
 
 
 select * from school_book;
 
 select * from library_user;
+
+select role_id FROM library_urer
+WHERE 
 
 

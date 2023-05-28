@@ -11,11 +11,12 @@
                 <form method="POST">
                     {{ form.hidden_tag() }}
 
-                    {{form.username.label}}
-                    {{form.username()}}
-                    {{form.password.label}}
-                    {{form.password()}}
-                    {{ form.submit() }}
+                    {{form.username.label(class="form-label")}}
+                    {{form.username(class="form-control")}}
+                    {{form.password.label(class="form-label")}}
+                    {{form.password(class="form-control")}}
+                    <br/>
+                    {{ form.submit(class="btn btn-primary") }}
                 </form>
                 <!-- <a class="btn btn-primary" id="show-btn" href="/programs">Show</a> -->
                 </div>
