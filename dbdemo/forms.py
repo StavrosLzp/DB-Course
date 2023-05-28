@@ -10,3 +10,5 @@ class login(FlaskForm):
     username = StringField(label = "Username", validators = [DataRequired(message = "Username is a required field.")])
 
     password = StringField(label = "Password", validators = [DataRequired(message = "Password is a required field.")])
+
+    submit = SubmitField("Login")
