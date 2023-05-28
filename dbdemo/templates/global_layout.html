@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang = "en">
+
+<head>
+    <meta charset = "utf-8">
+    <meta name = "viewport" content = "width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>
+        {% block title %}
+        {% endblock title %}
+    </title>
+    <link rel = "stylesheet" href = "{{ url_for('static', filename = 'bootstrap/css/bootstrap.min.css') }}">
+    <link rel = "stylesheet" href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel = "stylesheet" href = "{{ url_for('static', filename = 'css/styles.css') }}">
+</head>
+
+    {% include "navbar.html" %}
+
+<body>
+    <!-- all other templates are to be rendered "within" the following block -->
+    {% block content %}
+    {% endblock content %}
+
+    <script src = "{{ url_for('static', filename = 'bootstrap/js/bootstrap.min.js') }}"></script>
+</body>
+
+</html>
