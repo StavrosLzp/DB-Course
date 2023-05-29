@@ -1,6 +1,7 @@
 import faker, os, random
 from faker import Faker
-from datetime import datetime
+from datetime import datetime,timedelta
+import datetime
 from collections import OrderedDict
 from faker.providers import isbn, lorem
 from faker_education import SchoolProvider
@@ -262,30 +263,61 @@ for i in range(SchoolNum):
 
 
 
+
+# borrowing  OLD ------------------------ 
+DUMMY_DATA_NUMBER = DUMMY_DATA_NUMBER_BOOKS
+table_name = "borrowing"
+table_columns = ["book_book_id", "library_user_user_id", "borrowing_date", "borrowing_status"]
+content += f"\n"
+
+for i in range (5):
+    for  student in range(1,SchoolNum * studentsPerSchool+1):
+        user_id = SchoolNum + 1 + student
+        book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
+        date = fake.date_between_dates(datetime.date.today() - timedelta(days = 900),datetime.date.today() - timedelta(days = 15))
+        status = "returned"
+        
+        content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
+            VALUES ("{book_id}", "{user_id}", "{date}", "{status}");\n'
+
+    for teacher in range(SchoolNum * studentsPerSchool+1,SchoolNum * studentsPerSchool+1+SchoolNum*TeachersPerSchool):
+        user_id = SchoolNum + 1 +  teacher
+        book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
+        date = fake.date_between_dates(datetime.date.today() - timedelta(days = 900),datetime.date.today() - timedelta(days = 15))
+        status = "returned"
+        content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
+            VALUES ("{book_id}", "{user_id}", "{date}", "{status}");\n'
+
+
 random.seed(1) 
 # borrowing ------------------------ 
 
 DUMMY_DATA_NUMBER = DUMMY_DATA_NUMBER_BOOKS
 table_name = "borrowing"
-table_columns = ["book_book_id", "library_user_user_id", "borrowing_date"]
+table_columns = ["book_book_id", "library_user_user_id", "borrowing_date", "borrowing_status"]
 content += f"\n"
 
 # school_id = floor(i / studentsPerSchool) +1
 for  student in range(1,SchoolNum * studentsPerSchool+1):
     user_id = SchoolNum + 1 + student
     book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
-    date = fake.date_of_birth(minimum_age = 0, maximum_age = 1)
+    date = fake.date_between_dates(datetime.date.today() - timedelta(days = 15),datetime.date.today())
+    if date > datetime.date.today() - timedelta(days = 9) : status = "active"
+    else : status = "returned"
     
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-        VALUES ("{book_id}", "{user_id}", "{date}");\n'
+        VALUES ("{book_id}", "{user_id}", "{date}", "{status}");\n'
 
 for teacher in range(SchoolNum * studentsPerSchool+1,SchoolNum * studentsPerSchool+1+SchoolNum*TeachersPerSchool):
     user_id = SchoolNum + 1 +  teacher
     book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
-    date = fake.date_of_birth(minimum_age = 0, maximum_age = 1)
+    date = fake.date_between_dates(datetime.date.today() - timedelta(days = 15),datetime.date.today())
+    if date > datetime.date.today() - timedelta(days = 9) : status = "active"
+    else : status = "returned"
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-        VALUES ("{book_id}", "{user_id}", "{date}");\n'
+        VALUES ("{book_id}", "{user_id}", "{date}", "{status}");\n'
 
+    
 
 
 
@@ -300,7 +332,7 @@ content += f"\n"
 for  student in range(1,SchoolNum * studentsPerSchool+1):
     user_id = SchoolNum + 1 + student
     book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
-    date = fake.date_of_birth(minimum_age = 0, maximum_age = 1)
+    date = fake.date_between_dates(datetime.date.today() - timedelta(days = 7),datetime.date.today())
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
         VALUES ("{book_id}", "{user_id}", "{date}");\n'
         
@@ -308,7 +340,7 @@ for  student in range(1,SchoolNum * studentsPerSchool+1):
 for teacher in range(SchoolNum * studentsPerSchool+1,SchoolNum * studentsPerSchool+1+SchoolNum*TeachersPerSchool):
     user_id = SchoolNum + 1 + teacher
     book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
-    date = fake.date_of_birth(minimum_age = 0, maximum_age = 1)
+    date = fake.date_between_dates(datetime.date.today() - timedelta(days = 7),datetime.date.today())
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
         VALUES ("{book_id}", "{user_id}", "{date}");\n'
     
@@ -328,7 +360,7 @@ for  student in range(1,SchoolNum * studentsPerSchool+1):
     review_rating = random.randint(0,5)
     user_id = SchoolNum + 1 +  student
     book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
-    date = fake.date_of_birth(minimum_age = 0, maximum_age = 1)
+    date = fake.date_this_month()
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
         VALUES ("{review_text}", "{review_rating}", "{book_id}", "{user_id}", "{date}");\n'
         
@@ -337,7 +369,7 @@ for teacher in range(SchoolNum * studentsPerSchool+1,SchoolNum * studentsPerScho
     review_rating = random.randint(0,5)
     user_id = SchoolNum + 1 + teacher
     book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
-    date = fake.date_of_birth(minimum_age = 0, maximum_age = 1)
+    date = fake.date_this_month()
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
         VALUES ("{review_text}", "{review_rating}", "{book_id}", "{user_id}", "{date}");\n'
     

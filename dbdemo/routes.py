@@ -54,7 +54,7 @@ def loans():
         FROM school s
         LEFT JOIN library_user u ON s.school_id = u.school_id
         LEFT JOIN borrowing b ON u.user_id = b.library_user_user_id
-        WHERE b.borrowing_status ='active'
+        WHERE u.user_id <> 0
         """
     
     cur = db.connection.cursor()
@@ -64,14 +64,11 @@ def loans():
         form.month.data = ""
         year = form.year.data
         form.year.data = ""
-        print("Not")
         if month: query +=f" AND MONTH(b.borrowing_date) = {month}  "
         if year: query +=f" AND YEAR(b.borrowing_date) = {year}  "
-        print("Not")
     
     query +="GROUP BY s.school_id;"
     cur.execute(query)
-    print("Done")
     column_names = [i[0] for i in cur.description]
     loans = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     cur.close()    

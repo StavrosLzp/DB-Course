@@ -403,10 +403,6 @@ BEGIN
 		AND book_book_id = NEW.book_book_id;
         SET NEW.reservation_status = 'awaiting_pick_up';
 	END IF;
-
-	if NEW.reservation_date IS NULL THEN
-		SET NEW.reservation_date = CURDATE();
-	END IF;
 END$$
 
 USE `library`$$
@@ -429,9 +425,7 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'review rating between 0 and 5';
     END IF;
     
-    if NEW.review_date IS NULL THEN
-		SET NEW.review_date = CURDATE();
-	END IF;
+    SET NEW.review_date = CURDATE();
 END$$
 
 USE `library`$$
@@ -448,7 +442,7 @@ BEGIN
     WHERE user_id = NEW.library_user_user_id;
 
     
-    IF (SELECT COUNT(borrowing_id) FROM borrowing WHERE book_book_id =  NEW.book_book_id AND library_user_user_id = NEW.library_user_user_id) >= 1 THEN
+    IF (SELECT COUNT(borrowing_id) FROM borrowing WHERE book_book_id =  NEW.book_book_id AND library_user_user_id = NEW.library_user_user_id AND borrowing_status = 'active') >= 1 THEN
         SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Cannot Borrow more than one copy of a Book.';
     END IF;
@@ -473,6 +467,9 @@ BEGIN
             SET MESSAGE_TEXT = 'Borrowing limit has been reached, make reservation instead.';
     END IF;
     
+    if NEW.borrowing_date IS NULL THEN
+		SET NEW.borrowing_date = CURDATE();
+	END IF;
     
 	-- Check availability 	
     IF (SELECT school_book_amount FROM school_book 
@@ -485,17 +482,12 @@ BEGIN
 	AND library_user_user_id = NEW.library_user_user_id) THEN 
 		DELETE FROM reservation WHERE book_book_id =  NEW.book_book_id 
 		AND library_user_user_id = NEW.library_user_user_id;
-	ELSE -- Remove one book from school 
+	ElSEIF NEW.borrowing_status = 'active' THEN-- Remove one book from school 
 		UPDATE school_book set school_book_amount = school_book_amount - 1
 		WHERE school_school_id = (SELECT school_id from library_user WHERE user_id = NEW.library_user_user_id)
 		AND book_book_id = NEW.book_book_id;
 	END IF;
     
-    
-    if NEW.borrowing_date IS NULL THEN
-		SET NEW.borrowing_date = CURDATE();
-        SET NEW.borrowing_status = 'active';
-	END IF;
 END$$
 
 USE `library`$$

@@ -40,7 +40,8 @@ select * from reservation;
 INSERT INTO  borrowing (borrowing_date, book_book_id, library_user_user_id)VALUES (CURDATE(), 1, 14);
 
 select * from library_user WHERE school_id = 1;
-select * from borrowing;
+select * from borrowing where library_user_user_id = 82;
+
 SELECT COUNT(borrowing_id) FROM borrowing WHERE book_book_id = 3;
 select * from reservation;
 delete from reservation Where book_book_id = 1 AND reservation_status = 'awaiting_pick_up';
@@ -92,3 +93,6 @@ left join category c on c.category_id = bc.category_category_id
 where c.category_name = "Poetry"
 group by a.author_id
 order by a.author_id;
+
+INSERT INTO borrowing (book_book_id,library_user_user_id,borrowing_date,borrowing_status)            VALUES ("33", "7", "2022-03-07", "returned");
+INSERT INTO borrowing (book_book_id,library_user_user_id,borrowing_date)            VALUES ("33", "7", "2022-03-07");
