@@ -86,22 +86,14 @@ def category_info():
     categorys = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     
     form = category()
-    cat = ""
-    authors = [0]
-    query = f"""
-        select a.author_id, a.author_first_name, a.author_last_name from author a
-        left join book_author ba ON  ba.author_author_id = a.author_id
-        left join book b on b.book_id = ba.book_book_id
-        left join book_category bc on bc.book_book_id = b.book_id
-        left join category c on c.category_id = bc.category_category_id
-        where c.category_name = "{cat}"
-        group by a.author_id
-        order by a.author_id;
-                """
+    query1 = f"""
+        select a.author_id, a.author_first_name, a.author_last_name from author a where a.author_id = ""
+            """
+    query2 = f"select u.user_first_name, u.user_last_name from library_user where u.role_id = '' " 
     
     if form.validate_on_submit():
         cat = form.category.data
-        query = f"""
+        query1 = f"""
                 select a.author_id, a.author_first_name, a.author_last_name from author a
                 left join book_author ba ON  ba.author_author_id = a.author_id
                 left join book b on b.book_id = ba.book_book_id
@@ -111,14 +103,32 @@ def category_info():
                 group by a.author_id
                 order by a.author_id;
                 """
+                
+        query2 = f"""
+                select u.user_id, u.user_first_name, u.user_last_name from library_user u 
+                Left join borrowing bo ON u.user_id = bo.library_user_user_id
+                left join book b on b.book_id = bo.book_book_id
+                left join book_category bc on bc.book_book_id = b.book_id
+                left join category c on c.category_id = bc.category_category_id
+                where c.category_name = "{cat}"
+                and u.role_id = 3; 
+                """
+        
+        
     cur = db.connection.cursor()
-    cur.execute(query)
+    cur.execute(query1)
     column_names = [i[0] for i in cur.description]
     authors = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     cur.close()
     
+    cur = db.connection.cursor()
+    cur.execute(query2)
+    column_names = [i[0] for i in cur.description]
+    users = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()
     
-    return render_template("category_info.html", pageTitle="View category info", form = form, categorys=categorys, authors=authors)
+    
+    return render_template("category_info.html", pageTitle="View category info", form = form, categorys=categorys, authors=authors, users=users)
 
     
 @app.route("/operator_dash")

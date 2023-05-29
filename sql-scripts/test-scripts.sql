@@ -71,8 +71,12 @@ INSERT INTO borrowing (borrowing_date, borrowing_status, book_book_id, library_u
 VALUES (CURDATE(), 'active', 12, 82);
 
 select * from library_user u 
-Left join borrowing b ON u.user_id = b.library_user_user_id
-Where u.role_id = 3; 
+Left join borrowing bo ON u.user_id = bo.library_user_user_id
+left join book b on b.book_id = ba.book_book_id
+left join book_category bc on bc.book_book_id = b.book_id
+left join category c on c.category_id = bc.category_category_id
+where c.category_name = "Poetry"
+and u.role_id = 3; 
 
 select * from category;
 

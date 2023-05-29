@@ -78,16 +78,16 @@
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>Author ID</th>
-                                        <th>Author Name</th>
+                                        <th>Teacher ID</th>
+                                        <th>Teacher Name</th>
                                         <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for author in authors %}
+                                    {% for user in users %}
                                     <tr>
-                                        <td> {{ author.author_id }} </td>
-                                        <td> {{ author.author_first_name + " " + author.author_last_name }} </td>
+                                        <td> {{ user.user_id }} </td>
+                                        <td> {{ user.user_first_name + " " + user.user_last_name }} </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
