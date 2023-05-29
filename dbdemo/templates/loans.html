@@ -27,6 +27,19 @@
                     </table>
                 </div>
             </div>
+            <div class="card" id="card-container">
+                <div class="card-body" id="card">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        {{form.month.label(class="form-label")}}
+                        {{form.month(class="form-control")}}
+                        {{form.year.label(class="form-label")}}
+                        {{form.year(class="form-control")}}
+                        <br/>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </form>
+                </div>
+            </div>
         </div>
 
     </div>

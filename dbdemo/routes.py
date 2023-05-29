@@ -40,27 +40,42 @@ def index():
 def admin():
     return render_template("dash_admin.html", pageTitle="Admin Dashboard")
 
-@app.route("/Loans")
+@app.route("/Loans", methods=['GET', 'POST'])
 def loans():
-    try:
-        form = loans_view()
-        cur = db.connection.cursor()
-        query = """
+    # 3.1.1 Loans month search 
+    cur = db.connection.cursor()
+    cur.close()
+    month = None
+    year = None
+    form = loans_view()
+    print("1Not")
+    query = """
         SELECT s.school_id, s.school_name, COUNT(b.borrowing_id) AS borrowings_count
         FROM school s
         LEFT JOIN library_user u ON s.school_id = u.school_id
         LEFT JOIN borrowing b ON u.user_id = b.library_user_user_id
-        WHERE b.borrowing_status ='active'
-        GROUP BY s.school_id;
-        """
-        cur.execute(query)
-        column_names = [i[0] for i in cur.description]
-        loans = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
-        cur.close()
-        return render_template("loans.html", pageTitle="View Loans", loans = loans, form = form)
-    except Exception as e:
-        flash(str(e), "danger")
-        abort(500)
+        WHERE b.borrowing_status ='active' """
+    
+    cur = db.connection.cursor()
+    if form.validate_on_submit():
+        print("start")
+        month = form.month.data
+        form.month.data = ""
+        year = form.year.data
+        form.year.data = ""
+        print("Not")
+        if month: query +=f" AND MONTH(b.borrowing_date) = {month}  "
+        if year: query +=f" AND YEAR(b.borrowing_date) = {year}  "
+        print("Not")
+    
+    query +="GROUP BY s.school_id;"
+    cur.execute(query)
+    print("Done")
+    column_names = [i[0] for i in cur.description]
+    loans = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()    
+    
+    return render_template("loans.html", pageTitle="View Loans", loans = loans, form = form)
 
 @app.route("/operator_dash")
 def operator():

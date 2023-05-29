@@ -14,10 +14,10 @@ class login(FlaskForm):
     submit = SubmitField("Login")
     
 class loans_view(FlaskForm):
-    school_name = StringField(label = "School name", validators = [DataRequired(message = "School name is a required field.")])
+    month = StringField(label = "Month (int)")
 
-    loan_count = StringField(label = "Loan count", validators = [DataRequired(message = "Borrowing_count is a required field.")])
+    year = StringField(label = "Year (int)")
 
-    submit = SubmitField("Create")
+    submit = SubmitField("Search")
 
 
