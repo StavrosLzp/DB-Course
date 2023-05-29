@@ -1,3 +1,6 @@
+SET PASSWORD FOR root@localhost=''; 
+
+
 use library;
 
 select * from author;
