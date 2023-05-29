@@ -1,5 +1,9 @@
 SET PASSWORD FOR root@localhost=''; 
 
+-- for VS CODE connection
+CREATE USER 'sqluser'@'%' IDENTIFIED WITH mysql_native_password BY '';
+GRANT ALL PRIVILEGES ON *.* TO 'sqluser'@'%';
+FLUSH PRIVILEGES;
 
 use library;
 
@@ -62,7 +66,7 @@ GROUP BY s.school_id;
 select * from school;
 
 
-select * from library_user where role_id = 3;
+select * from library_user where role_id = 4;
 
 select * from library_user u 
 Left join borrowing b ON u.user_id = b.library_user_user_id;
@@ -72,7 +76,7 @@ VALUES (CURDATE(), 'active', 12, 82);
 
 select * from library_user u 
 Left join borrowing bo ON u.user_id = bo.library_user_user_id
-left join book b on b.book_id = ba.book_book_id
+left join book b on b.book_id = bo.book_book_id
 left join book_category bc on bc.book_book_id = b.book_id
 left join category c on c.category_id = bc.category_category_id
 where c.category_name = "Poetry"

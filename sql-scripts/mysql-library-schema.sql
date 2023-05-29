@@ -156,6 +156,7 @@ CREATE TABLE IF NOT EXISTS `library_user` (
   `user_password` VARCHAR(16) NOT NULL,
   `user_first_name` VARCHAR(45) NOT NULL,
   `user_last_name` VARCHAR(45) NOT NULL,
+  `user_birthdate` DATE NOT NULL,
   `role_id` INT UNSIGNED NOT NULL,
   `school_id` INT UNSIGNED NULL,
   PRIMARY KEY (`user_id`),
@@ -403,7 +404,9 @@ BEGIN
         SET NEW.reservation_status = 'awaiting_pick_up';
 	END IF;
 
-    SET NEW.reservation_date = CURDATE();
+	if NEW.reservation_date IS NULL THEN
+		SET NEW.reservation_date = CURDATE();
+	END IF;
 END$$
 
 USE `library`$$
@@ -426,7 +429,9 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'review rating between 0 and 5';
     END IF;
     
-    SET NEW.review_date = CURDATE();
+    if NEW.review_date IS NULL THEN
+		SET NEW.review_date = CURDATE();
+	END IF;
 END$$
 
 USE `library`$$
@@ -486,8 +491,11 @@ BEGIN
 		AND book_book_id = NEW.book_book_id;
 	END IF;
     
-    SET NEW.borrowing_status = 'active';
-    SET NEW.borrowing_date = CURDATE();
+    
+    if NEW.borrowing_date IS NULL THEN
+		SET NEW.borrowing_date = CURDATE();
+        SET NEW.borrowing_status = 'active';
+	END IF;
 END$$
 
 USE `library`$$

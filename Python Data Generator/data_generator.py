@@ -140,7 +140,7 @@ for i in range(len(roles)):
 SchoolNum = 5
 DUMMY_DATA_NUMBER = SchoolNum+1
 table_name = "library_user"
-table_columns = ["username", "user_password","user_first_name","user_last_name","role_id"]
+table_columns = ["username", "user_password","user_first_name","user_last_name","role_id","user_birthdate"]
 content += f"\n"
 
 # First Admin created is Central admin
@@ -149,14 +149,15 @@ for i in range(DUMMY_DATA_NUMBER):
     password = fake.sentence(nb_words=1).replace(".","").replace(" ","_")
     firstName = fake.first_name()
     lastName = fake.last_name()
+    birth = fake.date_of_birth(minimum_age = 25, maximum_age = 65)
     if i == 0 :
         role_id = 1 #Central Admin
         content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-            VALUES ("{username}", "{password}", "{firstName}", "{lastName}", "{role_id}");\n'
+            VALUES ("{username}", "{password}", "{firstName}", "{lastName}", "{role_id}", "{birth}");\n'
     else:
         role_id = 2 # school admin
         content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-            VALUES ("{username}", "{password}", "{firstName}", "{lastName}", "{role_id}");\n'
+            VALUES ("{username}", "{password}", "{firstName}", "{lastName}", "{role_id}", "{birth}");\n'
 
 
 
@@ -188,7 +189,7 @@ for i in range(SchoolNum): #as many schools as school admins
 studentsPerSchool = 15
 DUMMY_DATA_NUMBER = SchoolNum * studentsPerSchool
 table_name = "library_user"
-table_columns = ["username", "user_password","user_first_name","user_last_name","role_id","school_id"]
+table_columns = ["username", "user_password","user_first_name","user_last_name","role_id","school_id","user_birthdate"]
 content += f"\n"
 
 
@@ -200,8 +201,10 @@ for i in range(DUMMY_DATA_NUMBER):
     lastName = fake.last_name()
     role_id = 4 #student
     school_id = floor(i / studentsPerSchool) +1
+    birth = fake.date_of_birth(minimum_age = 12, maximum_age = 18)
+    
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-        VALUES ("{username}", "{password}", "{firstName}", "{lastName}", "{role_id}", "{school_id}");\n'
+        VALUES ("{username}", "{password}", "{firstName}", "{lastName}", "{role_id}", "{school_id}", "{birth}");\n'
 
 
 
@@ -210,7 +213,7 @@ for i in range(DUMMY_DATA_NUMBER):
 TeachersPerSchool = 4
 DUMMY_DATA_NUMBER = SchoolNum * TeachersPerSchool
 table_name = "library_user"
-table_columns = ["username", "user_password","user_first_name","user_last_name","role_id","school_id"]
+table_columns = ["username", "user_password","user_first_name","user_last_name","role_id","school_id","user_birthdate"]
 content += f"\n"
 
 
@@ -222,8 +225,10 @@ for i in range(DUMMY_DATA_NUMBER):
     lastName = fake.last_name()
     role_id = 3 #teacher
     school_id = floor(i / TeachersPerSchool) +1
+    birth = fake.date_of_birth(minimum_age = 25, maximum_age = 65)
+    
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-        VALUES ("{username}", "{password}", "{firstName}", "{lastName}", "{role_id}", "{school_id}");\n'
+        VALUES ("{username}", "{password}", "{firstName}", "{lastName}", "{role_id}", "{school_id}", "{birth}");\n'
 
 
 
@@ -262,23 +267,24 @@ random.seed(1)
 
 DUMMY_DATA_NUMBER = DUMMY_DATA_NUMBER_BOOKS
 table_name = "borrowing"
-table_columns = ["book_book_id", "library_user_user_id"]
+table_columns = ["book_book_id", "library_user_user_id", "borrowing_date"]
 content += f"\n"
 
 # school_id = floor(i / studentsPerSchool) +1
 for  student in range(1,SchoolNum * studentsPerSchool+1):
-
-     
     user_id = SchoolNum + 1 + student
     book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
+    date = fake.date_of_birth(minimum_age = 0, maximum_age = 1)
+    
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-        VALUES ("{book_id}", "{user_id}");\n'
+        VALUES ("{book_id}", "{user_id}", "{date}");\n'
 
 for teacher in range(SchoolNum * studentsPerSchool+1,SchoolNum * studentsPerSchool+1+SchoolNum*TeachersPerSchool):
     user_id = SchoolNum + 1 +  teacher
     book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
+    date = fake.date_of_birth(minimum_age = 0, maximum_age = 1)
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-        VALUES ("{book_id}", "{user_id}");\n'
+        VALUES ("{book_id}", "{user_id}", "{date}");\n'
 
 
 
@@ -287,24 +293,24 @@ for teacher in range(SchoolNum * studentsPerSchool+1,SchoolNum * studentsPerScho
 
 DUMMY_DATA_NUMBER = DUMMY_DATA_NUMBER_BOOKS
 table_name = "reservation"
-table_columns = ["book_book_id", "library_user_user_id"]
+table_columns = ["book_book_id", "library_user_user_id", "reservation_date"]
 content += f"\n"
 
 # school_id = floor(i / studentsPerSchool) +1
 for  student in range(1,SchoolNum * studentsPerSchool+1):
-
-     
     user_id = SchoolNum + 1 + student
     book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
+    date = fake.date_of_birth(minimum_age = 0, maximum_age = 1)
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-        VALUES ("{book_id}", "{user_id}");\n'
+        VALUES ("{book_id}", "{user_id}", "{date}");\n'
         
         
 for teacher in range(SchoolNum * studentsPerSchool+1,SchoolNum * studentsPerSchool+1+SchoolNum*TeachersPerSchool):
     user_id = SchoolNum + 1 + teacher
     book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
+    date = fake.date_of_birth(minimum_age = 0, maximum_age = 1)
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-        VALUES ("{book_id}", "{user_id}");\n'
+        VALUES ("{book_id}", "{user_id}", "{date}");\n'
     
     
 
@@ -313,7 +319,7 @@ for teacher in range(SchoolNum * studentsPerSchool+1,SchoolNum * studentsPerScho
 
 DUMMY_DATA_NUMBER = DUMMY_DATA_NUMBER_BOOKS
 table_name = "review"
-table_columns = ["review_text", "review_rating", "book_book_id", "library_user_user_id"]
+table_columns = ["review_text", "review_rating", "book_book_id", "library_user_user_id", "review_date"]
 content += f"\n"
 
 # school_id = floor(i / studentsPerSchool) +1
@@ -322,16 +328,18 @@ for  student in range(1,SchoolNum * studentsPerSchool+1):
     review_rating = random.randint(0,5)
     user_id = SchoolNum + 1 +  student
     book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
+    date = fake.date_of_birth(minimum_age = 0, maximum_age = 1)
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-        VALUES ("{review_text}", "{review_rating}", "{book_id}", "{user_id}");\n'
+        VALUES ("{review_text}", "{review_rating}", "{book_id}", "{user_id}", "{date}");\n'
         
 for teacher in range(SchoolNum * studentsPerSchool+1,SchoolNum * studentsPerSchool+1+SchoolNum*TeachersPerSchool):
     review_text = fake.text(max_nb_chars=200)
     review_rating = random.randint(0,5)
     user_id = SchoolNum + 1 + teacher
     book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
+    date = fake.date_of_birth(minimum_age = 0, maximum_age = 1)
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-        VALUES ("{review_text}", "{review_rating}", "{book_id}", "{user_id}");\n'
+        VALUES ("{review_text}", "{review_rating}", "{book_id}", "{user_id}", "{date}");\n'
     
 
 

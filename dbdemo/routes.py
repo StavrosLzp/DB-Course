@@ -40,7 +40,7 @@ def index():
 def admin():
     return render_template("dash_admin.html", pageTitle="Admin Dashboard")
 
-@app.route("/Loans", methods=['GET', 'POST'])
+@app.route("/admin_dash/loans", methods=['GET', 'POST'])
 def loans():
     # 3.1.1 Loans month search 
     cur = db.connection.cursor()
@@ -54,7 +54,8 @@ def loans():
         FROM school s
         LEFT JOIN library_user u ON s.school_id = u.school_id
         LEFT JOIN borrowing b ON u.user_id = b.library_user_user_id
-        WHERE b.borrowing_status ='active' """
+        WHERE b.borrowing_status ='active'
+        """
     
     cur = db.connection.cursor()
     if form.validate_on_submit():
@@ -77,7 +78,7 @@ def loans():
     
     return render_template("loans.html", pageTitle="View Loans", loans = loans, form = form)
 
-@app.route("/category_info", methods=['GET', 'POST'])
+@app.route("/admin_dash/category_info", methods=['GET', 'POST'])
 def category_info():        
     query = "select category.category_name from category;"
     cur = db.connection.cursor()
@@ -89,7 +90,7 @@ def category_info():
     query1 = f"""
         select a.author_id, a.author_first_name, a.author_last_name from author a where a.author_id = ""
             """
-    query2 = f"select u.user_first_name, u.user_last_name from library_user where u.role_id = '' " 
+    query2 = f"select u.user_first_name, u.user_last_name from library_user u where u.role_id = '' " 
     
     if form.validate_on_submit():
         cat = form.category.data
