@@ -77,8 +77,50 @@ def loans():
     
     return render_template("loans.html", pageTitle="View Loans", loans = loans, form = form)
 
-# /category_info
+@app.route("/category_info", methods=['GET', 'POST'])
+def category_info():        
+    query = "select category.category_name from category;"
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    categorys = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    
+    form = category()
+    cat = ""
+    authors = [0]
+    query = f"""
+        select a.author_id, a.author_first_name, a.author_last_name from author a
+        left join book_author ba ON  ba.author_author_id = a.author_id
+        left join book b on b.book_id = ba.book_book_id
+        left join book_category bc on bc.book_book_id = b.book_id
+        left join category c on c.category_id = bc.category_category_id
+        where c.category_name = "{cat}"
+        group by a.author_id
+        order by a.author_id;
+                """
+    
+    if form.validate_on_submit():
+        cat = form.category.data
+        query = f"""
+                select a.author_id, a.author_first_name, a.author_last_name from author a
+                left join book_author ba ON  ba.author_author_id = a.author_id
+                left join book b on b.book_id = ba.book_book_id
+                left join book_category bc on bc.book_book_id = b.book_id
+                left join category c on c.category_id = bc.category_category_id
+                where c.category_name = "{cat}"
+                group by a.author_id
+                order by a.author_id;
+                """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    authors = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()
+    
+    
+    return render_template("category_info.html", pageTitle="View category info", form = form, categorys=categorys, authors=authors)
 
+    
 @app.route("/operator_dash")
 def operator():
     return render_template("dash_operator.html", pageTitle="Operator Dashboard")

@@ -1,0 +1,102 @@
+{% extends "global_layout.html" %}
+{% block content %}
+<div class="container" id="row-container">
+    {% include "flash_messages.html" %}
+    <div class="row" id="row">
+        
+        <div class="col-md-6">
+            <div class="card" id="card-container">
+                <div class="card-body" id="card">
+                    <h4 class="card-title">Select category</h4>
+                    <p class="card-text" id="paragraph">For a given book category, which authors belong to it and which teachers have borrowed books from that category in the last year?<br></p>
+                    <div class="mt-auto">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for category in categorys %}
+                                <tr>
+                                    <td> {{ category.category_name }} </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card" id="card-container">
+                <div class="card-body" id="card">
+                    <h4 class="card-title">Select category</h4>
+                    <p class="card-text" id="paragraph">For a given book category, which authors belong to it and which teachers have borrowed books from that category in the last year?<br></p>
+                    <div class="mt-auto">
+                        <form method="POST">
+                            {{ form.hidden_tag() }}
+        
+                            {{form.category.label(class="form-label")}}
+                            {{form.category(class="form-control")}}
+                            <br/>
+                            {{ form.submit(class="btn btn-primary") }}
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <p></p>
+            <div class="card" id="card-container">
+                <div class="card" id="card-container">
+                    <div class="card-body" id="card">
+                        <h4 class="card-title">View Authors that write books of that category</h4>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Author ID</th>
+                                        <th>Author Name</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for author in authors %}
+                                    <tr>
+                                        <td> {{ author.author_id }} </td>
+                                        <td> {{ author.author_first_name + " " + author.author_last_name }} </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <p>
+                <div class="card" id="card-container">
+                    <div class="card-body" id="card">
+                        <h4 class="card-title">View Authors that write books of that category</h4>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Author ID</th>
+                                        <th>Author Name</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for author in authors %}
+                                    <tr>
+                                        <td> {{ author.author_id }} </td>
+                                        <td> {{ author.author_first_name + " " + author.author_last_name }} </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </p>
+        </div>  
+    </div>
+{% endblock content %}

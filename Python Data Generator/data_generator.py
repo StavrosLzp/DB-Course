@@ -55,7 +55,7 @@ table_columns = ["book_book_id", "author_author_id"]
 content += f"\n"
 
 for book_id in range(1,DUMMY_DATA_NUMBER_BOOKS+1):
-    auth_amount = random.randint(1,5)
+    auth_amount = random.randint(1,2)
     auth_ids = random.sample(range(1,21), auth_amount)
     for auth_id in auth_ids:
         content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
@@ -85,7 +85,11 @@ book_categories = [
     "Children's",
     "Science",
     "Art",
-    "Cooking"
+    "Cooking",
+    "Western",
+    "Comic Book",
+    "Programming",
+    "Educational"
 ]
 table_name = "category"
 table_columns = ["category_name"]
@@ -103,7 +107,7 @@ table_columns = ["book_book_id", "category_category_id"]
 content += f"\n"
 
 for book_id in range(1,DUMMY_DATA_NUMBER_BOOKS+1):
-    cat_amount = random.randint(2,6)
+    cat_amount = random.randint(2,3)
     cats = random.sample(range(1,len(book_categories)+1), cat_amount)
     for cat in cats:
         content += f'INSERT INTO {table_name} ({",".join(table_columns)})\

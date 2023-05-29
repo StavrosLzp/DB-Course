@@ -19,5 +19,9 @@ class loans_view(FlaskForm):
     year = StringField(label = "Year (int)")
 
     submit = SubmitField("Search")
+    
+class category(FlaskForm):
+    category = StringField(label = "Category")
 
+    submit = SubmitField("Search")
 
