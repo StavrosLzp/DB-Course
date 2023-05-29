@@ -77,6 +77,8 @@ def loans():
     
     return render_template("loans.html", pageTitle="View Loans", loans = loans, form = form)
 
+# /category_info
+
 @app.route("/operator_dash")
 def operator():
     return render_template("dash_operator.html", pageTitle="Operator Dashboard")

@@ -265,7 +265,13 @@ content += f"\n"
 for  student in range(1,SchoolNum * studentsPerSchool+1):
 
      
-    user_id = student
+    user_id = SchoolNum + 1 + student
+    book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
+    content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
+        VALUES ("{book_id}", "{user_id}");\n'
+
+for teacher in range(SchoolNum * studentsPerSchool+1,SchoolNum * studentsPerSchool+1+SchoolNum*TeachersPerSchool):
+    user_id = SchoolNum + 1 +  teacher
     book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
         VALUES ("{book_id}", "{user_id}");\n'
@@ -284,10 +290,18 @@ content += f"\n"
 for  student in range(1,SchoolNum * studentsPerSchool+1):
 
      
-    user_id = student
+    user_id = SchoolNum + 1 + student
     book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
         VALUES ("{book_id}", "{user_id}");\n'
+        
+        
+for teacher in range(SchoolNum * studentsPerSchool+1,SchoolNum * studentsPerSchool+1+SchoolNum*TeachersPerSchool):
+    user_id = SchoolNum + 1 + teacher
+    book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
+    content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
+        VALUES ("{book_id}", "{user_id}");\n'
+    
     
 
 
@@ -302,7 +316,15 @@ content += f"\n"
 for  student in range(1,SchoolNum * studentsPerSchool+1):
     review_text = fake.text(max_nb_chars=200)
     review_rating = random.randint(0,5)
-    user_id = student
+    user_id = SchoolNum + 1 +  student
+    book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
+    content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
+        VALUES ("{review_text}", "{review_rating}", "{book_id}", "{user_id}");\n'
+        
+for teacher in range(SchoolNum * studentsPerSchool+1,SchoolNum * studentsPerSchool+1+SchoolNum*TeachersPerSchool):
+    review_text = fake.text(max_nb_chars=200)
+    review_rating = random.randint(0,5)
+    user_id = SchoolNum + 1 + teacher
     book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
         VALUES ("{review_text}", "{review_rating}", "{book_id}", "{user_id}");\n'

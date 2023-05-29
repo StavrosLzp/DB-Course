@@ -25,7 +25,7 @@ JOIN category c ON bc.category_category_id = c.category_id
 WHERE b.book_id = 2;
 
 INSERT INTO borrowing (borrowing_date, borrowing_status, book_book_id, library_user_user_id)
-VALUES (CURDATE(), 'active', 12, 15);
+VALUES (CURDATE(), 'active', 12, 22);
 
 INSERT INTO reservation (reservation_date, book_book_id, library_user_user_id)VALUES (CURDATE(), 1, 11);
 INSERT INTO reservation (reservation_date, book_book_id, library_user_user_id)VALUES (CURDATE(), 1, 12);
@@ -60,4 +60,17 @@ WHERE b.borrowing_status ='active'
 GROUP BY s.school_id;
 
 select * from school;
+
+
+select * from library_user where role_id = 3;
+
+select * from library_user u 
+Left join borrowing b ON u.user_id = b.library_user_user_id;
+
+INSERT INTO borrowing (borrowing_date, borrowing_status, book_book_id, library_user_user_id)
+VALUES (CURDATE(), 'active', 12, 82);
+
+select * from library_user u 
+Left join borrowing b ON u.user_id = b.library_user_user_id
+Where u.role_id = 3; 
 
