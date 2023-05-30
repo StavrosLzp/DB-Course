@@ -100,6 +100,39 @@
                 </div>
             </div>
         </div>
+        <!-- 3.1.6 -->
+        <div class="col-md-4">
+            <div class="card" id="card-container-layout">
+                <div class="card-body d-flex flex-column" id="card">
+                    <h4 class="card-title">Popular category combos</h4>
+                    <div class="mt-auto">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Category One </th>
+                                    <th>Category Two </th>
+                                    <th>Book Count</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for result in top3_cats %}
+                                <tr>
+                                    <td> {{ result.category_name }} </td>
+                                    <td> {{ result.category2_name }} </td>
+                                    <td> {{ result.comb_amount }} </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p></p>
+
+        
     </div>
 </div>
 {% endblock content %}
