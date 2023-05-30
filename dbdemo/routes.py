@@ -16,20 +16,21 @@ def index():
         password = form.password.data
         cur = db.connection.cursor()
         query = f"""
-                SELECT role_id FROM library_user 
+                SELECT role_id, user_id FROM library_user 
                 WHERE username = '{username}' AND user_password = '{password}';
                 """
         cur.execute(query)
         result = cur.fetchall()
         if result:
             role_id = result[0][0]
+            user_id = result[0][1]
         cur.close()
         form.username.data = ""
         form.password.data = ""
     if role_id == 1:
         return redirect('/admin_dash')
     elif role_id == 2:
-        return redirect('/operator_dash')
+        return redirect('/operator_dash/'+ str(user_id))
     elif role_id == 3 or role_id == 4:
         return redirect('/user_dash')
     else :
@@ -173,8 +174,9 @@ def top_teach_borrowers():
 
 
     
-@app.route("/operator_dash")
-def operator():
+@app.route("/operator_dash/<int:ID>")
+def operator(ID):
+    print(ID)
     return render_template("dash_operator.html", pageTitle="Operator Dashboard")
 
 @app.route("/user_dash")
