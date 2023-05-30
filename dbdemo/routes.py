@@ -52,7 +52,18 @@ def admin():
     no_lend_authors = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     # 3.1.4 END
     
-    return render_template("dash_admin.html", pageTitle="Admin Dashboard", no_lend_authors = no_lend_authors)
+    
+    query =  f"""
+                SELECT op1.user_id, op1.user_first_name, op1.user_last_name, op2.user_id AS user2_user_id, op2.user_first_name AS user2_first_name, op2.user_last_name AS user2_last_name, op2.borrowings_count
+                FROM Loans_per_school_admin_this_year op1
+                Join Loans_per_school_admin_this_year op2 ON op1.user_id < op2.user_id AND op1.borrowings_count = op2.borrowings_count
+                WHERE op1.borrowings_count > 20;
+                """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    same_l_operators = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    return render_template("dash_admin.html", pageTitle="Admin Dashboard", no_lend_authors = no_lend_authors, same_l_operators = same_l_operators)
 
 @app.route("/admin_dash/loans", methods=['GET', 'POST'])
 def loans():
@@ -159,6 +170,7 @@ def top_teach_borrowers():
     column_names = [i[0] for i in cur.description]
     results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     return render_template("top_teach_borrowers.html", pageTitle="View top teacher borrowers", results = results)
+
 
     
 @app.route("/operator_dash")

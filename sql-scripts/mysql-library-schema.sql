@@ -502,7 +502,7 @@ BEGIN
 	AND library_user_user_id = NEW.library_user_user_id) THEN 
 		DELETE FROM reservation WHERE book_book_id =  NEW.book_book_id 
 		AND library_user_user_id = NEW.library_user_user_id;
-	ElSEIF borrowing_status = 'active' THEN-- Remove one book from school 
+	ElSEIF NEW.borrowing_status = 'active' THEN-- Remove one book from school 
 		UPDATE school_book set school_book_amount = school_book_amount - 1
 		WHERE school_school_id = (SELECT school_id from library_user WHERE user_id = NEW.library_user_user_id)
 		AND book_book_id = NEW.book_book_id;

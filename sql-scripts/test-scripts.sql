@@ -124,13 +124,9 @@ WHERE u.user_id <> 0
 AND YEAR(b.borrowing_date) = YEAR(NOW())
 GROUP BY s.school_id;
 
-SELECT op1.user_id, op1.user_first_name, op1.user_last_name, op1.borrowings_count, op2.user_id, op2.user_first_name, op2.user_last_name, op2.borrowings_count
+SELECT op1.user_id, op1.user_first_name, op1.user_last_name, op2.user_id AS user2_user_id, op2.user_first_name AS user2_first_name, op2.user_last_name AS user2_last_name, op2.borrowings_count
 FROM Loans_per_school_admin_this_year op1
-Join Loans_per_school_admin_this_year op2;
+Join Loans_per_school_admin_this_year op2 ON op1.user_id < op2.user_id AND op1.borrowings_count = op2.borrowings_count
+WHERE op1.borrowings_count > 20;
 
 select * from Loans_per_school_admin_this_year View;
-
-SELECT u1.user_id, u1.name, u2.user_id, u2.name, s.school_id, s.school_name
-FROM users u1
-JOIN users u2 ON u1.school_id = u2.school_id AND u1.user_id < u2.user_id
-JOIN schools s ON u1.school_id = s.school_id

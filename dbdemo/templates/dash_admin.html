@@ -39,6 +39,7 @@
                 </div>
             </div>
         </div>
+        <p></p>
         <!-- 3.1.4 -->
         <div class="col-md-4">
             <div class="card" id="card-container-layout">
@@ -69,7 +70,38 @@
                 </div>
             </div>
         </div>
+        <!-- 3.1.5 -->
+        <div class="col-md-4">
+            <div class="card" id="card-container-layout">
+                <div class="card-body d-flex flex-column" id="card">
+                    <h4 class="card-title">Operators that lended the same amount of books this year</h4>
+                    <p class="card-text" id="paragraph"><br></p>
+                    <div class="mt-auto">
+                    
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Operator One </th>
+                                    <th>Operator Two </th>
+                                    <th>Loans count</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for result in same_l_operators %}
+                                <tr>
+                                    <td> {{ result.user_first_name + " " + result.user_last_name }} </td>
+                                    <td> {{ result.user2_first_name + " " + result.user2_last_name }} </td>
+                                    <td> {{ result.borrowings_count }} </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
 
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock content %}
