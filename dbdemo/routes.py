@@ -38,7 +38,21 @@ def index():
         
 @app.route("/admin_dash")
 def admin():
-    return render_template("dash_admin.html", pageTitle="Admin Dashboard")
+    
+    # 3.1.4 START
+    query =  f"""
+                select a.author_id, a.author_first_name, a.author_last_name, b.book_id from author a
+                left join book_author ba ON  ba.author_author_id = a.author_id
+                left join book b on b.book_id = ba.book_book_id
+                WHERE NOT EXISTS(SELECT * from borrowing WHERE book_book_id = b.book_id);
+                """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    no_lend_authors = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    # 3.1.4 END
+    
+    return render_template("dash_admin.html", pageTitle="Admin Dashboard", no_lend_authors = no_lend_authors)
 
 @app.route("/admin_dash/loans", methods=['GET', 'POST'])
 def loans():
@@ -129,7 +143,7 @@ def category_info():
     
     return render_template("category_info.html", pageTitle="View category info", form = form, categorys=categorys, authors=authors, users=users)
 
-@app.route("/admin_dash/top_teach_borrowers", methods=['GET', 'POST'])
+@app.route("/admin_dash/top_teach_borrowers")
 def top_teach_borrowers():
     query =  f"""
                 SELECT u.user_id, u.user_first_name, u.user_last_name, COUNT(b.borrowing_id) AS num_books_borrowed
@@ -145,7 +159,7 @@ def top_teach_borrowers():
     column_names = [i[0] for i in cur.description]
     results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     return render_template("top_teach_borrowers.html", pageTitle="View top teacher borrowers", results = results)
-    
+
     
 @app.route("/operator_dash")
 def operator():

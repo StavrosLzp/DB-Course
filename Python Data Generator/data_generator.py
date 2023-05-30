@@ -28,7 +28,8 @@ for i in range(DUMMY_DATA_NUMBER):
     lastName = fake.last_name()
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
         VALUES ("{firstName}", "{lastName}");\n'
-
+#author with no books borrowed 3.1.4:
+content += 'INSERT INTO author (author_first_name,author_last_name)        VALUES ("Mary", "Knox");'
 
 
 # Book ---------------------------
@@ -46,7 +47,8 @@ for i in range(DUMMY_DATA_NUMBER_BOOKS):
     language = random.choice(lang)
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
         VALUES ("{isbn_var}", "{title}", "{page_no}", "{language}");\n'
-    
+# 3.1.4:        
+content += 'INSERT INTO book (book_ISBN,book_title,book_page_no,book_language)        VALUES ("5-57237-837-7", "Understand government", "445", "Greek");'
 
 # Book_Author ---------------------------
 
@@ -61,6 +63,8 @@ for book_id in range(1,DUMMY_DATA_NUMBER_BOOKS+1):
     for auth_id in auth_ids:
         content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
             VALUES ("{book_id}", "{auth_id}");\n'
+# 3.1.4:        
+content += 'INSERT INTO book_author (book_book_id,author_author_id)            VALUES ("101", "21");'
 
 
 

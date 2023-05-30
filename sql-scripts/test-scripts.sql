@@ -108,3 +108,11 @@ AND u.role_id = 3
 GROUP BY u.user_id
 ORDER BY num_books_borrowed DESC;
 
+-- 3.1.4
+select a.author_id, a.author_first_name, a.author_last_name, b.book_id from author a
+left join book_author ba ON  ba.author_author_id = a.author_id
+left join book b on b.book_id = ba.book_book_id
+WHERE NOT EXISTS(SELECT * from borrowing WHERE book_book_id = b.book_id);
+
+
+
