@@ -49,3 +49,12 @@ class books_form(FlaskForm):
 
     submit = SubmitField("Show")
 
+class author(FlaskForm):
+    author = StringField(label = "Author")
+
+    submit = SubmitField("Search")
+
+class title(FlaskForm):
+    title = StringField(label = "Title")
+
+    submit = SubmitField("Search")
