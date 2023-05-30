@@ -82,6 +82,7 @@ def category_info():
     cur.execute(query)
     column_names = [i[0] for i in cur.description]
     categorys = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()
     
     form = category()
     query1 = f"""
@@ -128,6 +129,23 @@ def category_info():
     
     return render_template("category_info.html", pageTitle="View category info", form = form, categorys=categorys, authors=authors, users=users)
 
+@app.route("/admin_dash/top_teach_borrowers", methods=['GET', 'POST'])
+def top_teach_borrowers():
+    query =  f"""
+                SELECT u.user_id, u.user_first_name, u.user_last_name, COUNT(b.borrowing_id) AS num_books_borrowed
+                FROM library_user u
+                JOIN borrowing b ON u.user_id = b.library_user_user_id
+                WHERE datediff(NOW(),u.user_birthdate) < 40 * 365
+                AND u.role_id = 3
+                GROUP BY u.user_id
+                ORDER BY num_books_borrowed DESC;
+                """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    return render_template("top_teach_borrowers.html", pageTitle="View top teacher borrowers", results = results)
+    
     
 @app.route("/operator_dash")
 def operator():

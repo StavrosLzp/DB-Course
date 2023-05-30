@@ -96,3 +96,15 @@ order by a.author_id;
 
 INSERT INTO borrowing (book_book_id,library_user_user_id,borrowing_date,borrowing_status)            VALUES ("33", "7", "2022-03-07", "returned");
 INSERT INTO borrowing (book_book_id,library_user_user_id,borrowing_date)            VALUES ("33", "7", "2022-03-07");
+
+
+
+-- 3.1.3 
+SELECT u.user_id, u.user_first_name, u.user_last_name, COUNT(b.borrowing_id) AS num_books_borrowed
+FROM library_user u
+JOIN borrowing b ON u.user_id = b.library_user_user_id
+WHERE datediff(NOW(),u.user_birthdate) < 40 * 365
+AND u.role_id = 3
+GROUP BY u.user_id
+ORDER BY num_books_borrowed DESC;
+

@@ -1,0 +1,33 @@
+{% extends "global_layout.html" %}
+{% block content %}
+<div class="container">
+    {% include "flash_messages.html" %}
+    <div class="row" id="row">
+        <div class="col-md-12">
+            <div class="card" id="card-container">
+                <div class="card-body" id="card">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Teacher ID</th>
+                                <th>Teacher Name</th>
+                                <th>Number of Books Borrowed</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in results %}
+                            <tr>
+                                <td> {{ result.user_id }} </td>
+                                <td> {{ result.user_first_name + " " + result.user_last_name }} </td>
+                                <td> {{ result.num_books_borrowed }} </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
