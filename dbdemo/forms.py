@@ -24,4 +24,28 @@ class category(FlaskForm):
     category = StringField(label = "Category")
 
     submit = SubmitField("Search")
+    
+    
+class books_form(FlaskForm):
+    book_id = SelectField(
+        label = "Book",
+        validators = [DataRequired(message = "Book is a required field.")],
+        coerce = int
+    )
+    # grade = IntegerField(
+    #     label = "Grade",
+    #     validators = [NumberRange(min = 0, max = 100, message = "Grade between 0 and 100 inclusive.")]
+    # )
+
+    # ## In a real scenario, where the courses would be a separate entity, the
+    # ## choices list below would be populated by the corresponding data
+    # ## retrieved from the database. See createGrade in routes.py for an example
+    # ## of this with student_id
+    # course_name = SelectField(
+    #     label = "Course",
+    #     validators = [DataRequired(message = "Course is a required field.")],
+    #     choices = ["PAC", "PAS", "SHO", "DRI", "DEF", "PHY"]
+    # )
+
+    submit = SubmitField("Show")
 

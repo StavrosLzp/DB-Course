@@ -215,12 +215,21 @@ def less_than_5_books_from_max():
     results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     return render_template("less_than_5_books_from_max.html", pageTitle="5 or more books away from most books written", results=results)
 
+@app.route("/operator_dash/<int:user_ID>")
+def operator(user_ID):
+    return render_template("dash_operator.html", pageTitle="Operator Dashboard", user_ID = user_ID)
+
+@app.route("/operator_dash/<int:user_ID>/show_books", methods=['GET', 'POST'])
+def operator_show_books(user_ID):
+    form = books_form()
+    cur = db.connection.cursor()
+    cur.execute('SELECT book_id, book_title FROM book;')
+    form.book_id.choices = list(cur.fetchall())
+    cur.close()
+    return render_template("operator_show_books.html", pageTitle = "Create Grade", form = form)
 
 
-@app.route("/operator_dash/<int:ID>")
-def operator(ID):
-    print(ID)
-    return render_template("dash_operator.html", pageTitle="Operator Dashboard")
+
 
 
 @app.route("/user_dash/<int:ID>")

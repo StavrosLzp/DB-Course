@@ -3,12 +3,18 @@
 <div class="container" id="row-container">
     {% include "flash_messages.html" %}
     <div class="row" id="row">
-        <div class="card" id="card-container-layout">
-            <div class="card-body d-flex flex-column" id="card">
-                <h4 class="card-title">Test operator card</h4>
-                <p class="card-text" id="paragraph">Test operator card text</p>
+        <div class="col-md-6">
+            <div class="card" id="card-container-layout">
+                <div class="card-body" id="card">
+                    <h4 class="card-title">Students</h4>
+                    <p class="card-text paragraph-custom">
+                        Simple query to database to show all students, or enter a new student into the database
+                    </p>
+                    <a class="btn btn-primary btn-submit-custom" href="/operator_dash/{{user_ID}}/show_books">Show</a>
+                    <a class="btn btn-primary btn-submit-custom" href="/students/create">Create</a>
                 </div>
             </div>
+        </div>
         </div>
     </div>
 </div>

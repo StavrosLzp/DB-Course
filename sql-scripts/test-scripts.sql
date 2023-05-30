@@ -67,7 +67,7 @@ GROUP BY s.school_id;
 select * from school;
 
 
-select * from library_user where role_id = 2;
+select * from library_user where role_id = 4;
 
 select * from library_user u 
 Left join borrowing b ON u.user_id = b.library_user_user_id;
@@ -159,12 +159,12 @@ order by a1.author_id asc;
 
 
 select author_id, author_first_name, author_last_name, books_written from books_written_per_author
-where books_written <= MAX(books_written);
+where books_written <= (SELECT MAX(books_written) - 5 from books_written_per_author);
 
 
 
 
 
-
-
+-- 3.2.1
+SELECT book_id, book_title FROM book order by book_id;
 
