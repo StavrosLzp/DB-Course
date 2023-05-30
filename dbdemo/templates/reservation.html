@@ -1,0 +1,118 @@
+{% extends "global_layout.html" %}
+{% block content %}
+<div class="container" id="row-container">
+    {% include "flash_messages.html" %}
+
+    <div class="col-md-12">
+        <div class="row" id="row">
+            <div class="col-md-6">
+                <div class="card" id="card-container">
+                    <div class="card-body" id="card">
+                        <div class="mt-auto">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for category in categorys %}
+                                    <tr>
+                                        <td> {{ category.category_name }} </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-6">
+                <div class="card" id="card-container">
+                    <div class="card-body" id="card">
+                        <h4 class="card-title">Search by Title</h4>
+                        <p class="card-text" id="paragraph">Search for books by title.<br></p>
+                        <div class="mt-auto">
+                            <form method="POST">
+                                {{ formtitle.hidden_tag() }}
+
+                                {{formtitle.title.label(class="form-label")}}
+                                {{formtitle.title(class="form-control")}}
+                                <br />
+                                {{ formtitle.submit(class="btn btn-primary") }}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <p>
+                <div class="card" id="card-container">
+                    <div class="card-body" id="card">
+                        <h4 class="card-title">Search for books by author</h4>
+                        <p class="card-text" id="paragraph">Find books writen by a specific author<br></p>
+                        <div class="mt-auto">
+                            <form method="POST">
+                                {{ formauth.hidden_tag() }}
+
+                                {{formauth.author.label(class="form-label")}}
+                                {{formauth.author(class="form-control")}}
+                                <br />
+                                {{ formauth.submit(class="btn btn-primary") }}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <p>
+                <div class="card" id="card-container">
+                    <div class="card-body" id="card">
+                        <h4 class="card-title">Search by category</h4>
+                        <p class="card-text" id="paragraph">Search for books based on
+                            one of the categories listed in the table at the left.<br></p>
+                        <div class="mt-auto">
+                            <form method="POST">
+                                {{ formcat.hidden_tag() }}
+
+                                {{formcat.category.label(class="form-label")}}
+                                {{formcat.category(class="form-control")}}
+                                <br />
+                                {{ formcat.submit(class="btn btn-primary") }}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <p>
+            </div>
+        </div>
+        <p>
+        <div class="card" id="card-container">
+            <div class="card-body" id="card">
+                <h4 class="card-title">Books</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Authors</th>
+                            <th>Categories</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for book in books %}
+                        <tr>
+                            <td> {{ book.title }} </td>
+                            <td> {{ book.author_first_name +' '+ book.author_last_name }}</td>
+                            <td> {{ book.category_name }} </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </p>
+    </div>
+</div>
+</p>
+
+</div>
+{% endblock content %}

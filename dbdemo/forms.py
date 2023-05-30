@@ -25,3 +25,12 @@ class category(FlaskForm):
 
     submit = SubmitField("Search")
 
+class author(FlaskForm):
+    author = StringField(label = "Author")
+
+    submit = SubmitField("Search")
+
+class title(FlaskForm):
+    title = StringField(label = "Title")
+
+    submit = SubmitField("Search")

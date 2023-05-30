@@ -213,7 +213,7 @@ def operator(ID):
 
 
 @app.route("/user_dash/<int:ID>")
-def user(ID=13):
+def user(ID):
     print(ID)
     query = f"""SELECT book_title, borrowing_status FROM
                 borrowing JOIN book ON book_book_id=book_id 
@@ -224,9 +224,61 @@ def user(ID=13):
     column_names = [i[0] for i in cur.description]
     book = [dict(zip(column_names, entry))
             for entry in cur.fetchall()]
+    
+    query = f"""SELECT user_first_name, user_last_name 
+                FROM library_user 
+                WHERE user_id='{ID}';
+                """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    name = [dict(zip(column_names, entry))
+            for entry in cur.fetchall()]
 
     return render_template("dash_user.html", pageTitle="User Dashboard",
-                           book=book)
+                           book=book,name=name)
+
+
+@app.route("/user_dash/reservation", methods=['GET', 'POST'])
+def reservation():
+    query = "select category.category_name from category;"
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    categorys = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()
+
+    formcat = category()
+    formtitle=title()
+    formauth=author()
+    query=""
+    if formtitle.validate_on_submit():
+        titl = formtitle.title.data
+        query= f"""SELECT book_title,author_first_name, author_last_name, category_name FROM 
+                    book JOIN book_author ON book_id=book_author.book_book_id
+                    JOIN author ON author_author_id=author_id
+                    JOIN book_category ON book_id=book_category.book_book_id
+                    JOIN category ON category_category_id=category_id
+                    WHERE book_title='{titl}';
+                """
+        
+    if formauth.validate_on_submit():
+        aut = formauth.author.data
+
+    if formcat.validate_on_submit():
+        cat = formcat.category.data
+
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    books = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()
+    return render_template("reservation.html", pageTitle="Available Books",
+                           categorys=categorys, 
+                           books=books,
+                           formcat=formcat,
+                           formtitle=formtitle,
+                           formauth=formauth)
 
 
 @app.errorhandler(404)
