@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, abort
 from flask_mysqldb import MySQL
-from dbdemo import app, db ## initially created by __init__.py, need to be used here
+from dbdemo import app, db  # initially created by __init__.py, need to be used here
 from dbdemo.forms import *
+
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
@@ -25,23 +26,30 @@ def index():
             role_id = result[0][0]
             user_id = result[0][1]
         cur.close()
-        form.username.data = ""
+        # form.username.data = ""
         form.password.data = ""
     if role_id == 1:
         return redirect('/admin_dash')
     elif role_id == 2:
         return redirect('/operator_dash/'+ str(user_id))
     elif role_id == 3 or role_id == 4:
-        return redirect('/user_dash')
-    else :
+        cur = db.connection.cursor()
+        query = f"""
+                SELECT user_id FROM library_user WHERE username='{username}';
+                """
+        cur.execute(query)
+        result = cur.fetchall()
+        return redirect(url_for('user', ID=str(result[0][0])))
+    else:
         return render_template("landing.html", pageTitle="Landing Page",
-            username = username, password = password, form = form)
-        
+                               username=username, password=password, form=form)
+
+
 @app.route("/admin_dash")
 def admin():
-    
+
     # 3.1.4 START
-    query =  f"""
+    query = f"""
                 select a.author_id, a.author_first_name, a.author_last_name, b.book_id from author a
                 left join book_author ba ON  ba.author_author_id = a.author_id
                 left join book b on b.book_id = ba.book_book_id
@@ -50,10 +58,10 @@ def admin():
     cur = db.connection.cursor()
     cur.execute(query)
     column_names = [i[0] for i in cur.description]
-    no_lend_authors = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    no_lend_authors = [dict(zip(column_names, entry))
+                       for entry in cur.fetchall()]
     # 3.1.4 END
-    
-    # 3.1.5 START
+     # 3.1.5 START
     query =  f"""
                 SELECT op1.user_id, op1.user_first_name, op1.user_last_name, op2.user_id AS user2_user_id, op2.user_first_name AS user2_first_name, op2.user_last_name AS user2_last_name, op2.borrowings_count
                 FROM Loans_per_school_admin_this_year op1
@@ -83,12 +91,13 @@ def admin():
     
     # 3.1.6 END
     
+   
     return render_template("dash_admin.html", pageTitle="Admin Dashboard", 
         no_lend_authors = no_lend_authors, same_l_operators = same_l_operators, top3_cats = top3_cats)
 
 @app.route("/admin_dash/loans", methods=['GET', 'POST'])
 def loans():
-    # 3.1.1 Loans month search 
+    # 3.1.1 Loans month search
     cur = db.connection.cursor()
     cur.close()
     month = None
@@ -102,7 +111,7 @@ def loans():
         LEFT JOIN borrowing b ON u.user_id = b.library_user_user_id
         WHERE u.user_id <> 0
         """
-    
+
     cur = db.connection.cursor()
     if form.validate_on_submit():
         print("start")
@@ -110,32 +119,35 @@ def loans():
         form.month.data = ""
         year = form.year.data
         form.year.data = ""
-        if month: query +=f" AND MONTH(b.borrowing_date) = {month}  "
-        if year: query +=f" AND YEAR(b.borrowing_date) = {year}  "
-    
-    query +="GROUP BY s.school_id;"
+        if month:
+            query += f" AND MONTH(b.borrowing_date) = {month}  "
+        if year:
+            query += f" AND YEAR(b.borrowing_date) = {year}  "
+
+    query += "GROUP BY s.school_id;"
     cur.execute(query)
     column_names = [i[0] for i in cur.description]
     loans = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
-    cur.close()    
-    
-    return render_template("loans.html", pageTitle="View Loans", loans = loans, form = form)
+    cur.close()
+
+    return render_template("loans.html", pageTitle="View Loans", loans=loans, form=form)
+
 
 @app.route("/admin_dash/category_info", methods=['GET', 'POST'])
-def category_info():        
+def category_info():
     query = "select category.category_name from category;"
     cur = db.connection.cursor()
     cur.execute(query)
     column_names = [i[0] for i in cur.description]
     categorys = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     cur.close()
-    
+
     form = category()
     query1 = f"""
         select a.author_id, a.author_first_name, a.author_last_name from author a where a.author_id = ""
             """
-    query2 = f"select u.user_first_name, u.user_last_name from library_user u where u.role_id = '' " 
-    
+    query2 = f"select u.user_first_name, u.user_last_name from library_user u where u.role_id = '' "
+
     if form.validate_on_submit():
         cat = form.category.data
         query1 = f"""
@@ -148,7 +160,7 @@ def category_info():
                 group by a.author_id
                 order by a.author_id;
                 """
-                
+
         query2 = f"""
                 select u.user_id, u.user_first_name, u.user_last_name from library_user u 
                 Left join borrowing bo ON u.user_id = bo.library_user_user_id
@@ -158,26 +170,25 @@ def category_info():
                 where c.category_name = "{cat}"
                 and u.role_id = 3; 
                 """
-        
-        
+
     cur = db.connection.cursor()
     cur.execute(query1)
     column_names = [i[0] for i in cur.description]
     authors = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     cur.close()
-    
+
     cur = db.connection.cursor()
     cur.execute(query2)
     column_names = [i[0] for i in cur.description]
     users = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     cur.close()
-    
-    
-    return render_template("category_info.html", pageTitle="View category info", form = form, categorys=categorys, authors=authors, users=users)
+
+    return render_template("category_info.html", pageTitle="View category info", form=form, categorys=categorys, authors=authors, users=users)
+
 
 @app.route("/admin_dash/top_teach_borrowers")
 def top_teach_borrowers():
-    query =  f"""
+    query = f"""
                 SELECT u.user_id, u.user_first_name, u.user_last_name, COUNT(b.borrowing_id) AS num_books_borrowed
                 FROM library_user u
                 JOIN borrowing b ON u.user_id = b.library_user_user_id
@@ -190,7 +201,8 @@ def top_teach_borrowers():
     cur.execute(query)
     column_names = [i[0] for i in cur.description]
     results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
-    return render_template("top_teach_borrowers.html", pageTitle="View top teacher borrowers", results = results)
+    return render_template("top_teach_borrowers.html", pageTitle="View top teacher borrowers", results=results)
+
 
 
     
@@ -199,15 +211,30 @@ def operator(ID):
     print(ID)
     return render_template("dash_operator.html", pageTitle="Operator Dashboard")
 
-@app.route("/user_dash")
-def user():
-    return render_template("dash_user.html", pageTitle="User Dashboard")
+
+@app.route("/user_dash/<int:ID>")
+def user(ID=13):
+    print(ID)
+    query = f"""SELECT book_title, borrowing_status FROM
+                borrowing JOIN book ON book_book_id=book_id 
+                WHERE library_user_user_id='{ID}';
+                """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    book = [dict(zip(column_names, entry))
+            for entry in cur.fetchall()]
+
+    return render_template("dash_user.html", pageTitle="User Dashboard",
+                           book=book)
+
 
 @app.errorhandler(404)
 def page_not_found(e):
     # note that we set the 404 status explicitly
-    return render_template("errors/404.html", pageTitle = "Not Found"), 404
+    return render_template("errors/404.html", pageTitle="Not Found"), 404
+
 
 @app.errorhandler(500)
 def page_not_found2(e):
-    return render_template("errors/500.html", pageTitle = "Internal Server Error"), 500
+    return render_template("errors/500.html", pageTitle="Internal Server Error"), 500
