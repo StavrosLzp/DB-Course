@@ -114,5 +114,23 @@ left join book_author ba ON  ba.author_author_id = a.author_id
 left join book b on b.book_id = ba.book_book_id
 WHERE NOT EXISTS(SELECT * from borrowing WHERE book_book_id = b.book_id);
 
+-- 3.1.5
+-- Loans_per_school_admin_this_year View :
+SELECT op.user_id, op.user_first_name, op.user_last_name, COUNT(b.borrowing_id) AS borrowings_count from library_user op
+LEFT JOIN school s ON s.library_admin_user_id = op.user_id
+LEFT JOIN library_user u ON s.school_id = u.school_id
+LEFT JOIN borrowing b ON u.user_id = b.library_user_user_id
+WHERE u.user_id <> 0
+AND YEAR(b.borrowing_date) = YEAR(NOW())
+GROUP BY s.school_id;
 
+SELECT op1.user_id, op1.user_first_name, op1.user_last_name, op1.borrowings_count, op2.user_id, op2.user_first_name, op2.user_last_name, op2.borrowings_count
+FROM Loans_per_school_admin_this_year op1
+Join Loans_per_school_admin_this_year op2;
 
+select * from Loans_per_school_admin_this_year View;
+
+SELECT u1.user_id, u1.name, u2.user_id, u2.name, s.school_id, s.school_name
+FROM users u1
+JOIN users u2 ON u1.school_id = u2.school_id AND u1.user_id < u2.user_id
+JOIN schools s ON u1.school_id = s.school_id
