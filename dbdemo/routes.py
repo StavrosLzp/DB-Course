@@ -91,7 +91,6 @@ def admin():
     
     # 3.1.6 END
     
-   
     return render_template("dash_admin.html", pageTitle="Admin Dashboard", 
         no_lend_authors = no_lend_authors, same_l_operators = same_l_operators, top3_cats = top3_cats)
 
@@ -203,9 +202,21 @@ def top_teach_borrowers():
     results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     return render_template("top_teach_borrowers.html", pageTitle="View top teacher borrowers", results=results)
 
+@app.route("/admin_dash/less_than_5_books_from_max")
+def less_than_5_books_from_max():
+    query =  f"""
+                    select author_id, author_first_name, author_last_name, books_written from books_written_per_author
+                    where books_written <= (SELECT MAX(books_written) - 5 from books_written_per_author)
+                    order by books_written desc;
+                """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    return render_template("less_than_5_books_from_max.html", pageTitle="5 or more books away from most books written", results=results)
 
 
-    
+
 @app.route("/operator_dash/<int:ID>")
 def operator(ID):
     print(ID)

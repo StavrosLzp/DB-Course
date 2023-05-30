@@ -346,6 +346,11 @@ USE `library` ;
 CREATE TABLE IF NOT EXISTS `Loans_per_school_admin_this_year` (`user_id` INT, `user_first_name` INT, `user_last_name` INT, `borrowings_count` INT);
 
 -- -----------------------------------------------------
+-- Placeholder table for view `books_written_per_author`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `books_written_per_author` (`author_id` INT, `author_first_name` INT, `author_last_name` INT, `books_written` INT);
+
+-- -----------------------------------------------------
 -- View `Loans_per_school_admin_this_year`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `Loans_per_school_admin_this_year`;
@@ -358,6 +363,18 @@ LEFT JOIN borrowing b ON u.user_id = b.library_user_user_id
 WHERE u.user_id <> 0
 AND YEAR(b.borrowing_date) = YEAR(NOW())
 GROUP BY s.school_id;
+
+-- -----------------------------------------------------
+-- View `books_written_per_author`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `books_written_per_author`;
+USE `library`;
+CREATE  OR REPLACE VIEW `books_written_per_author` AS
+select a1.author_id, a1.author_first_name, a1.author_last_name, count(b.book_id) AS books_written from author a1
+left join book_author ba ON  ba.author_author_id = a1.author_id
+left join book b on b.book_id = ba.book_book_id
+group by a1.author_id
+order by a1.author_id asc;
 USE `library`;
 
 DELIMITER $$

@@ -1,0 +1,35 @@
+{% extends "global_layout.html" %}
+{% block content %}
+<div class="container">
+    {% include "flash_messages.html" %}
+    <div class="row" id="row">
+        <div class="col-md-12">
+            <div class="card" id="card-container">
+                <div class="card-body" id="card">
+                    <h4 class="card-title">Find all authors who have written at least 5 books less than the author with the most books.</h4>
+                    <p></p>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Author ID</th>
+                                <th>Author Name</th>
+                                <th>books_written </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in results %}
+                            <tr>
+                                <td> {{ result.author_id }} </td>
+                                <td> {{ result.author_first_name + " " + result.author_last_name }} </td>
+                                <td> {{ result.books_written }} </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -149,4 +149,22 @@ group by c1.category_id, c2.category_id
 order by comb_amount Desc;
 
 
+-- 3.1.7
+-- books_written_per_author View :
+select a1.author_id, a1.author_first_name, a1.author_last_name, count(b.book_id) AS books_written from author a1
+left join book_author ba ON  ba.author_author_id = a1.author_id
+left join book b on b.book_id = ba.book_book_id
+group by a1.author_id
+order by a1.author_id asc;
+
+
+select author_id, author_first_name, author_last_name, books_written from books_written_per_author
+where books_written <= MAX(books_written);
+
+
+
+
+
+
+
 
