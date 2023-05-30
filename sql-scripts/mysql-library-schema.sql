@@ -338,6 +338,26 @@ CREATE INDEX `fk_borrowing_book1_idx` ON `borrowing` (`book_book_id` ASC) VISIBL
 
 CREATE INDEX `fk_borrowing_library_user1_idx` ON `borrowing` (`library_user_user_id` ASC) VISIBLE;
 
+USE `library` ;
+
+-- -----------------------------------------------------
+-- Placeholder table for view `Loans_per_school_admin_this_year`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Loans_per_school_admin_this_year` (`user_id` INT, `user_first_name` INT, `user_last_name` INT, `borrowings_count` INT);
+
+-- -----------------------------------------------------
+-- View `Loans_per_school_admin_this_year`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Loans_per_school_admin_this_year`;
+USE `library`;
+CREATE  OR REPLACE VIEW `Loans_per_school_admin_this_year` AS
+SELECT op.user_id, op.user_first_name, op.user_last_name, COUNT(b.borrowing_id) AS borrowings_count from library_user op
+LEFT JOIN school s ON s.library_admin_user_id = op.user_id
+LEFT JOIN library_user u ON s.school_id = u.school_id
+LEFT JOIN borrowing b ON u.user_id = b.library_user_user_id
+WHERE u.user_id <> 0
+AND YEAR(b.borrowing_date) = YEAR(NOW())
+GROUP BY s.school_id;
 USE `library`;
 
 DELIMITER $$

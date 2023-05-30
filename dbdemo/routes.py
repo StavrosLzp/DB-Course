@@ -17,20 +17,21 @@ def index():
         password = form.password.data
         cur = db.connection.cursor()
         query = f"""
-                SELECT role_id FROM library_user 
+                SELECT role_id, user_id FROM library_user 
                 WHERE username = '{username}' AND user_password = '{password}';
                 """
         cur.execute(query)
         result = cur.fetchall()
         if result:
             role_id = result[0][0]
+            user_id = result[0][1]
         cur.close()
         # form.username.data = ""
         form.password.data = ""
     if role_id == 1:
         return redirect('/admin_dash')
     elif role_id == 2:
-        return redirect('/operator_dash')
+        return redirect('/operator_dash/'+ str(user_id))
     elif role_id == 3 or role_id == 4:
         cur = db.connection.cursor()
         query = f"""
@@ -60,9 +61,39 @@ def admin():
     no_lend_authors = [dict(zip(column_names, entry))
                        for entry in cur.fetchall()]
     # 3.1.4 END
-
-    return render_template("dash_admin.html", pageTitle="Admin Dashboard", no_lend_authors=no_lend_authors)
-
+     # 3.1.5 START
+    query =  f"""
+                SELECT op1.user_id, op1.user_first_name, op1.user_last_name, op2.user_id AS user2_user_id, op2.user_first_name AS user2_first_name, op2.user_last_name AS user2_last_name, op2.borrowings_count
+                FROM Loans_per_school_admin_this_year op1
+                Join Loans_per_school_admin_this_year op2 ON op1.user_id < op2.user_id AND op1.borrowings_count = op2.borrowings_count
+                WHERE op1.borrowings_count > 20;
+                """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    same_l_operators = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    # 3.1.5 END
+    
+    # 3.1.6 START
+    query =  f"""
+                    Select c1.category_name, c2.category_name AS category2_name, count(*) AS comb_amount from book b
+                    join book_category bc1 ON bc1.book_book_id = b.book_id
+                    join book_category bc2 ON bc2.book_book_id = b.book_id AND bc1.category_category_id < bc2.category_category_id
+                    join category c1 ON bc1.category_category_id = c1.category_id
+                    join category c2 ON bc2.category_category_id = c2.category_id
+                    group by c1.category_id, c2.category_id
+                    order by comb_amount Desc;
+                """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    top3_cats = [dict(zip(column_names, entry)) for entry in cur.fetchall()][0:3]
+    
+    # 3.1.6 END
+    
+   
+    return render_template("dash_admin.html", pageTitle="Admin Dashboard", 
+        no_lend_authors = no_lend_authors, same_l_operators = same_l_operators, top3_cats = top3_cats)
 
 @app.route("/admin_dash/loans", methods=['GET', 'POST'])
 def loans():
@@ -173,8 +204,11 @@ def top_teach_borrowers():
     return render_template("top_teach_borrowers.html", pageTitle="View top teacher borrowers", results=results)
 
 
-@app.route("/operator_dash")
-def operator():
+
+    
+@app.route("/operator_dash/<int:ID>")
+def operator(ID):
+    print(ID)
     return render_template("dash_operator.html", pageTitle="Operator Dashboard")
 
 

@@ -67,7 +67,7 @@ GROUP BY s.school_id;
 select * from school;
 
 
-select * from library_user where role_id = 4;
+select * from library_user where role_id = 2;
 
 select * from library_user u 
 Left join borrowing b ON u.user_id = b.library_user_user_id;
@@ -113,6 +113,40 @@ select a.author_id, a.author_first_name, a.author_last_name, b.book_id from auth
 left join book_author ba ON  ba.author_author_id = a.author_id
 left join book b on b.book_id = ba.book_book_id
 WHERE NOT EXISTS(SELECT * from borrowing WHERE book_book_id = b.book_id);
+
+-- 3.1.5
+-- Loans_per_school_admin_this_year View :
+SELECT op.user_id, op.user_first_name, op.user_last_name, COUNT(b.borrowing_id) AS borrowings_count from library_user op
+LEFT JOIN school s ON s.library_admin_user_id = op.user_id
+LEFT JOIN library_user u ON s.school_id = u.school_id
+LEFT JOIN borrowing b ON u.user_id = b.library_user_user_id
+WHERE u.user_id <> 0
+AND YEAR(b.borrowing_date) = YEAR(NOW())
+GROUP BY s.school_id;
+
+SELECT op1.user_id, op1.user_first_name, op1.user_last_name, op2.user_id AS user2_user_id, op2.user_first_name AS user2_first_name, op2.user_last_name AS user2_last_name, op2.borrowings_count
+FROM Loans_per_school_admin_this_year op1
+Join Loans_per_school_admin_this_year op2 ON op1.user_id < op2.user_id AND op1.borrowings_count = op2.borrowings_count
+WHERE op1.borrowings_count > 20;
+
+select * from Loans_per_school_admin_this_year View;
+
+
+-- 3.1.6
+Select c1.category_name, c2.category_name from book b
+join book_category bc1 ON bc1.book_book_id = b.book_id
+join book_category bc2 ON bc2.book_book_id = b.book_id AND bc1.category_category_id < bc2.category_category_id
+join category c1 ON bc1.category_category_id = c1.category_id
+join category c2 ON bc2.category_category_id = c2.category_id
+order by c1.category_id, c2.category_id;
+
+Select c1.category_name, c2.category_name AS category2_name, count(*) AS comb_amount from book b
+join book_category bc1 ON bc1.book_book_id = b.book_id
+join book_category bc2 ON bc2.book_book_id = b.book_id AND bc1.category_category_id < bc2.category_category_id
+join category c1 ON bc1.category_category_id = c1.category_id
+join category c2 ON bc2.category_category_id = c2.category_id
+group by c1.category_id, c2.category_id
+order by comb_amount Desc;
 
 
 
