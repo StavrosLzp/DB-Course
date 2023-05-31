@@ -33,51 +33,23 @@
             <div class="col-md-6">
                 <div class="card" id="card-container">
                     <div class="card-body" id="card">
-                        <h4 class="card-title">Search by Title</h4>
-                        <p class="card-text" id="paragraph">Search for books by title.<br></p>
+                        <h4 class="card-title"></h4>
+                        <p class="card-text" id="paragraph">Search for books .<br></p>
                         <div class="mt-auto">
                             <form method="POST">
-                                {{ formtitle.hidden_tag() }}
+                                {{ form.hidden_tag() }}
 
-                                {{formtitle.title.label(class="form-label")}}
-                                {{formtitle.title(class="form-control")}}
-                                <br />
-                                {{ formtitle.submit(class="btn btn-primary") }}
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <p>
-                <div class="card" id="card-container">
-                    <div class="card-body" id="card">
-                        <h4 class="card-title">Search for books by author</h4>
-                        <p class="card-text" id="paragraph">Find books writen by a specific author<br></p>
-                        <div class="mt-auto">
-                            <form method="POST">
-                                {{ formauth.hidden_tag() }}
+                                {{form.title.label(class="form-label")}}
+                                {{form.title(class="form-control")}}
 
-                                {{formauth.author.label(class="form-label")}}
-                                {{formauth.author(class="form-control")}}
-                                <br />
-                                {{ formauth.submit(class="btn btn-primary") }}
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <p>
-                <div class="card" id="card-container">
-                    <div class="card-body" id="card">
-                        <h4 class="card-title">Search by category</h4>
-                        <p class="card-text" id="paragraph">Search for books based on
-                            one of the categories listed in the table at the left.<br></p>
-                        <div class="mt-auto">
-                            <form method="POST">
-                                {{ formcat.hidden_tag() }}
+                                {{form.author.label(class="form-label")}}
+                                {{form.author(class="form-control")}}
 
-                                {{formcat.category.label(class="form-label")}}
-                                {{formcat.category(class="form-control")}}
+                                {{form.category.label(class="form-label")}}
+                                {{form.category(class="form-control")}}
+
                                 <br />
-                                {{ formcat.submit(class="btn btn-primary") }}
+                                {{ form.submit(class="btn btn-primary") }}
                             </form>
                         </div>
                     </div>
