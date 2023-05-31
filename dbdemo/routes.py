@@ -315,11 +315,14 @@ def reservation():
     cur.execute(query)
     column_names = [i[0] for i in cur.description]
     books = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    newBooks=merge_fields(books,'author_first_name','author_last_name','author_name')
+    print(newBooks)
+    conBooks=consolidate(newBooks,'book_title','author_name','category_name')
     cur.close()
-    print(books)
+    print(conBooks)
     return render_template("reservation.html", pageTitle="Available Books",
                            categorys=categorys, 
-                           books=books,
+                           books=conBooks,
                            formcat=formcat,
                            formtitle=formtitle,
                            formauth=formauth)
@@ -334,3 +337,49 @@ def page_not_found(e):
 @app.errorhandler(500)
 def page_not_found2(e):
     return render_template("errors/500.html", pageTitle="Internal Server Error"), 500
+
+# Function to merge 2 fields of each row of a list of dictionaries
+def merge_fields(dictionaries, field1, field2, merged_field):
+    merged_dictionaries = []
+    
+    for dictionary in dictionaries:
+        merged_dictionary = dict(dictionary)
+        if field1 in dictionary and field2 in dictionary:
+            merged_value = dictionary[field1] + ' ' + dictionary[field2]
+            merged_dictionary[merged_field] = merged_value
+            del merged_dictionary[field1]
+            del merged_dictionary[field2]
+        
+        merged_dictionaries.append(merged_dictionary)
+    
+    return merged_dictionaries
+
+from collections import defaultdict
+# Function that consolidates the list based on the specified field name and
+# merges the specified fields correctly, handling multiple values. 
+# The resulting list contains one dictionary for each uniqe
+# value in the specified field, with merged fields as required.
+def consolidate(lst, field_name, *fields):
+    consolidated_dict = defaultdict(lambda: defaultdict(set))
+    
+    for d in lst:
+        value = d[field_name]
+        existing_dict = consolidated_dict[value]
+        for key, val in d.items():
+            if key != field_name:
+                existing_dict[key].add(val)
+    
+    consolidated_list = []
+    for value, nested_dict in consolidated_dict.items():
+        consolidated_dict = {field_name: value}
+        for key, value_set in nested_dict.items():
+            if len(value_set) == 1:
+                consolidated_dict[key] = next(iter(value_set))
+            else:
+                if key in fields:
+                    consolidated_dict[key] = ", ".join(value_set)
+                else:
+                    consolidated_dict[key] = list(value_set)
+        consolidated_list.append(consolidated_dict)
+    
+    return consolidated_list

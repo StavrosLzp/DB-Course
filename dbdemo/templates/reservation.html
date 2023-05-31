@@ -101,7 +101,7 @@
                         {% for book in books %}
                         <tr>
                             <td>{{ book.book_title}}</td>
-                            <td>{{ book.author_first_name +' '+ book.author_last_name }}</td>
+                            <td>{{ book.author_name }}</td>
                             <td>{{ book.category_name }}</td>
                         </tr>
                         {% endfor %}
