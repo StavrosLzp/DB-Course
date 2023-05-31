@@ -271,28 +271,52 @@ def reservation():
     formcat = category()
     formtitle=title()
     formauth=author()
-    query=""
-    if formtitle.validate_on_submit():
-        titl = formtitle.title.data
-        query= f"""SELECT book_title,author_first_name, author_last_name, category_name FROM 
+    query=f"""SELECT book_title,author_first_name, author_last_name, category_name FROM 
                     book JOIN book_author ON book_id=book_author.book_book_id
                     JOIN author ON author_author_id=author_id
                     JOIN book_category ON book_id=book_category.book_book_id
-                    JOIN category ON category_category_id=category_id
-                    WHERE book_title='{titl}';
-                """
+                    JOIN category ON category_category_id=category_id;
+                    """
+    if formtitle.validate_on_submit():
+        titl = formtitle.title.data
+        if titl!=None:
+            query= f"""SELECT book_title,author_first_name, author_last_name, category_name FROM 
+                        book JOIN book_author ON book_id=book_author.book_book_id
+                        JOIN author ON author_author_id=author_id
+                        JOIN book_category ON book_id=book_category.book_book_id
+                        JOIN category ON category_category_id=category_id
+                        WHERE book_title='{titl}';
+                    """
         
     if formauth.validate_on_submit():
         aut = formauth.author.data
+        if aut!=None:
+            query= f"""SELECT book_title,author_first_name, author_last_name, category_name FROM 
+                        book JOIN book_author ON book_id=book_author.book_book_id
+                        JOIN author ON author_author_id=author_id
+                        JOIN book_category ON book_id=book_category.book_book_id
+                        JOIN category ON category_category_id=category_id
+                        WHERE author_first_name='{aut.split()[0]}'
+                        AND author_last_name='{aut.split()[1]}';
+                    """
 
     if formcat.validate_on_submit():
         cat = formcat.category.data
+        if cat!=None:
+            query= f"""SELECT book_title,author_first_name, author_last_name, category_name FROM 
+                        book JOIN book_author ON book_id=book_author.book_book_id
+                        JOIN author ON author_author_id=author_id
+                        JOIN book_category ON book_id=book_category.book_book_id
+                        JOIN category ON category_category_id=category_id
+                        WHERE category_name='{cat}';
+                    """
 
     cur = db.connection.cursor()
     cur.execute(query)
     column_names = [i[0] for i in cur.description]
     books = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     cur.close()
+    print(books)
     return render_template("reservation.html", pageTitle="Available Books",
                            categorys=categorys, 
                            books=books,
