@@ -300,19 +300,31 @@ def user(ID):
             for entry in cur.fetchall()]
 
     return render_template("dash_user.html", pageTitle="User Dashboard",
-                           book=book,name=name)
+                           book=book,name=name,ID=ID)
 
 
-@app.route("/user_dash/reservation", methods=['GET', 'POST'])
-def reservation():
+@app.route("/user_dash/reservation/<int:ID>", methods=['GET', 'POST'])
+def reservation(ID):
     query = "select category.category_name from category;"
     cur = db.connection.cursor()
     cur.execute(query)
     column_names = [i[0] for i in cur.description]
     categorys = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     cur.close()
+
+    query = f"""
+            SELECT book_id, book_title, reservation_date
+            FROM reservation JOIN book ON book_book_id=book_id
+            WHERE library_user_user_id='{ID}';
+            """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    reservations = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()
+
     form=user_books_form()
-    query=f"""SELECT book_title,author_first_name, author_last_name, category_name FROM 
+    query=f"""SELECT book_id, book_title, author_first_name, author_last_name, category_name FROM 
                     book JOIN book_author ON book_id=book_author.book_book_id
                     JOIN author ON author_author_id=author_id
                     JOIN book_category ON book_id=book_category.book_book_id
@@ -335,7 +347,7 @@ def reservation():
              query += f""" AND category_name = '{cat}'  """
         
          
-    query += f";"
+    query += f"ORDER BY book_title;"
     cur = db.connection.cursor()
     cur.execute(query)
     column_names = [i[0] for i in cur.description]
@@ -346,9 +358,42 @@ def reservation():
     cur.close()
     print(conBooks)
     return render_template("reservation.html", pageTitle="Available Books",
+                           reservations=reservations, 
                            categorys=categorys, 
                            books=conBooks,
-                           form=form)
+                           form=form,
+                           ID=ID)
+
+@app.route('/reserve/<int:ID>', methods=['POST'])
+def reserve(ID):
+    book_id = request.form['book_id']
+    error='problem'
+    allgood=True
+    # TODO:Αυ΄τή η μέθοδος θα κληθεί όταν ο χρήστης με user_id=ID πατ΄ησει το κουμπί
+    # reserve για το βιβλίο με book_id. Πρέπει να κληθούν τα κατάληλα queries και 
+    # αν όλα πάνε καλά ανανεώνεται η σελίδα και η κράτηση εμφανίζεται στον πίνακα κρατήσεων
+    # αλλιώς πάμε σε σελίδα ERROR που εμφανίζει το μήνυμα error 
+    if allgood:
+        return redirect(url_for('reservation', ID=ID))
+    else:
+        return render_template("reserve_error.html", pageTitle="Error During Reservation",
+                           error=error)
+
+@app.route('/unreserve/<int:ID>', methods=['POST'])
+def unreserve(ID):
+    book_id = request.form['book_id']
+    error='problem'
+    
+    # TODO: Query to delete reservation with user_id=ID 
+    # and book_id =book_id from reservations table
+    query = ''
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    reservations = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()
+
+    return redirect(url_for('reservation', ID=ID))
 
 
 @app.errorhandler(404)
