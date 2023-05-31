@@ -166,5 +166,16 @@ where books_written <= (SELECT MAX(books_written) - 5 from books_written_per_aut
 
 
 -- 3.2.1
-SELECT book_id, book_title FROM book order by book_id;
+SELECT book_id, book_title FROM book 
+WHERE book_title like "Understand may story governm"
+order by book_id;
+
+SELECT b.book_id, b.book_title, c.category_name FROM book b
+left join school_book sb on b.book_id = sb.book_book_id 
+left join book_category bc on b.book_id = bc.book_book_id 
+left join category c on c.category_id = bc.category_category_id
+WHERE sb.school_school_id = 2
+AND b.book_title like "%%" 
+AND c.category_name like "%s%"
+order by book_id;
 

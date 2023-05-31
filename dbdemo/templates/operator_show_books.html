@@ -4,21 +4,30 @@
     {% include "flash_messages.html" %}
     <div class="row" id="row">
         <div class="col-md-12">
-            <form class="form-horizontal" name="book-form" method="POST">
-                <!-- hidden_tag returns the form's security metadata -->
-                {{ form.hidden_tag() }}
-                <div class="form-group col-sm-5 mb-5">
-                    {{ form.book_id.label(class = "form-label") }}
-                    <!-- Setting required to false disables the HTML attribute and leaves input validation to the backend -->
-                    {{ form.book_id(class = "form-select", required = False) }}
-                    <p></p>
-                {{ form.submit(class = "btn btn-primary btn-submit-custom") }}
-            </form>
-
-
-                    
+            <div class="card" id="card-container">
+                <div class="card-body" id="card">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Book ID</th>
+                                <th>Book Title</th>
+                                <th>Number of Loans</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in results %}
+                            <tr>
+                                <td> {{ result.book_id }} </td>
+                                <td> {{ result.book_title    }} </td>
+                                <td> {{ result.borrowings_count }} </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
+</div>
 {% endblock content %}

@@ -142,9 +142,7 @@ def category_info():
     cur.close()
 
     form = category()
-    query1 = f"""
-        select a.author_id, a.author_first_name, a.author_last_name from author a where a.author_id = ""
-            """
+    query1 = f"select a.author_id, a.author_first_name, a.author_last_name from author a where a.author_id = "
     query2 = f"select u.user_first_name, u.user_last_name from library_user u where u.role_id = '' "
 
     if form.validate_on_submit():
@@ -219,14 +217,55 @@ def less_than_5_books_from_max():
 def operator(user_ID):
     return render_template("dash_operator.html", pageTitle="Operator Dashboard", user_ID = user_ID)
 
-@app.route("/operator_dash/<int:user_ID>/show_books", methods=['GET', 'POST'])
+@app.route("/operator_dash/<int:user_ID>/search_books", methods=['GET', 'POST'])
 def operator_show_books(user_ID):
-    form = books_form()
+    
+    # Get Admin school id 
+    query = f"""
+            SELECT school_id from library_user 
+            WHERE user_id = {user_ID};
+            """
     cur = db.connection.cursor()
-    cur.execute('SELECT book_id, book_title FROM book;')
-    form.book_id.choices = list(cur.fetchall())
+    cur.execute(query)
+    result = cur.fetchall()
+    school_id = result[0][0]
     cur.close()
-    return render_template("operator_show_books.html", pageTitle = "Create Grade", form = form)
+
+    form = books_form()
+    # Get categories for drop down list
+    cur = db.connection.cursor()
+    cur.execute('SELECT category_id, category_name FROM category;')
+    form.book_category.choices = list(cur.fetchall())
+    form.book_category.choices.insert(0,(0, "---"))
+    cur.close()
+
+    book_title = None
+    book_category = None
+    book_author = None  
+    book_copies = None
+    if form.validate_on_submit():
+        book_title = form.book_title.data
+        book_category = form.book_category.data
+        print(book_category)
+        book_author = form.book_author.data
+        book_copies = form.book_copies.data
+        query = f"""
+                SELECT b.book_id, b.book_title FROM book b
+                left join school_book sb on b.book_id = sb.book_book_id 
+                left join book_category bc on b.book_id = bc.book_book_id 
+                WHERE sb.school_school_id = {school_id}
+                AND b.book_title like "%{book_title}%" 
+                """
+        if book_category : query += f"AND bc.category_category_id = {book_category}"
+        query += "group by book_id order by book_id;"
+        
+        cur = db.connection.cursor()
+        cur.execute(query)
+        column_names = [i[0] for i in cur.description]
+        results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+        cur.close()
+        return render_template("operator_show_books.html", pageTitle = "Create Grade", results=results)
+    return render_template("operator_search_books.html", pageTitle = "Search", form = form)
 
 
 
