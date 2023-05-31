@@ -281,10 +281,10 @@ def operator_show_books(user_ID):
         column_names = [i[0] for i in cur.description]
         results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
         newresults=merge_fields(results,'author_first_name','author_last_name','author_name')
-        conresults=consolidate(newresults,'book_id', 'book_title','author_name','category_name', 'school_book_amount')
+        results=consolidate(newresults,'book_id', 'book_title','author_name','category_name', 'school_book_amount')
         cur.close()
         #return render_template("operator_show_books.html", pageTitle = "Create Grade", results=results)
-    return render_template("operator_search_books.html", pageTitle = "Search", form = form , results=conresults)
+    return render_template("operator_search_books.html", pageTitle = "Search", form = form , results=results)
 
 @app.route("/operator_dash/<int:user_ID>/search_owed_returns", methods=['GET', 'POST'])
 def operator_search_owed_returns(user_ID):
@@ -301,7 +301,21 @@ def operator_search_owed_returns(user_ID):
     cur.close()
     results = []
     
-    return render_template("operator_search_books.html", pageTitle = "Search", form = form , results=conresults)
+    form = owed_returs_form()
+    
+    
+    first_name = None
+    last_name = None
+    days_due = None  
+    if form.validate_on_submit():
+        first_name = form.first_name.data
+        last_name = form.last_name.data
+        days_due = form.days_due.data
+        query = f"""
+                
+                """
+    
+    return render_template("operator_search_owed_returns.html", pageTitle = "Search", form = form , results=conresults)
 
 
 

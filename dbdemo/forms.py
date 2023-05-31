@@ -36,6 +36,15 @@ class books_form(FlaskForm):
     book_copies = IntegerField(label = "Book Copies", validators = [NumberRange(min = 0, max = 100, message = "Boooks Number")])
 
     submit = SubmitField("Show")
+    
+class owed_returs_form(FlaskForm): #Όνομα, Επώνυμο, Ημέρες Καθυστέρησης
+    first_name = StringField(label = "Book Title")
+    
+    last_name = StringField(label = "Book Category", coerce = int)
+
+    days_due = IntegerField(label = "Book Copies", validators = [NumberRange(min = 0, max = 9999, message = "Days due")])
+
+    submit = SubmitField("Serch")
 
 class user_books_form(FlaskForm):
     title = StringField(label = "Search by Title")
