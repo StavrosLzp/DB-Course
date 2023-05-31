@@ -426,6 +426,10 @@ BEGIN
 			SET MESSAGE_TEXT = 'Cannot reserve more books for that user';
     END IF;
     
+    IF NEW.reservation_date IS NULL THEN
+		SET NEW.reservation_date = CURDATE();
+	END IF;
+    
     
 	-- Check availability 
 	
