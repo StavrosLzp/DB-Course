@@ -315,31 +315,58 @@ def reservation():
     formcat = category()
     formtitle=title()
     formauth=author()
-    query=""
-    if formtitle.validate_on_submit():
-        titl = formtitle.title.data
-        query= f"""SELECT book_title,author_first_name, author_last_name, category_name FROM 
+    query=f"""SELECT book_title,author_first_name, author_last_name, category_name FROM 
                     book JOIN book_author ON book_id=book_author.book_book_id
                     JOIN author ON author_author_id=author_id
                     JOIN book_category ON book_id=book_category.book_book_id
-                    JOIN category ON category_category_id=category_id
-                    WHERE book_title='{titl}';
-                """
+                    JOIN category ON category_category_id=category_id;
+                    """
+    if formtitle.validate_on_submit():
+        titl = formtitle.title.data
+        if titl!=None:
+            query= f"""SELECT book_title,author_first_name, author_last_name, category_name FROM 
+                        book JOIN book_author ON book_id=book_author.book_book_id
+                        JOIN author ON author_author_id=author_id
+                        JOIN book_category ON book_id=book_category.book_book_id
+                        JOIN category ON category_category_id=category_id
+                        WHERE book_title='{titl}';
+                    """
         
     if formauth.validate_on_submit():
         aut = formauth.author.data
+        if aut!=None:
+            query= f"""SELECT book_title,author_first_name, author_last_name, category_name FROM 
+                        book JOIN book_author ON book_id=book_author.book_book_id
+                        JOIN author ON author_author_id=author_id
+                        JOIN book_category ON book_id=book_category.book_book_id
+                        JOIN category ON category_category_id=category_id
+                        WHERE author_first_name='{aut.split()[0]}'
+                        AND author_last_name='{aut.split()[1]}';
+                    """
 
     if formcat.validate_on_submit():
         cat = formcat.category.data
+        if cat!=None:
+            query= f"""SELECT book_title,author_first_name, author_last_name, category_name FROM 
+                        book JOIN book_author ON book_id=book_author.book_book_id
+                        JOIN author ON author_author_id=author_id
+                        JOIN book_category ON book_id=book_category.book_book_id
+                        JOIN category ON category_category_id=category_id
+                        WHERE category_name='{cat}';
+                    """
 
     cur = db.connection.cursor()
     cur.execute(query)
     column_names = [i[0] for i in cur.description]
     books = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    newBooks=merge_fields(books,'author_first_name','author_last_name','author_name')
+    print(newBooks)
+    conBooks=consolidate(newBooks,'book_title','author_name','category_name')
     cur.close()
+    print(conBooks)
     return render_template("reservation.html", pageTitle="Available Books",
                            categorys=categorys, 
-                           books=books,
+                           books=conBooks,
                            formcat=formcat,
                            formtitle=formtitle,
                            formauth=formauth)
@@ -354,3 +381,49 @@ def page_not_found(e):
 @app.errorhandler(500)
 def page_not_found2(e):
     return render_template("errors/500.html", pageTitle="Internal Server Error"), 500
+
+# Function to merge 2 fields of each row of a list of dictionaries
+def merge_fields(dictionaries, field1, field2, merged_field):
+    merged_dictionaries = []
+    
+    for dictionary in dictionaries:
+        merged_dictionary = dict(dictionary)
+        if field1 in dictionary and field2 in dictionary:
+            merged_value = dictionary[field1] + ' ' + dictionary[field2]
+            merged_dictionary[merged_field] = merged_value
+            del merged_dictionary[field1]
+            del merged_dictionary[field2]
+        
+        merged_dictionaries.append(merged_dictionary)
+    
+    return merged_dictionaries
+
+from collections import defaultdict
+# Function that consolidates the list based on the specified field name and
+# merges the specified fields correctly, handling multiple values. 
+# The resulting list contains one dictionary for each uniqe
+# value in the specified field, with merged fields as required.
+def consolidate(lst, field_name, *fields):
+    consolidated_dict = defaultdict(lambda: defaultdict(set))
+    
+    for d in lst:
+        value = d[field_name]
+        existing_dict = consolidated_dict[value]
+        for key, val in d.items():
+            if key != field_name:
+                existing_dict[key].add(val)
+    
+    consolidated_list = []
+    for value, nested_dict in consolidated_dict.items():
+        consolidated_dict = {field_name: value}
+        for key, value_set in nested_dict.items():
+            if len(value_set) == 1:
+                consolidated_dict[key] = next(iter(value_set))
+            else:
+                if key in fields:
+                    consolidated_dict[key] = ", ".join(value_set)
+                else:
+                    consolidated_dict[key] = list(value_set)
+        consolidated_list.append(consolidated_dict)
+    
+    return consolidated_list
