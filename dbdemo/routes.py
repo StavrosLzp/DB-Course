@@ -252,13 +252,18 @@ def operator_show_books(user_ID):
         query = f"""
                 SELECT b.book_id, b.book_title FROM book b
                 left join school_book sb on b.book_id = sb.book_book_id 
-                left join book_category bc on b.book_id = bc.book_book_id 
+                """
+        if book_category : 
+            query +="""left join book_category bc on b.book_id = bc.book_book_id 
+                left join category c on c.category_id = bc.category_category_id"""
+        query +=f"""
                 WHERE sb.school_school_id = {school_id}
                 AND b.book_title like "%{book_title}%" 
                 """
-        if book_category : query += f"AND bc.category_category_id = {book_category}"
-        query += "group by book_id order by book_id;"
-        
+                
+        if book_category : query += f"AND bc.category_category_id = {book_category} \n"
+        query += "order by book_id;"
+        print(query)
         cur = db.connection.cursor()
         cur.execute(query)
         column_names = [i[0] for i in cur.description]
