@@ -397,6 +397,10 @@ BEGIN
     SET @user_role_id_var = NULL;
     SET @reservation_limit = NULL;
 
+	if NEW.reservation_date IS NULL THEN
+		SET NEW.reservation_date = CURDATE();
+	END IF;
+	
     SELECT role_id into @user_role_id_var
     FROM library_user
     WHERE user_id = NEW.library_user_user_id;
@@ -425,10 +429,6 @@ BEGIN
 		SIGNAL SQLSTATE '45000'
 			SET MESSAGE_TEXT = 'Cannot reserve more books for that user';
     END IF;
-    
-    IF NEW.reservation_date IS NULL THEN
-		SET NEW.reservation_date = CURDATE();
-	END IF;
     
     
 	-- Check availability 
