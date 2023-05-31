@@ -1,0 +1,25 @@
+{% extends "global_layout.html" %}
+{% block content %}
+<div class="container" id="row-container">
+    {% include "flash_messages.html" %}
+    <div class="row" id="row">
+        <div class="col-md-4">
+            <div class="card" id="card-container-layout">
+                <div class="card-body d-flex flex-column" id="card">
+                    <h4 class="card-title">Error</h4>
+                    <p class="card-text" id="paragraph"><br></p>
+                    <div class="mt-auto">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td> {{ error }} </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
