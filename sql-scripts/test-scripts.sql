@@ -179,3 +179,23 @@ AND b.book_title like "%%"
 AND c.category_name like "%s%"
 order by book_id;
 
+SELECT b.book_id, b.book_title FROM book b
+                left join school_book sb on b.book_id = sb.book_book_id
+                left join book_category bc on b.book_id = bc.book_book_id
+                WHERE sb.school_school_id = 4
+                AND b.book_title like "%Smile%"
+                AND bc.category_category_id = 1order by book_id;
+
+SELECT b.book_id, b.book_title, sb.school_book_amount FROM book b
+                left join school_book sb on b.book_id = sb.book_book_id ;
+                
+-- 3.2.2
+SELECT u.user_id, u.user_first_name, u.user_last_name, count(b.borrowing_id), max(datediff(curdate(), b.borrowing_date)) - 7 AS days_due from library_user u
+left join borrowing b ON b.library_user_user_id = u.user_id
+Where b.borrowing_status = "active"
+group by u.user_id
+order by days_due desc;
+
+
+
+

@@ -312,7 +312,11 @@ def operator_search_owed_returns(user_ID):
         last_name = form.last_name.data
         days_due = form.days_due.data
         query = f"""
-                
+                SELECT u.user_id, u.user_first_name, u.user_last_name, count(b.borrowing_id), max(datediff(curdate(), b.borrowing_date)) - 7 AS days_due from library_user u
+                left join borrowing b ON b.library_user_user_id = u.user_id
+                Where b.borrowing_status = "active"
+                group by u.user_id
+                order by days_due desc;
                 """
     
     return render_template("operator_search_owed_returns.html", pageTitle = "Search", form = form , results=conresults)
