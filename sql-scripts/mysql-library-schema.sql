@@ -397,10 +397,6 @@ BEGIN
     SET @user_role_id_var = NULL;
     SET @reservation_limit = NULL;
 
-	if NEW.reservation_date IS NULL THEN
-		SET NEW.reservation_date = CURDATE();
-	END IF;
-	
     SELECT role_id into @user_role_id_var
     FROM library_user
     WHERE user_id = NEW.library_user_user_id;
@@ -409,6 +405,11 @@ BEGIN
     IF (SELECT COUNT(borrowing_id) FROM borrowing WHERE book_book_id =  NEW.book_book_id AND library_user_user_id = NEW.library_user_user_id AND borrowing_status = 'active') >= 1 THEN
         SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Cannot reserve a copy of a Book that the same user has borrowed';
+    END IF;
+    
+	IF (SELECT COUNT(reservation_id) FROM reservation WHERE book_book_id =  NEW.book_book_id AND library_user_user_id = NEW.library_user_user_id ) >= 1 THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Cannot reserve two of the same book';
     END IF;
     
     -- Get the total number of books reserved by the user in the current week
@@ -443,6 +444,10 @@ BEGIN
 		WHERE school_school_id = (SELECT school_id from library_user WHERE user_id = NEW.library_user_user_id)
 		AND book_book_id = NEW.book_book_id;
         SET NEW.reservation_status = 'awaiting_pick_up';
+	END IF;
+    
+    if NEW.reservation_date IS NULL THEN
+		SET NEW.reservation_date = CURDATE();
 	END IF;
 END$$
 
