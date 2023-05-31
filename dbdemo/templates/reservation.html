@@ -8,14 +8,9 @@
             <div class="col-md-6">
                 <div class="card" id="card-container">
                     <div class="card-body" id="card">
+                        <h4 class="card-title">Categories</h4>
                         <div class="mt-auto">
                             <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Category</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
                                 <tbody>
                                     {% for category in categorys %}
                                     <tr>
@@ -33,8 +28,8 @@
             <div class="col-md-6">
                 <div class="card" id="card-container">
                     <div class="card-body" id="card">
-                        <h4 class="card-title"></h4>
-                        <p class="card-text" id="paragraph">Search for books .<br></p>
+                        <h4 class="card-title">Search for books</h4>
+                        <p class="card-text" id="paragraph"><br></p>
                         <div class="mt-auto">
                             <form method="POST">
                                 {{ form.hidden_tag() }}
@@ -55,6 +50,37 @@
                     </div>
                 </div>
                 <p>
+                <div class="col-md-12">
+                    <div class="card" id="card-container">
+                        <div class="card-body" id="card">
+                            <h4 class="card-title">My Reservations</h4>
+                            <div class="mt-auto">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Book</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for res in reservations %}
+                                        <tr>
+                                            <td>
+                                                <form action="/unreserve/{{ID}}" method="POST">
+                                                    <input type="hidden" name="book_id" value="{{ res.book_id }}">
+                                                    <button type="submit">Cancel</button>
+                                                </form>
+                                            </td>
+                                            <td> {{ res.book_title }} </td>
+                                            <td> {{ res.reservation_date }} </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <p>
@@ -64,6 +90,7 @@
                 <table class="table">
                     <thead>
                         <tr>
+                            <th></th>
                             <th>Title</th>
                             <th>Authors</th>
                             <th>Categories</th>
@@ -72,6 +99,12 @@
                     <tbody>
                         {% for book in books %}
                         <tr>
+                            <td>
+                                <form action="/reserve/{{ID}}" method="POST">
+                                    <input type="hidden" name="book_id" value="{{ book.book_id }}">
+                                    <button type="submit">Reserve</button>
+                                </form>
+                            </td>
                             <td>{{ book.book_title}}</td>
                             <td>{{ book.author_name }}</td>
                             <td>{{ book.category_name }}</td>
