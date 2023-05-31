@@ -3,6 +3,7 @@ from flask_mysqldb import MySQL
 from dbdemo import app, db  # initially created by __init__.py, need to be used here
 from dbdemo.forms import *
 
+import traceback
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
@@ -319,13 +320,12 @@ def operator_search_owed_returns(user_ID):
                 order by days_due desc;
                 """
     
-    return render_template("operator_search_owed_returns.html", pageTitle = "Search", form = form , results=conresults)
+    return render_template("operator_search_owed_returns.html", pageTitle = "Search", form = form ,results=conresults)
 
 
 
 @app.route("/user_dash/<int:ID>")
 def user(ID):
-    print(ID)
     query = f"""SELECT book_title, borrowing_status FROM
                 borrowing JOIN book ON book_book_id=book_id 
                 WHERE library_user_user_id='{ID}';
@@ -400,10 +400,8 @@ def reservation(ID):
     column_names = [i[0] for i in cur.description]
     books = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     newBooks=merge_fields(books,'author_first_name','author_last_name','author_name')
-    print(newBooks)
     conBooks=consolidate(newBooks,'book_title','author_name','category_name')
     cur.close()
-    print(conBooks)
     return render_template("reservation.html", pageTitle="Available Books",
                            reservations=reservations, 
                            categorys=categorys, 
@@ -411,35 +409,37 @@ def reservation(ID):
                            form=form,
                            ID=ID)
 
-@app.route('/reserve/<int:ID>', methods=['POST'])
+@app.route('/reserve/<int:ID>', methods=['GET', 'POST'])
 def reserve(ID):
     book_id = request.form['book_id']
-    error='problem'
-    allgood=True
-    # TODO:Αυ΄τή η μέθοδος θα κληθεί όταν ο χρήστης με user_id=ID πατ΄ησει το κουμπί
-    # reserve για το βιβλίο με book_id. Πρέπει να κληθούν τα κατάληλα queries και 
-    # αν όλα πάνε καλά ανανεώνεται η σελίδα και η κράτηση εμφανίζεται στον πίνακα κρατήσεων
-    # αλλιώς πάμε σε σελίδα ERROR που εμφανίζει το μήνυμα error 
-    if allgood:
-        return redirect(url_for('reservation', ID=ID))
-    else:
-        return render_template("reserve_error.html", pageTitle="Error During Reservation",
-                           error=error)
 
-@app.route('/unreserve/<int:ID>', methods=['POST'])
+    query = f"""INSERT INTO reservation (book_book_id,library_user_user_id)
+                VALUES ('{book_id}','{ID}');"""
+    
+    try:
+        cur = db.connection.cursor()
+        cur.execute(query)
+        db.connection.commit()
+        cur.close()
+        return redirect(url_for('reservation', ID=ID))
+    
+    except Exception as error:
+        error_message = str(error)
+        traceback.print_exc()  
+        return render_template("reserve_error.html", pageTitle="Error During Reservation",
+                           error=error_message)
+
+@app.route('/unreserve/<int:ID>', methods=['GET', 'POST'])
 def unreserve(ID):
     book_id = request.form['book_id']
-    error='problem'
-    
-    # TODO: Query to delete reservation with user_id=ID 
-    # and book_id =book_id from reservations table
-    query = ''
+    query = f"""DELETE FROM reservation 
+                WHERE library_user_user_id='{ID}'
+                AND book_book_id='{book_id}';            
+            """
     cur = db.connection.cursor()
     cur.execute(query)
-    column_names = [i[0] for i in cur.description]
-    reservations = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    db.connection.commit()
     cur.close()
-
     return redirect(url_for('reservation', ID=ID))
 
 
