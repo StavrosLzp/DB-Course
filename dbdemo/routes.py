@@ -213,6 +213,7 @@ def less_than_5_books_from_max():
     results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     return render_template("less_than_5_books_from_max.html", pageTitle="5 or more books away from most books written", results=results)
 
+
 @app.route("/operator_dash/<int:user_ID>")
 def operator(user_ID):
     return render_template("dash_operator.html", pageTitle="Operator Dashboard", user_ID = user_ID)
@@ -285,7 +286,22 @@ def operator_show_books(user_ID):
         #return render_template("operator_show_books.html", pageTitle = "Create Grade", results=results)
     return render_template("operator_search_books.html", pageTitle = "Search", form = form , results=conresults)
 
-
+@app.route("/operator_dash/<int:user_ID>/search_owed_returns", methods=['GET', 'POST'])
+def operator_search_owed_returns(user_ID):
+    
+    # Get Admin school id 
+    query = f"""
+            SELECT school_id from library_user 
+            WHERE user_id = {user_ID};
+            """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    result = cur.fetchall()
+    school_id = result[0][0]
+    cur.close()
+    results = []
+    
+    return render_template("operator_search_books.html", pageTitle = "Search", form = form , results=conresults)
 
 
 
