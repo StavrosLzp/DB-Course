@@ -3,26 +3,56 @@
 <div class="container" id="row-container">
     {% include "flash_messages.html" %}
     <div class="row" id="row">
-        <div class="card" id="card-container-layout">
-            <div class="card-body d-flex flex-column" id="card">
-                <h4 class="card-title">Search Page</h4>
-                <p class="card-text" id="paragraph">Enter Search Criteria or leave blanc</p>
-                <div class="mt-auto">
-                <form method="POST">
-                    {{ form.hidden_tag() }}
+        <div class="col-md-12">
+            <div class="card" id="card-container-layout">
+                <div class="card-body" id="card">
+                    <h4 class="card-title">Search Page</h4>
+                    <p class="card-text" id="paragraph">Enter Search Criteria or leave blanc</p>
+                    <div class="mt-auto">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
 
-                    {{form.book_title.label(class="form-label")}}
-                    {{form.book_title(class="form-control")}}
-                    {{form.book_category.label(class="form-label")}}
-                    {{form.book_category(class="form-control")}}
-                    {{form.book_author.label(class="form-label")}}
-                    {{form.book_author(class="form-control")}}
-                    {{form.book_copies.label(class="form-label")}}
-                    {{form.book_copies(class="form-control")}}
-                    <br/>
-                    {{ form.submit(class="btn btn-primary") }}
-                </form>
-                <!-- <a class="btn btn-primary" id="show-btn" href="/programs">Show</a> -->
+                        {{form.book_title.label(class="form-label")}}
+                        {{form.book_title(class="form-control")}}
+                        {{form.book_category.label(class="form-label")}}
+                        {{form.book_category(class="form-control")}}
+                        {{form.book_author.label(class="form-label")}}
+                        {{form.book_author(class="form-control")}}
+                        {{form.book_copies.label(class="form-label")}}
+                        {{form.book_copies(class="form-control")}}
+                        <br/>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="row">
+        <div class="col-md-12">
+            <div class="card" id="card-container">
+                <div class="card-body" id="card">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Book ID</th>
+                                <th>Book Title</th>
+                                <th>Books Authors</th>
+                                <th>Books available</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in results %}
+                            <tr>
+                                <td> {{ result.book_id }} </td>
+                                <td> {{ result.book_title }} </td>
+                                <td> {{ result.author_name }} </td>
+                                <td> {{ result.school_book_amount }} </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

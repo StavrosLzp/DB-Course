@@ -230,6 +230,7 @@ def operator_show_books(user_ID):
     result = cur.fetchall()
     school_id = result[0][0]
     cur.close()
+    results = []
 
     form = books_form()
     # Get categories for drop down list
@@ -237,6 +238,10 @@ def operator_show_books(user_ID):
     cur.execute('SELECT category_id, category_name FROM category;')
     form.book_category.choices = list(cur.fetchall())
     form.book_category.choices.insert(0,(0, "---"))
+    # Get authors for drop down list
+    cur.execute('SELECT author_id, CONCAT(author_first_name, " " ,author_last_name) AS author_name FROM author;')
+    form.book_author.choices = list(cur.fetchall())
+    form.book_author.choices.insert(0,(0, "---"))
     cur.close()
 
     book_title = None
@@ -250,27 +255,35 @@ def operator_show_books(user_ID):
         book_author = form.book_author.data
         book_copies = form.book_copies.data
         query = f"""
-                SELECT b.book_id, b.book_title FROM book b
+                SELECT b.book_id, b.book_title, sb.school_book_amount, a.author_first_name, a.author_last_name FROM book b
                 left join school_book sb on b.book_id = sb.book_book_id 
                 """
         if book_category : 
             query +="""left join book_category bc on b.book_id = bc.book_book_id 
                 left join category c on c.category_id = bc.category_category_id"""
+        query +="""left join book_author ba on b.book_id = ba.book_book_id 
+                left join author a on a.author_id = ba.author_author_id """         
         query +=f"""
                 WHERE sb.school_school_id = {school_id}
                 AND b.book_title like "%{book_title}%" 
                 """
+        if book_author: query += f"AND ba.author_author_id = {book_author} \n"
                 
         if book_category : query += f"AND bc.category_category_id = {book_category} \n"
-        query += "order by book_id;"
+        query += f"""
+                AND sb.school_book_amount >= {book_copies}
+                order by book_id;
+                """
         print(query)
         cur = db.connection.cursor()
         cur.execute(query)
         column_names = [i[0] for i in cur.description]
         results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+        newresults=merge_fields(results,'author_first_name','author_last_name','author_name')
+        conresults=consolidate(newresults,'book_id', 'book_title','author_name','category_name', 'school_book_amount')
         cur.close()
-        return render_template("operator_show_books.html", pageTitle = "Create Grade", results=results)
-    return render_template("operator_search_books.html", pageTitle = "Search", form = form)
+        #return render_template("operator_show_books.html", pageTitle = "Create Grade", results=results)
+    return render_template("operator_search_books.html", pageTitle = "Search", form = form , results=conresults)
 
 
 
