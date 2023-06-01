@@ -9,26 +9,26 @@ DELETE FROM reservation
 
 
 ADMIN:
-    []Insert school with info
-    []Accepts operator registration
-    []backup
-    []restore
+    [ ]Insert school with info
+    [ ]Accepts operator registration
+    [ ]backup
+    [ ]restore
 OPERATOR:
-    []Register user-print card
-    []Delete user
-    []Deactivate user account
-    []Insert book
-    []Alter book
-    []See borrowings
-    []See reservations
-    []Lend book
-    []Accept return of book
-    []Accept user review
+    [ ]Register user-print card
+    [ ]Delete user
+    [ ]Deactivate user account
+    [ ]Insert book
+    [ ]Alter book
+    [ ]See borrowings
+    [ ]See reservations
+    [ ]Lend book
+    [ ]Accept return of book
+    [ ]Accept user review
 
 
 USER
-    []Alter personal info (ONLY TEACHER)
-    []Write review
+    [ ]Alter personal info (ONLY TEACHER)
+    [ ]Write review
 
 
 https://www.youtube.com/watch?v=-O9NMdvWmE8
