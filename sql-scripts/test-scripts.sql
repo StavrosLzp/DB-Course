@@ -241,4 +241,13 @@ select * from library_user;
 
 INSERT INTO library_user (username,user_password,user_first_name,user_last_name,school_id,user_birthdate,role_id)
                 VALUES ("Stavros", "Lzp", "Stavros", "Lazopoulos", "2", "2002-08-24", "5");
+                
+                
+-- activate reviews 
+SELECT r.review_id, r.book_book_id, r.review_rating, r.review_text, b.book_title, u.user_first_name, u.user_last_name
+FROM review r
+LEFT JOIN book b ON b.book_id = r.book_book_id
+LEFT JOIN library_user u ON u.user_id =  r.library_user_user_id
+WHERE u.school_id = '{school_id}'
+AND r.review_status = 'pending_validation';
 

@@ -315,6 +315,65 @@ def delete_user(user_ID):
     cur.close()
     return redirect(url_for('operator_activate_users', user_ID=user_ID))
 
+
+
+@app.route("/operator_dash/<int:user_ID>/activate_reviews", methods=['GET', 'POST'])
+def operator_activate_reviews(user_ID):
+    # Get operator school id 
+    query = f"""
+            SELECT school_id from library_user 
+            WHERE user_id = {user_ID};
+            """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    school_id = cur.fetchall()[0][0]
+    cur.close()
+
+    query = f"""SELECT r.review_id, r.book_book_id, r.review_rating, r.review_text, b.book_title, u.user_first_name, u.user_last_name
+                FROM review r
+                LEFT JOIN book b ON b.book_id = r.book_book_id
+                LEFT JOIN library_user u ON u.user_id =  r.library_user_user_id
+                WHERE u.school_id = '{school_id}'
+                AND r.review_status = 'pending_validation';
+                """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()
+
+    return render_template("operator_activate_reviews.html", pageTitle = "Search", results=results, user_ID=user_ID)
+
+
+@app.route('/validate_review/<int:user_ID>', methods=['GET', 'POST'])
+def operator_activate_review(user_ID):
+    review_id = request.form['review_id']
+    
+    query = f"""UPDATE review SET review_status = 'validated' WHERE review_id = {review_id}; """
+    try:
+        cur = db.connection.cursor()
+        cur.execute(query)
+        db.connection.commit()
+        cur.close()
+        return redirect(url_for('operator_activate_reviews', user_ID=user_ID))
+    except Exception as error:
+        error_message = str(error)
+        return render_template("reserve_error.html", pageTitle="Error During Review Update",
+                           error=error_message)
+        
+@app.route('/delete_review/<int:user_ID>', methods=['GET', 'POST'])
+def operator_delete_review(user_ID):
+    review_id = request.form['review_id']
+    query = f"""DELETE FROM review
+                WHERE review_id='{review_id}';           
+            """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    db.connection.commit()
+    cur.close()
+    return redirect(url_for('operator_activate_reviews', user_ID=user_ID))
+
+
 @app.route("/operator_dash/<int:user_ID>/search_books", methods=['GET', 'POST'])
 def operator_show_books(user_ID):
     

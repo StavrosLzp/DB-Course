@@ -234,7 +234,7 @@ CREATE INDEX `fk_reservation_library_user1_idx` ON `reservation` (`library_user_
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `review` (
   `review_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `review_text` VARCHAR(350) NULL DEFAULT NULL,
+  `review_text` TEXT NULL DEFAULT NULL,
   `review_rating` INT NOT NULL,
   `review_date` DATE NOT NULL,
   `review_status` ENUM('validated', 'pending_validation') NOT NULL DEFAULT 'validated',
