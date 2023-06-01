@@ -358,16 +358,18 @@ table_name = "review"
 table_columns = ["review_text", "review_rating", "book_book_id", "library_user_user_id", "review_date"]
 content += f"\n"
 
+reviewsPerUser = 3
 # school_id = floor(i / studentsPerSchool) +1
 for  student in range(1,SchoolNum * studentsPerSchool+1):
-    review_text = fake.text(max_nb_chars=200)
-    review_rating = random.randint(0,5)
-    user_id = SchoolNum + 1 +  student
-    book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
-    date = fake.date_this_month()
-    content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-        VALUES ("{review_text}", "{review_rating}", "{book_id}", "{user_id}", "{date}");\n'
-        
+    for i in range(reviewsPerUser):
+        review_text = fake.text(max_nb_chars=200)
+        review_rating = random.randint(0,5)
+        user_id = SchoolNum + 1 +  student
+        book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
+        date = fake.date_this_month()
+        content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
+            VALUES ("{review_text}", "{review_rating}", "{book_id}", "{user_id}", "{date}");\n'
+            
 for teacher in range(SchoolNum * studentsPerSchool+1,SchoolNum * studentsPerSchool+1+SchoolNum*TeachersPerSchool):
     review_text = fake.text(max_nb_chars=200)
     review_rating = random.randint(0,5)

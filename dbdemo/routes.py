@@ -296,7 +296,6 @@ def operator_show_books(user_ID):
 
 @app.route("/operator_dash/<int:user_ID>/search_owed_returns", methods=['GET', 'POST'])
 def operator_search_owed_returns(user_ID):
-    
     # Get Admin school id 
     query = f"""
             SELECT school_id from library_user 
@@ -336,6 +335,72 @@ def operator_search_owed_returns(user_ID):
     
     return render_template("operator_search_owed_returns.html", pageTitle = "Search", form = form ,results=results)
 
+@app.route("/operator_dash/<int:user_ID>/average_rating", methods=['GET', 'POST'])
+def operator_average_rating(user_ID):
+    # Get Admin school id 
+    query = f"""
+            SELECT school_id from library_user 
+            WHERE user_id = {user_ID};
+            """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    result = cur.fetchall()
+    school_id = result[0][0]
+    cur.close()
+    
+    
+    form = avg_review()
+    # Get categories for drop down list
+    cur = db.connection.cursor()
+    cur.execute('SELECT category_id, category_name FROM category;')
+    form.book_category.choices = list(cur.fetchall())
+    form.book_category.choices.insert(0,(0, "---"))
+    cur.close
+    
+    # avg rating per user
+    query1 = f"""
+            SELECT library_user_user_id, u.user_first_name, u.user_last_name, AVG(review_rating) AS average_rating
+            FROM review
+            left join library_user u ON u.user_id = library_user_user_id
+            Where school_id = {school_id}
+            """
+    query2 = f"""
+            SELECT c.category_name, AVG(r.review_rating) AS average_rating
+            FROM category c
+            JOIN book_category bc ON c.category_id = bc.category_category_id
+            JOIN book b ON bc.book_book_id = b.book_id
+            LEFT JOIN review r ON b.book_id = r.book_book_id
+            left join library_user u ON u.user_id = r.library_user_user_id
+            WHERE u.school_id = {school_id}
+            """
+            
+    if form.validate_on_submit():
+        first_name = form.first_name.data
+        last_name = form.last_name.data
+        book_category = form.book_category.data
+        if first_name: query1 += f' AND u.user_first_name like "%{first_name}%" '
+        if last_name: query1 += f' AND u.user_last_name like "%{last_name}%" '    
+        if book_category : query2 += f"AND bc.category_category_id = {book_category} \n"
+    
+    query1+="""
+            GROUP BY library_user_user_id;
+            """
+    query2+="""
+            GROUP BY c.category_id
+            order by average_rating desc;
+            """
+            
+    cur = db.connection.cursor()
+    cur.execute(query1)
+    column_names = [i[0] for i in cur.description]
+    results1 = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    
+    cur.execute(query2)
+    column_names = [i[0] for i in cur.description]
+    results2 = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()
+    
+    return render_template("operator_average_rating.html", pageTitle = "average_rating", form = form ,results1=results1,results2=results2)
 
 
 @app.route("/user_dash/<int:ID>")

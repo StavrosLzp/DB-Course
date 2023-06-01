@@ -1,0 +1,78 @@
+{% extends "global_layout.html" %}
+{% block content %}
+<div class="container" id="row-container">
+    {% include "flash_messages.html" %}
+    <div class="row" id="row">
+        <div class="col-md-12">
+            <div class="card" id="card-container-layout">
+                <div class="card-body" id="card">
+                    <h4 class="card-title">Search Page</h4>
+                    <p class="card-text" id="paragraph">Enter Search Criteria or leave blanc</p>
+                    <div class="mt-auto">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+
+                        {{form.first_name.label(class="form-label")}}
+                        {{form.first_name(class="form-control")}}
+                        {{form.last_name.label(class="form-label")}}
+                        {{form.last_name(class="form-control")}}
+                        {{form.book_category.label(class="form-label")}}
+                        {{form.book_category(class="form-control")}}
+                        <br/>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="row">
+        <div class="col-md-6">
+            <div class="card" id="card-container">
+                <div class="card-body" id="card">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Average Rating</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in results1 %}
+                            <tr>
+                                <td> {{ result.user_first_name }}  {{ result.user_last_name }} </td>
+                                <td> {{ result.average_rating }} </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card" id="card-container">
+                <div class="card-body" id="card">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Category Name</th>
+                                <th>Average Rating</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in results2 %}
+                            <tr>
+                                <td> {{ result.category_name }} </td>
+                                <td> {{ result.average_rating }} </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

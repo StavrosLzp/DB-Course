@@ -44,7 +44,16 @@ class owed_returs_form(FlaskForm): #Όνομα, Επώνυμο, Ημέρες Κ�
 
     days_due = IntegerField(label = "Days due", validators = [NumberRange(min = 1, max = 9999, message = "Days due")])
 
-    submit = SubmitField("Serch")
+    submit = SubmitField("Search")
+    
+class avg_review(FlaskForm): 
+    first_name = StringField(label = "First Name")
+    
+    last_name = StringField(label = "Last Name")
+
+    book_category = SelectField(label = "Book Category", coerce = int)
+
+    submit = SubmitField("Search")
 
 class user_books_form(FlaskForm):
     title = StringField(label = "Search by Title")

@@ -213,3 +213,23 @@ WHERE days_due > 0;
 select * from reservation;
 INSERT INTO reservation (book_book_id,library_user_user_id)        VALUES ("75", "17");	
 
+
+-- 3.2.3
+SELECT library_user_user_id, u.user_first_name, u.user_last_name, AVG(review_rating) AS average_rating
+FROM review
+left join library_user u ON u.user_id = library_user_user_id
+Where school_id = 1
+GROUP BY library_user_user_id;
+
+SELECT c.category_name, AVG(r.review_rating) AS average_rating
+FROM category c
+JOIN book_category bc ON c.category_id = bc.category_category_id
+JOIN book b ON bc.book_book_id = b.book_id
+LEFT JOIN review r ON b.book_id = r.book_book_id
+left join library_user u ON u.user_id = r.library_user_user_id
+WHERE u.school_id = 1
+GROUP BY c.category_id;
+
+
+
+
