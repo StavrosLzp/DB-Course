@@ -231,6 +231,14 @@ WHERE u.school_id = 1
 GROUP BY c.category_id
 order by average_rating desc;
 
-select * from review;
 
+
+
+-- signup
+use library;
+select * from school;
+select * from library_user;
+
+INSERT INTO library_user (username,user_password,user_first_name,user_last_name,school_id,user_birthdate,role_id)
+                VALUES ("Stavros", "Lzp", "Stavros", "Lazopoulos", "2", "2002-08-24", "5");
 

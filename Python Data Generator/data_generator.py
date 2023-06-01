@@ -150,8 +150,8 @@ content += f"\n"
 
 # First Admin created is Central admin
 for i in range(DUMMY_DATA_NUMBER):
-    username = fake.sentence(nb_words=1).replace(".","").replace(" ","_")
-    password = fake.sentence(nb_words=1).replace(".","").replace(" ","_")
+    username = fake.sentence(nb_words=3).replace(".","").replace(" ","_")
+    password = fake.sentence(nb_words=3).replace(".","").replace(" ","_")
     firstName = fake.first_name()
     lastName = fake.last_name()
     birth = fake.date_of_birth(minimum_age = 25, maximum_age = 65)
@@ -200,8 +200,8 @@ content += f"\n"
 
 
 for i in range(DUMMY_DATA_NUMBER):
-    username = fake.sentence(nb_words=1).replace(".","").replace(" ","_")
-    password = fake.sentence(nb_words=1).replace(".","").replace(" ","_")
+    username = fake.sentence(nb_words=3).replace(".","").replace(" ","_")
+    password = fake.sentence(nb_words=3).replace(".","").replace(" ","_")
     firstName = fake.first_name()
     lastName = fake.last_name()
     role_id = 4 #student
@@ -224,8 +224,8 @@ content += f"\n"
 
 
 for i in range(DUMMY_DATA_NUMBER):
-    username = fake.sentence(nb_words=1).replace(".","").replace(" ","_")
-    password = fake.sentence(nb_words=1).replace(".","").replace(" ","_")
+    username = fake.sentence(nb_words=3).replace(".","").replace(" ","_")
+    password = fake.sentence(nb_words=3).replace(".","").replace(" ","_")
     firstName = fake.first_name()
     lastName = fake.last_name()
     role_id = 3 #teacher

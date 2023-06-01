@@ -18,13 +18,13 @@ class sign_up_form(FlaskForm):
 
     password = StringField(label = "Password", validators = [DataRequired(message = "Password is a required field.")])
 
-    email = EmailField(label = "Email", validators = [DataRequired(message = "Email is a required field.")])
-
     school = SelectField(label = "School", validators = [DataRequired(message = "School is a required field.")])
 
     first_name = StringField(label = "First Name", validators = [DataRequired(message = "First name is a required field.")])
     
     last_name = StringField(label = "Last Name", validators = [DataRequired(message = "Last name is a required field.")])
+    
+    birthdate = DateField(label = "Birth Date", validators = [DataRequired(message = "Birth Date is a required field.")])
     
     submit = SubmitField("Login")
     

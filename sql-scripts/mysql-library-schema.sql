@@ -152,8 +152,8 @@ CREATE UNIQUE INDEX `library_admin_user_id_UNIQUE` ON `school` (`library_admin_u
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `library_user` (
   `user_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `username` VARCHAR(20) NOT NULL,
-  `user_password` VARCHAR(16) NOT NULL,
+  `username` VARCHAR(45) NOT NULL,
+  `user_password` VARCHAR(45) NOT NULL,
   `user_first_name` VARCHAR(45) NOT NULL,
   `user_last_name` VARCHAR(45) NOT NULL,
   `user_birthdate` DATE NOT NULL,
@@ -176,6 +176,10 @@ DEFAULT CHARACTER SET = utf8mb3;
 CREATE INDEX `fk_user_role_id` ON `library_user` (`role_id` ASC) VISIBLE;
 
 CREATE INDEX `fk_user_school_id` ON `library_user` (`school_id` ASC) VISIBLE;
+
+CREATE UNIQUE INDEX `username_UNIQUE` ON `library_user` (`username` ASC) VISIBLE;
+
+CREATE UNIQUE INDEX `user_password_UNIQUE` ON `library_user` (`user_password` ASC) VISIBLE;
 
 
 -- -----------------------------------------------------

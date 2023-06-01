@@ -45,7 +45,37 @@ def index():
 @app.route("/sign_up", methods=['GET', 'POST'])
 def sign_up():
     form = sign_up_form()
-    return render_template("sign_up.html", pageTitle="Landing Page", form=form, message = "Hi")
+    # Get categories for drop down list
+    cur = db.connection.cursor()
+    cur.execute('SELECT school_id, school_name FROM school;')
+    form.school.choices = list(cur.fetchall())
+    cur.close()
+    message = ""
+    
+    if form.validate_on_submit():
+        try:
+            username = form.username.data
+            password = form.password.data
+            first_name = form.first_name.data
+            last_name = form.last_name.data
+            school = form.school.data
+            birthdate = form.birthdate.data
+            cur = db.connection.cursor()
+            query = f"""
+                    INSERT INTO library_user (username,user_password,user_first_name,user_last_name,school_id,user_birthdate,role_id)
+                    VALUES ("{username}", "{password}", "{first_name}", "{last_name}", "{school}", "{birthdate}", "5");
+                    """
+            cur.execute(query)
+            print(query)
+            db.connection.commit()
+            cur.close()
+            flash("Sign up successfull. Your account will soon be reviewed for activation by your chool operator", "success")
+            return redirect("/")
+        except Exception as e: ## OperationalError
+            flash(str(e), "danger")
+            print(str(e))
+            message = "Something Failed please try again later"
+    return render_template("sign_up.html", pageTitle="Landing Page", form=form, message=message)
 
 
 @app.route("/admin_dash")
@@ -64,7 +94,7 @@ def admin():
     no_lend_authors = [dict(zip(column_names, entry))
                        for entry in cur.fetchall()]
     # 3.1.4 END
-     # 3.1.5 START
+    # 3.1.5 START
     query =  f"""
                 SELECT op1.user_id, op1.user_first_name, op1.user_last_name, op2.user_id AS user2_user_id, op2.user_first_name AS user2_first_name, op2.user_last_name AS user2_last_name, op2.borrowings_count
                 FROM Loans_per_school_admin_this_year op1
