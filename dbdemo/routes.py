@@ -175,7 +175,7 @@ def category_info():
     cur.close()
 
     form = category()
-    query1 = f"select a.author_id, a.author_first_name, a.author_last_name from author a where a.author_id = "
+    query1 = f"select a.author_id, a.author_first_name, a.author_last_name from author a where a.author_id = '' "
     query2 = f"select u.user_first_name, u.user_last_name from library_user u where u.role_id = '' "
 
     if form.validate_on_submit():
