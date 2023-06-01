@@ -8,6 +8,29 @@ DELETE FROM reservation
 * κουμπί για έλεγχο reservation on hold -> awaiting pick up
 
 
+ADMIN:
+    []Insert school with info
+    []Accepts operator registration
+    []backup
+    []restore
+OPERATOR:
+    []Register user-print card
+    []Delete user
+    []Deactivate user account
+    []Insert book
+    []Alter book
+    []See borrowings
+    []See reservations
+    []Lend book
+    []Accept return of book
+    []Accept user review
+
+
+USER
+    []Alter personal info (ONLY TEACHER)
+    []Write review
+
+
 https://www.youtube.com/watch?v=-O9NMdvWmE8
 
 ![image](https://github.com/StavrosLzp/DB-Course/assets/73658190/c7e988e9-dc65-48a6-bcf9-fb0981eb9828)
