@@ -199,7 +199,7 @@ SELECT b.book_id, b.book_title, sb.school_book_amount FROM book b
                 
 -- 3.2.2
 -- View library_user_days_due
-SELECT u.user_id, u.user_first_name, u.user_last_name, count(b.borrowing_id) AS currently_borrowed, max(datediff(curdate(), b.borrowing_date)) - 7 AS days_due from library_user u
+SELECT u.user_id, u.user_first_name, u.user_last_name, u.school_id, count(b.borrowing_id) AS currently_borrowed, max(datediff(curdate(), b.borrowing_date)) - 7 AS days_due from library_user u
 left join borrowing b ON b.library_user_user_id = u.user_id
 Where b.borrowing_status = "active"
 group by u.user_id

@@ -353,7 +353,7 @@ CREATE TABLE IF NOT EXISTS `books_written_per_author` (`author_id` INT, `author_
 -- -----------------------------------------------------
 -- Placeholder table for view `library_user_days_due`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `library_user_days_due` (`user_id` INT, `user_first_name` INT, `user_last_name` INT, `currently_borrowed` INT, `days_due` INT);
+CREATE TABLE IF NOT EXISTS `library_user_days_due` (`user_id` INT, `user_first_name` INT, `user_last_name` INT, `school_id` INT, `currently_borrowed` INT, `days_due` INT);
 
 -- -----------------------------------------------------
 -- View `Loans_per_school_admin_this_year`
@@ -387,7 +387,7 @@ order by a1.author_id asc;
 DROP TABLE IF EXISTS `library_user_days_due`;
 USE `library`;
 CREATE  OR REPLACE VIEW `library_user_days_due` AS
-SELECT u.user_id, u.user_first_name, u.user_last_name, count(b.borrowing_id) AS currently_borrowed, max(datediff(curdate(), b.borrowing_date)) - 7 AS days_due from library_user u
+SELECT u.user_id, u.user_first_name, u.user_last_name, u.school_id, count(b.borrowing_id) AS currently_borrowed, max(datediff(curdate(), b.borrowing_date)) - 7 AS days_due from library_user u
 left join borrowing b ON b.library_user_user_id = u.user_id
 Where b.borrowing_status = "active"
 group by u.user_id
