@@ -550,6 +550,50 @@ def update_reservation(ID):
         cur.close()
     return redirect(url_for('reservation', ID=ID))
 
+
+
+@app.route('/user_review/<int:ID>/<int:book_id>', methods=['GET', 'POST'])
+def user_review(ID,book_id):
+    form=user_review_form()
+    if form.validate_on_submit():
+        rating = form.rating.data
+        desc= form.description.data
+        hasrv=0
+        if  rating and desc:
+            query = f"""SELECT role_id FROM library_user WHERE user_id='{ID}';"""
+            cur = db.connection.cursor()
+            cur.execute(query)
+            column_names = [i[0] for i in cur.description]
+            role = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+            status='pending_validation'
+            if role[0]['role_id']==3:
+                status='validated'
+            cur.close()
+            query = f"""INSERT INTO review (library_user_user_id, 
+                            book_book_id, review_rating, review_text, review_status)
+                            VALUES ('{ID}','{book_id}','{rating}', '{desc}', '{status}');         
+                """
+            cur = db.connection.cursor()
+            cur.execute(query)
+            db.connection.commit()
+            cur.close()
+
+    query = f"""SELECT review_date, review_rating, review_text 
+                FROM review 
+                WHERE library_user_user_id ='{ID}'
+                AND book_book_id='{book_id}'          
+            """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    reviews = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()
+    return render_template("user_review.html", pageTitle="Review",
+                           has_review=len(reviews),
+                           rev=reviews,
+                           form=form)
+    
+
 @app.errorhandler(404)
 def page_not_found(e):
     # note that we set the 404 status explicitly

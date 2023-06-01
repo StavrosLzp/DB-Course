@@ -64,4 +64,11 @@ class user_books_form(FlaskForm):
 
     submit = SubmitField("Search")
 
+class user_review_form(FlaskForm):
+    rating = IntegerField(label = "Rating", validators = [NumberRange(min = 1, max = 5, message = "1-5")])
+    
+    description = StringField(label = "Review")
+
+    submit = SubmitField("Submit")
+
     

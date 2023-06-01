@@ -99,6 +99,12 @@
                         <td>{{ book.book_title}}</td>
                         <td>{{ book.author_name }}</td>
                         <td>{{ book.category_name }}</td>
+                        <td>
+                            <form action="/user_review/{{ID}}/{{ book.book_id }}" method="POST">
+                                <input type="hidden" name="book_id" value="{{ book.book_id }}">
+                                <button type="submit">Review</button>
+                            </form>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
