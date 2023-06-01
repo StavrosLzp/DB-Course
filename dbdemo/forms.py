@@ -86,4 +86,19 @@ class user_review_form(FlaskForm):
 
     submit = SubmitField("Submit")
 
+class change_info_form(FlaskForm):
+    username = StringField(label = "Username", validators = [DataRequired(message = "Username is a required field.")])
+
+    password = StringField(label = "Password", validators = [DataRequired(message = "Password is a required field.")])
+
+    first_name = StringField(label = "First Name", validators = [DataRequired(message = "First name is a required field.")])
+    
+    last_name = StringField(label = "Last Name", validators = [DataRequired(message = "Last name is a required field.")])
+    
+    school = SelectField(label = "School", validators = [DataRequired(message = "School is a required field.")])
+
+    birthdate = DateField(label = "Birth Date", validators = [DataRequired(message = "Birth Date is a required field.")])
+    
+    submit = SubmitField("Save")
+
     

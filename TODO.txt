@@ -15,5 +15,3 @@ OPERATOR:
 	*Accept return of book
 	*Accept user review
 USER
-	*Alter personal info (ONLY TEACHER)
-	*Write reviw
