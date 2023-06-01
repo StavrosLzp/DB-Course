@@ -231,6 +231,6 @@ WHERE u.school_id = 1
 GROUP BY c.category_id
 order by average_rating desc;
 
-
+select * from review;
 
 
