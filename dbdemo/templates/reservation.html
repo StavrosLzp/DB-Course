@@ -2,19 +2,44 @@
 {% block content %}
 <div class="container" id="row-container">
     {% include "flash_messages.html" %}
-
     <div class="col-md-12">
-        <div class="row" id="row">
-            <div class="col-md-6">
+        <div class="col-md-12">
+
+            <div class="col-md-12">
                 <div class="card" id="card-container">
                     <div class="card-body" id="card">
-                        <h4 class="card-title">Categories</h4>
+                        <h4 class="card-title">My Reservations</h4>
                         <div class="mt-auto">
                             <table class="table">
-                                <tbody>
-                                    {% for category in categorys %}
+                                <thead>
                                     <tr>
-                                        <td> {{ category.category_name }} </td>
+                                        <th></th>
+                                        <th>Book</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for res in reservations %}
+                                    <tr>
+                                        <td>
+                                            <form action="/unreserve/{{ID}}" method="POST">
+                                                <input type="hidden" name="book_id" value="{{ res.book_id }}">
+                                                <button type="submit">Cancel</button>
+                                            </form>
+                                        </td>
+                                        <td> {{ res.book_title }} </td>
+                                        <td> {{ res.reservation_date }} </td>
+                                        <td> {{ res.reservation_status }} </td>
+                                        {% if res.reservation_status=='on_hold' %}
+                                        <td>
+                                            <form action="/update_reservation/{{ID}}" method="POST">
+                                                <input type="hidden" name="book_id" value="{{ res.book_id }}">
+                                                <button type="submit">Update</button>
+                                            </form>
+                                        </td>
+                                        {% endif %}
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -23,100 +48,65 @@
                     </div>
                 </div>
             </div>
+            <p>
+            <div class="card" id="card-container">
+                <div class="card-body" id="card">
+                    <h4 class="card-title">Search for books</h4>
+                    <p class="card-text" id="paragraph"><br></p>
+                    <div class="mt-auto">
+                        <form method="POST">
+                            {{ form.hidden_tag() }}
 
+                            {{form.title.label(class="form-label")}}
+                            {{form.title(class="form-control")}}
 
-            <div class="col-md-6">
-                <div class="card" id="card-container">
-                    <div class="card-body" id="card">
-                        <h4 class="card-title">Search for books</h4>
-                        <p class="card-text" id="paragraph"><br></p>
-                        <div class="mt-auto">
-                            <form method="POST">
-                                {{ form.hidden_tag() }}
+                            {{form.author.label(class="form-label")}}
+                            {{form.author(class="form-control")}}
 
-                                {{form.title.label(class="form-label")}}
-                                {{form.title(class="form-control")}}
+                            {{form.category.label(class="form-label")}}
+                            {{form.category(class="form-control")}}
 
-                                {{form.author.label(class="form-label")}}
-                                {{form.author(class="form-control")}}
-
-                                {{form.category.label(class="form-label")}}
-                                {{form.category(class="form-control")}}
-
-                                <br />
-                                {{ form.submit(class="btn btn-primary") }}
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <p>
-                <div class="col-md-12">
-                    <div class="card" id="card-container">
-                        <div class="card-body" id="card">
-                            <h4 class="card-title">My Reservations</h4>
-                            <div class="mt-auto">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>Book</th>
-                                            <th>Date</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for res in reservations %}
-                                        <tr>
-                                            <td>
-                                                <form action="/unreserve/{{ID}}" method="POST">
-                                                    <input type="hidden" name="book_id" value="{{ res.book_id }}">
-                                                    <button type="submit">Cancel</button>
-                                                </form>
-                                            </td>
-                                            <td> {{ res.book_title }} </td>
-                                            <td> {{ res.reservation_date }} </td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                            <br />
+                            {{ form.submit(class="btn btn-primary") }}
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-        <p>
-        <div class="card" id="card-container">
-            <div class="card-body" id="card">
-                <h4 class="card-title">Books</h4>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>Title</th>
-                            <th>Authors</th>
-                            <th>Categories</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for book in books %}
-                        <tr>
-                            <td>
-                                <form action="/reserve/{{ID}}" method="POST">
-                                    <input type="hidden" name="book_id" value="{{ book.book_id }}">
-                                    <button type="submit">Reserve</button>
-                                </form>
-                            </td>
-                            <td>{{ book.book_title}}</td>
-                            <td>{{ book.author_name }}</td>
-                            <td>{{ book.category_name }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        </p>
     </div>
+    <p>
+    <div class="card" id="card-container">
+        <div class="card-body" id="card">
+            <h4 class="card-title">Books</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Title</th>
+                        <th>Authors</th>
+                        <th>Categories</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books %}
+                    <tr>
+                        <td>
+                            <form action="/reserve/{{ID}}" method="POST">
+                                <input type="hidden" name="book_id" value="{{ book.book_id }}">
+                                <button type="submit">Reserve</button>
+                            </form>
+                        </td>
+                        <td>{{ book.book_title}}</td>
+                        <td>{{ book.author_name }}</td>
+                        <td>{{ book.category_name }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </p>
+</div>
 </div>
 </p>
 

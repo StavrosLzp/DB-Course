@@ -51,7 +51,7 @@ class user_books_form(FlaskForm):
     
     author = StringField(label = "Search by Authors")
     
-    category = StringField(label = "Search by Category")
+    category = SelectField(label = "Search by Category")
 
     submit = SubmitField("Search")
 
