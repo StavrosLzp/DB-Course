@@ -1,0 +1,63 @@
+{% extends "global_layout.html" %}
+{% block content %}
+<div class="container" id="row-container">
+    {% include "flash_messages.html" %}
+    <div class="col-md-12">
+        <div class="col-md-12">
+            <div class="col-md-12">
+                <div class="card" id="card-container">
+                    <div class="card-body" id="card">
+                        <h4 class="card-title">My Reservations</h4>
+                        <div class="mt-auto">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>User ID</th>
+                                        <th>Username</th>
+                                        <th>User real name</th>
+                                        <th>User birth date</th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for result in results %}
+                                    <tr>
+                                        <td> {{ result.user_id }} </td>
+                                        <td> {{ result.username }} </td>
+                                        <td> {{ result.user_first_name }} {{ result.user_last_name }} </td>
+                                        <td> {{ result.user_birthdate }} </td>
+                                        <td>
+                                            <form action="/activate_user/{{user_ID}}" method="POST">
+                                                <input type="hidden" name="user_id" value="{{ result.user_id }}">
+                                                <input type="hidden" name="role_id" value="4">
+                                                <button type="submit">Activate Student</button>
+                                            </form>
+                                        </td>
+                                        <td>
+                                            <form action="/activate_user/{{user_ID}}" method="POST">
+                                                <input type="hidden" name="user_id" value="{{ result.user_id }}">
+                                                <input type="hidden" name="role_id" value="3">
+                                                <button type="submit">Activate Teacher</button>
+                                            </form>
+                                        </td>
+                                        <td>
+                                            <form action="/delete_user/{{user_ID}}" method="POST">
+                                                <input type="hidden" name="user_id" value="{{ result.user_id }}">
+                                                <button type="submit">Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

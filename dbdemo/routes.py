@@ -236,9 +236,9 @@ def top_teach_borrowers():
 @app.route("/admin_dash/less_than_5_books_from_max")
 def less_than_5_books_from_max():
     query =  f"""
-                    select author_id, author_first_name, author_last_name, books_written from books_written_per_author
-                    where books_written <= (SELECT MAX(books_written) - 5 from books_written_per_author)
-                    order by books_written desc;
+                select author_id, author_first_name, author_last_name, books_written from books_written_per_author
+                where books_written <= (SELECT MAX(books_written) - 5 from books_written_per_author)
+                order by books_written desc;
                 """
     cur = db.connection.cursor()
     cur.execute(query)
@@ -259,6 +259,61 @@ def operator(user_ID):
     results = [dict(zip(column_names, entry))
             for entry in cur.fetchall()]
     return render_template("dash_operator.html", pageTitle="Operator Dashboard", user_ID = user_ID, results = results)
+
+@app.route("/operator_dash/<int:user_ID>/activate_users", methods=['GET', 'POST'])
+def operator_activate_users(user_ID):
+    # Get operator school id 
+    query = f"""
+            SELECT school_id from library_user 
+            WHERE user_id = {user_ID};
+            """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    school_id = cur.fetchall()[0][0]
+    cur.close()
+
+    query = f"""SELECT user_id, username, user_first_name, user_last_name, user_birthdate
+                FROM library_user 
+                WHERE school_id = '{school_id}'
+                AND role_id = 5;
+                """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()
+
+    return render_template("operator_activate_users.html", pageTitle = "Search", results=results, user_ID=user_ID)
+
+
+@app.route('/activate_user/<int:user_ID>', methods=['GET', 'POST'])
+def activate_user(user_ID):
+    user_id = request.form['user_id']
+    role_id = request.form['role_id']
+    
+    query = f"""UPDATE library_user SET role_id = {role_id} WHERE user_id = {user_id}; """
+    try:
+        cur = db.connection.cursor()
+        cur.execute(query)
+        db.connection.commit()
+        cur.close()
+        return redirect(url_for('operator_activate_users', user_ID=user_ID))
+    except Exception as error:
+        error_message = str(error)
+        return render_template("reserve_error.html", pageTitle="Error During Reservation",
+                           error=error_message)
+        
+@app.route('/delete_user/<int:user_ID>', methods=['GET', 'POST'])
+def delete_user(user_ID):
+    user_id = request.form['user_id']
+    query = f"""DELETE FROM library_user
+                WHERE user_id='{user_id}';           
+            """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    db.connection.commit()
+    cur.close()
+    return redirect(url_for('operator_activate_users', user_ID=user_ID))
 
 @app.route("/operator_dash/<int:user_ID>/search_books", methods=['GET', 'POST'])
 def operator_show_books(user_ID):
