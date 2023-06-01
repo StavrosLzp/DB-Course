@@ -363,10 +363,11 @@ def operator_average_rating(user_ID):
     
     # avg rating per user
     query1 = f"""
-            SELECT library_user_user_id, u.user_first_name, u.user_last_name, AVG(review_rating) AS average_rating
-            FROM review
-            left join library_user u ON u.user_id = library_user_user_id
-            Where school_id = {school_id}
+            SELECT r.library_user_user_id, u.user_first_name, u.user_last_name, AVG(r.review_rating) AS average_rating
+            FROM review r
+            left join library_user u ON u.user_id = r.library_user_user_id
+            JOIN book_category bc ON bc.book_book_id = r.book_book_id
+            Where school_id = {school_id} AND review_status = 'validated'
             """
     query2 = f"""
             SELECT c.category_name, AVG(r.review_rating) AS average_rating
@@ -375,16 +376,22 @@ def operator_average_rating(user_ID):
             JOIN book b ON bc.book_book_id = b.book_id
             LEFT JOIN review r ON b.book_id = r.book_book_id
             left join library_user u ON u.user_id = r.library_user_user_id
-            WHERE u.school_id = {school_id}
+            WHERE u.school_id = {school_id} AND review_status = 'validated'
             """
             
     if form.validate_on_submit():
         first_name = form.first_name.data
         last_name = form.last_name.data
         book_category = form.book_category.data
-        if first_name: query1 += f' AND u.user_first_name like "%{first_name}%" '
-        if last_name: query1 += f' AND u.user_last_name like "%{last_name}%" '    
-        if book_category : query2 += f"AND bc.category_category_id = {book_category} \n"
+        if first_name: 
+            query1 += f' AND u.user_first_name like "%{first_name}%" '
+            query2 += f' AND u.user_first_name like "%{first_name}%" '
+        if last_name: 
+            query1 += f' AND u.user_last_name like "%{last_name}%" '    
+            query2 += f' AND u.user_last_name like "%{last_name}%" '  
+        if book_category : 
+            query1 += f"AND bc.category_category_id = {book_category} \n"
+            query2 += f"AND bc.category_category_id = {book_category} \n"
     
     query1+="""
             GROUP BY library_user_user_id;
