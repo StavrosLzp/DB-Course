@@ -3,8 +3,6 @@ from flask_mysqldb import MySQL
 from dbdemo import app, db  # initially created by __init__.py, need to be used here
 from dbdemo.forms import *
 
-import traceback
-
 @app.route("/", methods=['GET', 'POST'])
 def index():
     cur = db.connection.cursor()
@@ -343,7 +341,8 @@ def operator_search_owed_returns(user_ID):
 def user(ID):
     query = f"""SELECT book_title, borrowing_status FROM
                 borrowing JOIN book ON book_book_id=book_id 
-                WHERE library_user_user_id='{ID}';
+                WHERE library_user_user_id='{ID}'
+                ORDER BY borrowing_status;
                 """
     cur = db.connection.cursor()
     cur.execute(query)
@@ -375,7 +374,7 @@ def reservation(ID):
     cur.close()
 
     query = f"""
-            SELECT book_id, book_title, reservation_date
+            SELECT book_id, book_title, reservation_date, reservation_status
             FROM reservation JOIN book ON book_book_id=book_id
             WHERE library_user_user_id='{ID}';
             """
@@ -384,8 +383,6 @@ def reservation(ID):
     column_names = [i[0] for i in cur.description]
     reservations = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     cur.close()
-
-    form=user_books_form()
     query=f"""SELECT book_id, book_title, author_first_name, author_last_name, category_name FROM 
                     book JOIN book_author ON book_id=book_author.book_book_id
                     JOIN author ON author_author_id=author_id
@@ -393,6 +390,12 @@ def reservation(ID):
                     JOIN category ON category_category_id=category_id
                     WHERE TRUE
                     """
+    
+    form=user_books_form()
+    choises=[item['category_name'] for item in categorys]
+    choises.insert(0,"")
+    form.category.choices = choises
+
     if form.validate_on_submit():
         titl = form.title.data
         aut= form.author.data
@@ -440,7 +443,6 @@ def reserve(ID):
     
     except Exception as error:
         error_message = str(error)
-        traceback.print_exc()  
         return render_template("reserve_error.html", pageTitle="Error During Reservation",
                            error=error_message)
 
@@ -457,6 +459,30 @@ def unreserve(ID):
     cur.close()
     return redirect(url_for('reservation', ID=ID))
 
+@app.route('/update_reservation/<int:ID>', methods=['GET', 'POST'])
+def update_reservation(ID):
+    book_id = request.form['book_id']
+
+    query = f"""SELECT  school_book_amount 
+                FROM 
+                (SELECT school_id FROM library_user WHERE user_id={ID}) AS a
+                JOIN school_book ON a.school_id=school_school_id 
+                WHERE book_book_id='{book_id}';"""
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    booksnum = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()
+    books=booksnum[0]['school_book_amount']
+    if books>0:
+        query = f"""UPDATE reservation
+                    SET reservation_status = 'awaiting_pick_up'
+                    WHERE book_book_id={book_id} AND library_user_user_id={ID};"""
+        cur = db.connection.cursor()
+        cur.execute(query)
+        db.connection.commit()
+        cur.close()
+    return redirect(url_for('reservation', ID=ID))
 
 @app.errorhandler(404)
 def page_not_found(e):
