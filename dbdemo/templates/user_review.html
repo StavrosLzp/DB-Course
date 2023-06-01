@@ -1,0 +1,61 @@
+{% extends "global_layout.html" %}
+{% block content %}
+<div class="container" id="row-container">
+    {% include "flash_messages.html" %}
+    <div class="col-md-12">
+        {%if has_review%}
+        <div class="col-md-12">
+            <div class="col-md-12">
+                <div class="card" id="card-container">
+                    <div class="card-body" id="card">
+                        <h4 class="card-title">My Review</h4>
+                        <div class="mt-auto">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Rating</th>
+                                        <th>Review</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td> {{ rev[0].review_date}} </td>
+                                        <td> {{ rev[0].review_rating }} </td>
+                                        <td> {{ rev[0].review_text }} </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p>
+                {%endif%}
+                {%if not has_review%}
+            <div class="card" id="card-container">
+                <div class="card-body" id="card">
+                    <h4 class="card-title">Write a Review</h4>
+                    <p class="card-text" id="paragraph"><br></p>
+                    <div class="mt-auto">
+                        <form method="POST">
+                            {{ form.hidden_tag() }}
+
+                            {{form.rating.label(class="form-label")}}
+                            {{form.rating(class="form-control")}}
+
+                            {{form.description.label(class="form-label")}}
+                            {{form.description(class="form-control")}}
+
+                            <br />
+                            {{ form.submit(class="btn btn-primary") }}
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {%endif%}
+
+        </div>
+    </div>
+    </p>
+    {% endblock content %}
