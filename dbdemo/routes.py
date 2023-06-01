@@ -310,28 +310,29 @@ def operator_search_owed_returns(user_ID):
     results = {}
     
     form = owed_returs_form()
-    
-    
     first_name = None
     last_name = None
     days_due = None  
+    query = f"""
+            SELECT user_id, user_first_name, user_last_name, school_id, currently_borrowed, days_due FROM library_user_days_due
+            WHERE school_id = {school_id}
+            """
     if form.validate_on_submit():
         first_name = form.first_name.data
         last_name = form.last_name.data
         days_due = form.days_due.data
-        query = f"""
-                SELECT user_id, user_first_name, user_last_name, currently_borrowed, days_due FROM library_user_days_due
-                WHERE days_due > 0;
-                """
+        if first_name: query += f' AND user_first_name like "%{first_name}%" '
+        if last_name: query += f' AND user_last_name like "%{last_name}%" '
+        if days_due: query += f' AND days_due >= {days_due} '
                 
-        
-        cur = db.connection.cursor()
-        cur.execute(query)
-        column_names = [i[0] for i in cur.description]
-        cur.close()
-        results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
-        print(results)
-        print("Hi")
+    query += f";"
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()
+    print(results)
+    print("Hi")
     
     return render_template("operator_search_owed_returns.html", pageTitle = "Search", form = form ,results=results)
 
