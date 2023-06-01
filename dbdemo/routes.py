@@ -312,7 +312,7 @@ def operator_search_owed_returns(user_ID):
     form = owed_returs_form()
     first_name = None
     last_name = None
-    days_due = None  
+    days_due = 1
     query = f"""
             SELECT user_id, user_first_name, user_last_name, school_id, currently_borrowed, days_due FROM library_user_days_due
             WHERE school_id = {school_id}
@@ -323,8 +323,8 @@ def operator_search_owed_returns(user_ID):
         days_due = form.days_due.data
         if first_name: query += f' AND user_first_name like "%{first_name}%" '
         if last_name: query += f' AND user_last_name like "%{last_name}%" '
-        if days_due: query += f' AND days_due >= {days_due} '
-                
+    
+    query += f' AND days_due >= {days_due} '           
     query += f";"
     cur = db.connection.cursor()
     cur.execute(query)

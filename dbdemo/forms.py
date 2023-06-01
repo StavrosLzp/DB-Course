@@ -42,7 +42,7 @@ class owed_returs_form(FlaskForm): #Όνομα, Επώνυμο, Ημέρες Κ�
     
     last_name = StringField(label = "Last Name")
 
-    days_due = IntegerField(label = "Days due", validators = [NumberRange(min = 0, max = 9999, message = "Days due")])
+    days_due = IntegerField(label = "Days due", validators = [NumberRange(min = 1, max = 9999, message = "Days due")])
 
     submit = SubmitField("Serch")
 
