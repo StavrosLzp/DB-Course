@@ -233,6 +233,7 @@ CREATE TABLE IF NOT EXISTS `review` (
   `review_text` VARCHAR(350) NULL DEFAULT NULL,
   `review_rating` INT NOT NULL,
   `review_date` DATE NOT NULL,
+  `review_status` ENUM('validated', 'pending_validation') NOT NULL DEFAULT 'pending_validation',
   `book_book_id` INT NOT NULL,
   `library_user_user_id` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`review_id`),

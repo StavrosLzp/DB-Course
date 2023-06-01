@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, IntegerField, DateField, TextAreaField, SelectField, RadioField
+from wtforms import StringField, SubmitField, IntegerField, DateField, TextAreaField, SelectField, RadioField, EmailField
 from wtforms.validators import DataRequired, Email, Optional, NumberRange
 
 # when passed as a parameter to a template, an object of this class will be rendered as a regular HTML form
@@ -11,6 +11,21 @@ class login(FlaskForm):
 
     password = StringField(label = "Password", validators = [DataRequired(message = "Password is a required field.")])
 
+    submit = SubmitField("Login")
+    
+class sign_up_form(FlaskForm):
+    username = StringField(label = "Username", validators = [DataRequired(message = "Username is a required field.")])
+
+    password = StringField(label = "Password", validators = [DataRequired(message = "Password is a required field.")])
+
+    email = EmailField(label = "Email", validators = [DataRequired(message = "Email is a required field.")])
+
+    school = SelectField(label = "School", validators = [DataRequired(message = "School is a required field.")])
+
+    first_name = StringField(label = "First Name", validators = [DataRequired(message = "First name is a required field.")])
+    
+    last_name = StringField(label = "Last Name", validators = [DataRequired(message = "Last name is a required field.")])
+    
     submit = SubmitField("Login")
     
 class loans_view(FlaskForm):

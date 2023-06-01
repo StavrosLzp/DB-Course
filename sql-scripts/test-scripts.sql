@@ -228,7 +228,8 @@ JOIN book b ON bc.book_book_id = b.book_id
 LEFT JOIN review r ON b.book_id = r.book_book_id
 left join library_user u ON u.user_id = r.library_user_user_id
 WHERE u.school_id = 1
-GROUP BY c.category_id;
+GROUP BY c.category_id
+order by average_rating desc;
 
 
 

@@ -5,8 +5,6 @@ from dbdemo.forms import *
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
-    cur = db.connection.cursor()
-    cur.close()
     username = None
     password = None
     role_id = 0
@@ -42,6 +40,12 @@ def index():
     else:
         return render_template("landing.html", pageTitle="Landing Page",
                                username=username, password=password, form=form)
+        
+ 
+@app.route("/sign_up", methods=['GET', 'POST'])
+def sign_up():
+    form = sign_up_form()
+    return render_template("sign_up.html", pageTitle="Landing Page", form=form, message = "Hi")
 
 
 @app.route("/admin_dash")
