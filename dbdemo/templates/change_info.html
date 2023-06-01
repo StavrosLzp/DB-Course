@@ -1,0 +1,38 @@
+{% extends "global_layout.html" %}
+{% block content %}
+<div class="container" id="row-container">
+    {% include "flash_messages.html" %}
+    <div class="row" id="row">
+        <div class="card" id="card-container">
+            <div class="card-body d-flex flex-column" id="card">
+                <h4 class="card-title">Update Information</h4>
+                <p class="card-text" id="paragraph">Make changes and press save</p>
+                <div class="mt-auto">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        {{form.username.label(class="form-label")}}
+                        {{form.username(class="form-control")}}
+                        {{form.password.label(class="form-label")}}
+                        {{form.password(class="form-control")}}
+                        {{form.first_name.label(class="form-label")}}
+                        {{form.first_name(class="form-control")}}
+                        {{form.last_name.label(class="form-label")}}
+                        {{form.last_name(class="form-control")}}
+                        {{form.school.label(class="form-label")}}
+                        {{form.school(class="form-control")}}
+                        {{form.birthdate.label(class="form-label")}}
+                        {{form.birthdate(class="form-control")}}
+                        <br />
+                        {{ form.submit(class="btn btn-primary") }}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="row">
+
+        <p class="card-text" id="paragraph">{{ message }}</p>
+
+    </div>
+</div>
+{% endblock content %}

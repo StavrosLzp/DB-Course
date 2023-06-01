@@ -560,6 +560,17 @@ def operator_average_rating(user_ID):
 
 @app.route("/user_dash/<int:ID>")
 def user(ID):
+
+    query = f"""SELECT role_id
+                FROM library_user
+                WHERE user_id='{ID}';
+                """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    rol = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    role=rol[0]['role_id']
+
     query = f"""SELECT book_title, borrowing_status FROM
                 borrowing JOIN book ON book_book_id=book_id 
                 WHERE library_user_user_id='{ID}'
@@ -571,9 +582,9 @@ def user(ID):
     book = [dict(zip(column_names, entry))
             for entry in cur.fetchall()]
     
-    query = f"""SELECT user_first_name, user_last_name 
-                FROM library_user 
-                WHERE user_id='{ID}';
+    query = f"""SELECT user_first_name, user_last_name, school_name, user_birthdate
+                FROM library_user JOIN school ON library_user.school_id=school.school_id
+                WHERE user_id={ID};
                 """
     cur = db.connection.cursor()
     cur.execute(query)
@@ -582,7 +593,97 @@ def user(ID):
             for entry in cur.fetchall()]
 
     return render_template("dash_user.html", pageTitle="User Dashboard",
-                           book=book,name=name,ID=ID)
+                           book=book,name=name,ID=ID,role=role)
+
+
+@app.route("/user_dash/teacher_update_info/<int:ID>", methods=['GET', 'POST'])
+def teacher_update_info(ID):
+    query = f"""
+            SELECT username, user_password, user_first_name, user_last_name, user_birthdate,school_id
+            FROM library_user
+            WHERE user_id='{ID}';
+            """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    info = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()
+
+    form=change_info_form()
+
+    cur = db.connection.cursor()
+    cur.execute('SELECT school_id, school_name FROM school;')
+    form.school.choices = list(cur.fetchall())
+    cur.close()
+
+    old_username = form.username.default = info[0]['username']
+    print(old_username)
+    old_password = form.password.default = info[0]['user_password']
+    old_first_name = form.first_name.default = info[0]['user_first_name']
+    old_last_name = form.last_name.default = info[0]['user_last_name']
+    old_school=form.school.default=info[0]['school_id']
+    old_birthdate = form.birthdate.default = info[0]['user_birthdate']
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        first_name = form.first_name.data
+        last_name = form.last_name.data
+        school = form.school.data
+        birthdate = form.birthdate.data
+
+        col = " "
+        val = " "
+        change = 0
+
+        if username!=old_username:
+            change+=1
+            col+='username '
+            val+=username +' '
+
+        if password!=old_password:
+            change+=1
+            col+='user_password '
+            val+=password +' '
+
+        if first_name!=old_first_name:
+            change+=1
+            col+='user_first_name '
+            val+=first_name +' '
+
+        if last_name!=old_last_name:
+            change+=1
+            col+='user_last_name '
+            val+=last_name + ' '
+
+        if school!=old_school:
+            change+=1
+            col+='school_id '
+            val+=school + ' ' 
+            
+        if birthdate!=old_birthdate:
+            change+=1
+            col+='user_birthdate '
+            val+=str(birthdate) + ' '
+
+        if change>0:
+            colum=col.split()
+            value=val.split()
+            result = ", ".join([f"{c} = '{v}'" for c, v in zip(colum, value)])
+            print(result)
+            query = f"""
+                    UPDATE library_user
+                    SET {result}
+                    WHERE user_id={ID};
+                    """
+            cur = db.connection.cursor()
+            cur.execute(query)
+            db.connection.commit()
+            cur.close()
+
+        return redirect(url_for('user', ID=ID))
+    form.process()
+    return render_template("change_info.html", pageTitle="Change Your Information",form=form)
+
 
 
 @app.route("/user_dash/reservation/<int:ID>", methods=['GET', 'POST'])
