@@ -217,12 +217,21 @@ def less_than_5_books_from_max():
 
 @app.route("/operator_dash/<int:user_ID>")
 def operator(user_ID):
-    return render_template("dash_operator.html", pageTitle="Operator Dashboard", user_ID = user_ID)
+    query = f"""SELECT user_first_name, user_last_name, school_id, user_id
+                FROM library_user 
+                WHERE user_id='{user_ID}';
+                """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    results = [dict(zip(column_names, entry))
+            for entry in cur.fetchall()]
+    return render_template("dash_operator.html", pageTitle="Operator Dashboard", user_ID = user_ID, results = results)
 
 @app.route("/operator_dash/<int:user_ID>/search_books", methods=['GET', 'POST'])
 def operator_show_books(user_ID):
     
-    # Get Admin school id 
+    # Get operator school id 
     query = f"""
             SELECT school_id from library_user 
             WHERE user_id = {user_ID};
@@ -300,7 +309,7 @@ def operator_search_owed_returns(user_ID):
     result = cur.fetchall()
     school_id = result[0][0]
     cur.close()
-    results = []
+    results = {}
     
     form = owed_returs_form()
     
@@ -313,14 +322,20 @@ def operator_search_owed_returns(user_ID):
         last_name = form.last_name.data
         days_due = form.days_due.data
         query = f"""
-                SELECT u.user_id, u.user_first_name, u.user_last_name, count(b.borrowing_id), max(datediff(curdate(), b.borrowing_date)) - 7 AS days_due from library_user u
-                left join borrowing b ON b.library_user_user_id = u.user_id
-                Where b.borrowing_status = "active"
-                group by u.user_id
-                order by days_due desc;
+                SELECT user_id, user_first_name, user_last_name, currently_borrowed, days_due FROM library_user_days_due
+                WHERE days_due > 0;
                 """
+                
+        
+        cur = db.connection.cursor()
+        cur.execute(query)
+        column_names = [i[0] for i in cur.description]
+        cur.close()
+        results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+        print(results)
+        print("Hi")
     
-    return render_template("operator_search_owed_returns.html", pageTitle = "Search", form = form ,results=conresults)
+    return render_template("operator_search_owed_returns.html", pageTitle = "Search", form = form ,results=results)
 
 
 

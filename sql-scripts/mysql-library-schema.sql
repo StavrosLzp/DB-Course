@@ -351,6 +351,11 @@ CREATE TABLE IF NOT EXISTS `Loans_per_school_admin_this_year` (`user_id` INT, `u
 CREATE TABLE IF NOT EXISTS `books_written_per_author` (`author_id` INT, `author_first_name` INT, `author_last_name` INT, `books_written` INT);
 
 -- -----------------------------------------------------
+-- Placeholder table for view `library_user_days_due`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `library_user_days_due` (`user_id` INT, `user_first_name` INT, `user_last_name` INT, `currently_borrowed` INT, `days_due` INT);
+
+-- -----------------------------------------------------
 -- View `Loans_per_school_admin_this_year`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `Loans_per_school_admin_this_year`;
@@ -375,6 +380,18 @@ left join book_author ba ON  ba.author_author_id = a1.author_id
 left join book b on b.book_id = ba.book_book_id
 group by a1.author_id
 order by a1.author_id asc;
+
+-- -----------------------------------------------------
+-- View `library_user_days_due`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `library_user_days_due`;
+USE `library`;
+CREATE  OR REPLACE VIEW `library_user_days_due` AS
+SELECT u.user_id, u.user_first_name, u.user_last_name, count(b.borrowing_id) AS currently_borrowed, max(datediff(curdate(), b.borrowing_date)) - 7 AS days_due from library_user u
+left join borrowing b ON b.library_user_user_id = u.user_id
+Where b.borrowing_status = "active"
+group by u.user_id
+order by days_due desc;
 USE `library`;
 
 DELIMITER $$
@@ -450,6 +467,18 @@ BEGIN
 		SET NEW.reservation_date = CURDATE();
 	END IF;
 END$$
+
+USE `library`$$
+CREATE TRIGGER DecreaseBookAmountTrigger AFTER UPDATE ON reservation
+FOR EACH ROW
+BEGIN
+  -- Check if the borrowing status has changed to "awaiting_pick_up"
+  IF new.reservation_status = 'awaiting_pick_up' AND OLD.reservation_status = 'on_hold' THEN
+	UPDATE school_book SET school_book_amount = school_book_amount + - 1
+	WHERE school_school_id = (SELECT school_id from library_user WHERE user_id = NEW.library_user_user_id)
+	AND book_book_id = NEW.book_book_id;
+  END IF;
+END;$$
 
 USE `library`$$
 CREATE TRIGGER reservation_delete_update_availability

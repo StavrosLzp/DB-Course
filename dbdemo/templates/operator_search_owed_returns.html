@@ -33,19 +33,18 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Days Due</th>
+                                <th>Student Name</th>
                                 <th>Number of Books owed</th>
+                                <th>MAX Days Due</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for result in results %}
                             <tr>
-                                <td> {{ result.book_id }} </td>
-                                <td> {{ result.book_title }} </td>
-                                <td> {{ result.author_name }} </td>
-                                <td> {{ result.school_book_amount }} </td>
+                                <td> {{ result.user_first_name }}  {{ result.user_last_name }} </td>
+                                <td> {{ result.currently_borrowed }} </td>
+                                <td> {{ result.days_due }} </td>
                             </tr>
                             {% endfor %}
                         </tbody>
