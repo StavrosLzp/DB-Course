@@ -11,5 +11,4 @@ OPERATOR:
 	*See reeservations
 	*Lend book
 	*Accept return of book
-	*Accept user review
 USER
