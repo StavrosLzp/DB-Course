@@ -1,6 +1,4 @@
 ADMIN:
-	*Insert school with info
-	*Accepts operator registration
 	*backup
 	*restore
 OPERATOR:
