@@ -246,7 +246,6 @@ def less_than_5_books_from_max():
     results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     return render_template("less_than_5_books_from_max.html", pageTitle="5 or more books away from most books written", results=results)
 
-
 @app.route("/admin_dash/add_school", methods=['GET', 'POST'])
 def add_school():
     form = school_form()
@@ -273,6 +272,50 @@ def add_school():
             flash(str(e), "danger")
             print(str(e))
     return render_template("add_school.html", pageTitle="Landing Page", form=form)
+
+@app.route("/admin_dash/activate_users", methods=['GET', 'POST'])
+def admin_activate_users():
+    
+    query = f"""SELECT user_id, username, user_first_name, user_last_name, user_birthdate
+                FROM library_user 
+                WHERE role_id = 5
+                """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()
+
+    return render_template("admin_activate_operator.html", pageTitle = "Search", results=results)
+
+@app.route('/admin_activate_user', methods=['GET', 'POST'])
+def admin_activate_user():
+    user_id = request.form['user_id']
+    role_id = request.form['role_id']
+    
+    query = f"""UPDATE library_user SET role_id = {role_id} WHERE user_id = {user_id}; """
+    try:
+        cur = db.connection.cursor()
+        cur.execute(query)
+        db.connection.commit()
+        cur.close()
+        return redirect(url_for('admin_activate_users'))
+    except Exception as error:
+        error_message = str(error)
+        return render_template("reserve_error.html", pageTitle="Error During Reservation",
+                           error=error_message)
+        
+@app.route('/admin_delete_user', methods=['GET', 'POST'])
+def admin_delete_user():
+    user_id = request.form['user_id']
+    query = f"""DELETE FROM library_user
+                WHERE user_id='{user_id}';           
+            """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    db.connection.commit()
+    cur.close()
+    return redirect(url_for('admin_activate_users'))
 
 @app.route("/operator_dash/<int:user_ID>")
 def operator(user_ID):
@@ -313,8 +356,8 @@ def operator_activate_users(user_ID):
     return render_template("operator_activate_users.html", pageTitle = "Search", results=results, user_ID=user_ID)
 
 
-@app.route('/activate_user/<int:user_ID>', methods=['GET', 'POST'])
-def activate_user(user_ID):
+@app.route('/op_activate_user/<int:user_ID>', methods=['GET', 'POST'])
+def op_activate_user(user_ID):
     user_id = request.form['user_id']
     role_id = request.form['role_id']
     
@@ -324,14 +367,14 @@ def activate_user(user_ID):
         cur.execute(query)
         db.connection.commit()
         cur.close()
-        return redirect(url_for('operator_activate_users', user_ID=user_ID))
+        return redirect(url_for('op_activate_users', user_ID=user_ID))
     except Exception as error:
         error_message = str(error)
         return render_template("reserve_error.html", pageTitle="Error During Reservation",
                            error=error_message)
         
-@app.route('/delete_user/<int:user_ID>', methods=['GET', 'POST'])
-def delete_user(user_ID):
+@app.route('/op_delete_user/<int:user_ID>', methods=['GET', 'POST'])
+def op_delete_user(user_ID):
     user_id = request.form['user_id']
     query = f"""DELETE FROM library_user
                 WHERE user_id='{user_id}';           
@@ -340,7 +383,7 @@ def delete_user(user_ID):
     cur.execute(query)
     db.connection.commit()
     cur.close()
-    return redirect(url_for('operator_activate_users', user_ID=user_ID))
+    return redirect(url_for('op_activate_users', user_ID=user_ID))
 
 
 

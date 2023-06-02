@@ -30,21 +30,14 @@
                                         <td> {{ result.user_first_name }} {{ result.user_last_name }} </td>
                                         <td> {{ result.user_birthdate }} </td>
                                         <td>
-                                            <form action="/op_activate_user/{{user_ID}}" method="POST">
+                                            <form action="/admin_activate_user" method="POST">
                                                 <input type="hidden" name="user_id" value="{{ result.user_id }}">
-                                                <input type="hidden" name="role_id" value="4">
-                                                <button type="submit">Activate Student</button>
+                                                <input type="hidden" name="role_id" value="2">
+                                                <button type="submit">Activate Operator</button>
                                             </form>
                                         </td>
                                         <td>
-                                            <form action="/op_activate_user/{{user_ID}}" method="POST">
-                                                <input type="hidden" name="user_id" value="{{ result.user_id }}">
-                                                <input type="hidden" name="role_id" value="3">
-                                                <button type="submit">Activate Teacher</button>
-                                            </form>
-                                        </td>
-                                        <td>
-                                            <form action="/op_delete_user/{{user_ID}}" method="POST">
+                                            <form action="/admin_delete_user" method="POST">
                                                 <input type="hidden" name="user_id" value="{{ result.user_id }}">
                                                 <button type="submit">Delete</button>
                                             </form>
