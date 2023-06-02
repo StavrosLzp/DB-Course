@@ -35,6 +35,21 @@ class loans_view(FlaskForm):
 
     submit = SubmitField("Search")
     
+class school_form(FlaskForm):
+    school_name = StringField(label = "School Name", validators = [DataRequired(message = "School Name is a required field.")])
+    
+    school_principal_name = StringField(label = "Principal Name", validators = [DataRequired(message = "Principal Name is a required field.")])
+    
+    school_mail_address = StringField(label = "School Mail Address", validators = [DataRequired(message = "School Mail Address is a required field.")])
+    
+    school_city = StringField(label = "School City", validators = [DataRequired(message = "School City is a required field.")])
+    
+    school_phone_number = StringField(label = "School Phone Number", validators = [DataRequired(message = "School Phone Number is a required field.")])
+    
+    school_email = EmailField(label = "School Email", validators = [DataRequired(message = "Principal Name is a required field."), Email()])
+    
+    submit = SubmitField("Add School")
+    
 class category(FlaskForm):
     category = StringField(label = "Category")
 

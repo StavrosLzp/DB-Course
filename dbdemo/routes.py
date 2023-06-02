@@ -247,6 +247,33 @@ def less_than_5_books_from_max():
     return render_template("less_than_5_books_from_max.html", pageTitle="5 or more books away from most books written", results=results)
 
 
+@app.route("/admin_dash/add_school", methods=['GET', 'POST'])
+def add_school():
+    form = school_form()
+    if form.validate_on_submit():
+        try:
+            school_name = form.school_name.data
+            school_principal_name = form.school_principal_name.data
+            school_mail_address = form.school_mail_address.data
+            school_city = form.school_city.data
+            school_phone_number = form.school_phone_number.data
+            school_email = form.school_email.data
+            query =  f"""
+                    INSERT INTO school (school_name,school_principal_name,school_mail_address,city,school_phone_number,school_email)
+                    VALUES ("{school_name}", "{school_principal_name}","{school_mail_address}", "{school_city}", "{school_phone_number}", "{school_email}");
+                    """
+            cur = db.connection.cursor()
+            print(query)
+            cur.execute(query)
+            db.connection.commit()
+            cur.close()
+            flash("Succesfull Insert", "success")
+            return redirect("/admin_dash")
+        except Exception as e: ## OperationalError
+            flash(str(e), "danger")
+            print(str(e))
+    return render_template("add_school.html", pageTitle="Landing Page", form=form)
+
 @app.route("/operator_dash/<int:user_ID>")
 def operator(user_ID):
     query = f"""SELECT user_first_name, user_last_name, school_id, user_id

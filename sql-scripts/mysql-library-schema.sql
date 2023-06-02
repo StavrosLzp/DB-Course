@@ -128,23 +128,15 @@ CREATE TABLE IF NOT EXISTS `school` (
   `school_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `school_name` VARCHAR(50) NOT NULL,
   `school_principal_name` VARCHAR(50) NOT NULL,
-  `library_admin_user_id` INT UNSIGNED NOT NULL,
   `school_mail_address` VARCHAR(70) NOT NULL,
   `city` VARCHAR(40) NOT NULL,
   `school_phone_number` VARCHAR(10) NOT NULL,
   `school_email` VARCHAR(50) NOT NULL,
-  PRIMARY KEY (`school_id`),
-  CONSTRAINT `fk_school_library_admin1`
-    FOREIGN KEY (`library_admin_user_id`)
-    REFERENCES `library_user` (`user_id`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE)
+  PRIMARY KEY (`school_id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
 CREATE UNIQUE INDEX `school_name_UNIQUE` ON `school` (`school_name` ASC) VISIBLE;
-
-CREATE UNIQUE INDEX `library_admin_user_id_UNIQUE` ON `school` (`library_admin_user_id` ASC) VISIBLE;
 
 
 -- -----------------------------------------------------
@@ -367,12 +359,12 @@ DROP TABLE IF EXISTS `Loans_per_school_admin_this_year`;
 USE `library`;
 CREATE  OR REPLACE VIEW `Loans_per_school_admin_this_year` AS
 SELECT op.user_id, op.user_first_name, op.user_last_name, COUNT(b.borrowing_id) AS borrowings_count from library_user op
-LEFT JOIN school s ON s.library_admin_user_id = op.user_id
+LEFT JOIN school s ON s.school_id = op.school_id
 LEFT JOIN library_user u ON s.school_id = u.school_id
 LEFT JOIN borrowing b ON u.user_id = b.library_user_user_id
-WHERE u.user_id <> 0
+WHERE op.role_id = 2
 AND YEAR(b.borrowing_date) = YEAR(NOW())
-GROUP BY s.school_id;
+GROUP BY op.user_id;
 
 -- -----------------------------------------------------
 -- View `books_written_per_author`

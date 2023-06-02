@@ -139,13 +139,36 @@ for i in range(len(roles)):
     
 
 
+SchoolNum = 5
+# School ---------------------------
+table_name = "school"
+table_columns = ["school_name", "school_principal_name",
+    "school_mail_address", "city", "school_phone_number", "school_email", ]
+content += f"\n"
+
+for i in range(SchoolNum): #as many schools as school admins
+    school_name = fake.company()
+    school_principal_name = fake.name()
+    school_admin_user_id = i+2 
+    school_mail_address = fake.email()
+    city = fake.city()
+    school_phone_number = str(random.randint(210,290)) + ("%07d" % random.randint(0,9999999))
+    school_email = fake.email()
+
+    content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
+        VALUES ("{school_name}", "{school_principal_name}", \
+            "{school_mail_address}", "{city}", "{school_phone_number}", "{school_email}");\n'
+    
+    
+    
+    
 # library_user ------------------------ Admins
 
 
-SchoolNum = 5
 DUMMY_DATA_NUMBER = SchoolNum+1
 table_name = "library_user"
 table_columns = ["username", "user_password","user_first_name","user_last_name","role_id","user_birthdate"]
+table_columns2 = ["username", "user_password","user_first_name","user_last_name","role_id","user_birthdate","school_id"]
 content += f"\n"
 
 # First Admin created is Central admin
@@ -161,32 +184,9 @@ for i in range(DUMMY_DATA_NUMBER):
             VALUES ("{username}", "{password}", "{firstName}", "{lastName}", "{role_id}", "{birth}");\n'
     else:
         role_id = 2 # school admin
-        content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-            VALUES ("{username}", "{password}", "{firstName}", "{lastName}", "{role_id}", "{birth}");\n'
-
-
-
-# School ---------------------------
-table_name = "school"
-table_columns = ["school_name", "school_principal_name", "library_admin_user_id", \
-    "school_mail_address", "city", "school_phone_number", "school_email", ]
-content += f"\n"
-
-for i in range(SchoolNum): #as many schools as school admins
-    school_name = fake.company()
-    school_principal_name = fake.name()
-    school_admin_user_id = i+2 
-    school_mail_address = fake.email()
-    city = fake.city()
-    school_phone_number = str(random.randint(210,290)) + ("%07d" % random.randint(0,9999999))
-    school_email = fake.email()
-
-    content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-        VALUES ("{school_name}", "{school_principal_name}", "{school_admin_user_id}", \
-            "{school_mail_address}", "{city}", "{school_phone_number}", "{school_email}");\n'
-    
-    # Set school_admin's school_id to correct value
-    content += f'UPDATE library_user SET school_id = {i+1} WHERE user_id = {school_admin_user_id};\n'
+        school_id = i
+        content += f'INSERT INTO {table_name} ({",".join(table_columns2)})\
+            VALUES ("{username}", "{password}", "{firstName}", "{lastName}", "{role_id}", "{birth}", "{school_id}");\n'
 
 
 # library_user ------------------------ Students
