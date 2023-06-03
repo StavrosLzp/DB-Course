@@ -302,15 +302,16 @@ table_columns = ["book_book_id", "library_user_user_id", "borrowing_date", "borr
 content += f"\n"
 
 # school_id = floor(i / studentsPerSchool) +1
-for  student in range(1,SchoolNum * studentsPerSchool+1):
-    user_id = SchoolNum + 1 + student
-    book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
-    date = fake.date_between_dates(datetime.date.today() - timedelta(days = 15),datetime.date.today())
-    if date > datetime.date.today() - timedelta(days = 11) : status = "active"
-    else : status = "returned"
-    
-    content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-        VALUES ("{book_id}", "{user_id}", "{date}", "{status}");\n'
+for i in range(2):
+    for  student in range(1,SchoolNum * studentsPerSchool+1):
+        user_id = SchoolNum + 1 + student
+        book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
+        date = fake.date_between_dates(datetime.date.today() - timedelta(days = 15),datetime.date.today())
+        if date > datetime.date.today() - timedelta(days = 11) : status = "active"
+        else : status = "returned"
+        
+        content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
+            VALUES ("{book_id}", "{user_id}", "{date}", "{status}");\n'
 
 for teacher in range(SchoolNum * studentsPerSchool+1,SchoolNum * studentsPerSchool+1+SchoolNum*TeachersPerSchool):
     user_id = SchoolNum + 1 +  teacher

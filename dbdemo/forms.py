@@ -85,6 +85,15 @@ class user_search(FlaskForm):
 
     submit = SubmitField("Search")
     
+class borrowing_search_form(FlaskForm):
+    first_name = StringField(label = "First Name")
+    
+    last_name = StringField(label = "Last Name")
+    
+    borrowing_status = SelectField(label = "Borrowing Status")
+    
+    submit = SubmitField("Search")
+    
     
 class avg_review(FlaskForm): 
     first_name = StringField(label = "First Name")

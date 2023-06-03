@@ -718,13 +718,70 @@ def operator_search_users_print_card(user_ID):
         column_names = [i[0] for i in cur.description]
         results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
         cur.close()
-        return render_template("user_card.html", pageTitle = "user_card", results=results)
+        return render_template("user_card.html", pageTitle = "user_card", results=results, user_ID=user_ID)
     except Exception as e: ## OperationalError
         flash(str(e), "danger")
         print(str(e))
         return redirect(url_for('operator_search_users', user_ID=user_ID))
+    
+    
+@app.route('/operator_dash/<int:user_ID>/borrowings', methods=['GET', 'POST'])
+def operator_borrowings(user_ID):
+    # Get operator school id 
+    query = f"""
+            SELECT school_id from library_user 
+            WHERE user_id = {user_ID};
+            """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    result = cur.fetchall()
+    school_id = result[0][0]
+    cur.close()
+    
+    form = borrowing_search_form()
+    first_name = None
+    last_name = None
+    form.borrowing_status.choices = [("---","---"),("active", "Active") ,("returned", "Returned")]
+    query = f"""
+            SELECT br.borrowing_id, br.borrowing_date, br.borrowing_status, b.book_title, u.user_first_name, u.user_last_name FROM borrowing br
+            LEFT JOIN book b ON b.book_id = br.book_book_id
+            LEFT JOIN library_user u ON u.user_id = br.library_user_user_id
+            WHERE u.school_id = {school_id}
+            """
+    if form.validate_on_submit():
+        first_name = form.first_name.data
+        last_name = form.last_name.data
+        borrowing_status = form.borrowing_status.data
+        if first_name: query += f' AND u.user_first_name like "%{first_name}%" '
+        if last_name: query += f' AND u.user_last_name like "%{last_name}%" '
+        if borrowing_status != "---" : query += f' AND borrowing_status = "{borrowing_status}" '
+            
+    query += f"ORDER BY br.borrowing_date desc;"
+    print (query)
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()
+    return render_template("operator_borrowings.html", pageTitle = "Search", form = form ,results=results, user_ID=user_ID)
 
-
+@app.route('/operator_verify_return/<int:user_ID>', methods=['GET', 'POST'])
+def operator_verify_return(user_ID):
+    borrowing_id = request.form['borrowing_id']
+    query = f"""UPDATE borrowing
+                SET borrowing_status = "returned"
+                WHERE borrowing_id='{borrowing_id}';           
+            """
+    try:
+        cur = db.connection.cursor()
+        cur.execute(query)
+        db.connection.commit()
+        cur.close()
+        return redirect(url_for('operator_borrowings', user_ID=user_ID))
+    except Exception as e: ## OperationalError
+        flash(str(e), "danger")
+        print(str(e))
+        return redirect(url_for('operator_borrowings', user_ID=user_ID))
 
 @app.route("/user_dash/<int:ID>")
 def user(ID):
