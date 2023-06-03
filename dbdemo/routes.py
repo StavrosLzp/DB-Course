@@ -511,8 +511,27 @@ def operator_show_books(user_ID):
     newresults=merge_fields(results,'author_first_name','author_last_name','author_name')
     results=consolidate(newresults,'book_id', 'book_title','author_name','category_name', 'school_book_amount')
     cur.close()
-        #return render_template("operator_show_books.html", pageTitle = "Create Grade", results=results)
-    return render_template("operator_search_books.html", pageTitle = "Search", form = form , results=results)
+    
+    # Book Loan function
+    form2 = books_loan()
+    book_id = None
+    username = None
+    if form2.validate_on_submit():
+        book_id = form2.book_id.data
+        username = form2.username.data
+        query = f"""INSERT INTO borrowing (borrowing_status, book_book_id, library_user_user_id)
+                    VALUES ('active', {book_id},(SELECT user_id FROM library_user WHERE username = "{username}"));          
+                """
+        try:
+            cur = db.connection.cursor()
+            cur.execute(query)
+            db.connection.commit()
+            cur.close()
+        except Exception as e: ## OperationalError
+            flash(str(e), "danger")
+            print(str(e))
+        
+    return render_template("operator_search_books.html", pageTitle = "Search", form = form, form2 = form2 , results=results)
 
 @app.route("/operator_dash/<int:user_ID>/search_owed_returns", methods=['GET', 'POST'])
 def operator_search_owed_returns(user_ID):
@@ -843,8 +862,6 @@ def operator_borrowing_from_reservation(user_ID):
         flash(str(e), "danger")
         print(str(e))
         return redirect(url_for('operator_reservations', user_ID=user_ID))
-
-
 
 
 

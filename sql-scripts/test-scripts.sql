@@ -273,13 +273,15 @@ INSERT INTO reservation (reservation_date, book_book_id, library_user_user_id)
 VALUES (CURDATE(), 1, 11);
 INSERT INTO borrowing (borrowing_status, book_book_id, library_user_user_id)
 VALUES ('active', 1, 11);
-select * from borrowing WHERE library_user_user_id = 11 order by borrowing_id desc;
+select * from borrowing WHERE library_user_user_id = 9 order by borrowing_id desc;
 UPDATE borrowing
 SET borrowing_status = "returned"
 WHERE library_user_user_id = 11;
 
 Select * from school_book WHERE book_book_id =1;
 
+INSERT INTO borrowing (borrowing_status, book_book_id, library_user_user_id)
+VALUES ('active', 1,(SELECT user_id FROM library_user WHERE username = "film"));
 
-
-
+select * from borrowing WHERE library_user_user_id = 9 order by borrowing_id desc;
+select * from library_user WHERE user_id = 9 ;

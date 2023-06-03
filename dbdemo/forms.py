@@ -67,6 +67,14 @@ class books_form(FlaskForm):
 
     submit = SubmitField("Show")
     
+    
+class books_loan(FlaskForm):
+    username = StringField(label = "Username", validators = [DataRequired(message = "Username is a required field.")])
+
+    book_id = StringField(label = "Book ID", validators = [DataRequired(message = "Book ID is a required field.")])
+
+    submit = SubmitField("Loan")
+    
 class owed_returs_form(FlaskForm): #Όνομα, Επώνυμο, Ημέρες Καθυστέρησης
     first_name = StringField(label = "First Name")
     
