@@ -601,7 +601,7 @@ def add_book(ID,school_id):
             #Book category, book author, book keyword
             check=auth.split()
             authors=convert_string_names_to_list_of_dictionaries(auth)
-            if len(check)<2:
+            if (len(check)%2)!=0:
                 raise Exception("Please enter at least one author's name and surname")
             categories=cat.split(',')
             for i in range(len(categories)):
@@ -833,7 +833,7 @@ def edit_book(ID,book_id):
 
 
     if form.validate_on_submit():
-        # try:
+        try:
             # Book table
             title = form.title.data
             isbn = form.isbn.data
@@ -1128,7 +1128,7 @@ def edit_book(ID,book_id):
                 cur.close()
 
             return redirect(f"/operator_dash/{ID}/search_books")
-        # except Exception as error:
+        except Exception as error:
             error_message = str(error)
             return render_template("edit_book.html", pageTitle = "Edit Book",form=form ,error_message=error_message,error=1)
     form.process()   
