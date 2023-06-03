@@ -23,3 +23,7 @@ Use `pip3 install <package_name>` to install each individual Python package (lib
     - (or run the sql files through mysql workbench)
 - Run run.py in the dbdemo folder
 - Connect to [the website](http://localhost:5000/)
+
+
+![image](https://github.com/StavrosLzp/DB-Course/assets/73658190/281b9d2b-dd0f-4a48-84ab-1e320163298d)
+
