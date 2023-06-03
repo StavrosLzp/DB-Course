@@ -1,21 +1,13 @@
 # DB-Course
 
-# To Do :
+## Dependencies
 
-* Για διαγραφή παλιών reservations κουμπί: 
-DELETE FROM reservation
-    WHERE DATEDIFF(NEW.reservation_date, reservation_date) > 7;
-* κουμπί για έλεγχο reservation on hold -> awaiting pick up
+ - [MySQL](https://www.mysql.com/) for Windows ** IMPORTANT!!! " C:\Program Files\MySQL\MySQL Server 8.0\bin " NEEDS TO BE ADDED TO PATH FOR BACKUPS TO WORK ** 
+ - [Python](https://www.python.org/downloads/), with the additional libraries:
+    - [Flask](https://flask.palletsprojects.com/en/2.0.x/)
+    - [Flask-MySQLdb](https://flask-mysqldb.readthedocs.io/en/latest/)
+    - [faker](https://faker.readthedocs.io/en/master/) (for data generation)
+    - [Flask-WTForms](https://flask-wtf.readthedocs.io/en/1.0.x/) and [email-validator](https://pypi.org/project/email-validator/) (a more involved method of input validation)
 
+Use `pip3 install <package_name>` to install each individual Python package (library) directly for the entire system, or create a virtual environment with the [`venv`](https://docs.python.org/3/library/venv.html) module. The necessary packages for this app are listed in `requirements.txt` and can be installed all together via `pip install -r requirements.txt`.
 
-https://www.youtube.com/watch?v=-O9NMdvWmE8
-
-![image](https://github.com/StavrosLzp/DB-Course/assets/73658190/c7e988e9-dc65-48a6-bcf9-fb0981eb9828)
-
-![image](https://github.com/StavrosLzp/DB-Course/assets/73658190/e7474e0b-8c2d-4067-86ef-844b6d689a00)
-
-![image](https://github.com/StavrosLzp/DB-Course/assets/73658190/cf8b0cd9-ec53-4fa4-b8c2-68329305b071)
-
-![image](https://github.com/StavrosLzp/DB-Course/assets/73658190/49ef7192-4656-42f8-9c41-2bfbfed54fce)
-
-![image](https://github.com/StavrosLzp/DB-Course/assets/73658190/aea7213b-6f73-4c53-8d7a-20363a189c78)
