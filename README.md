@@ -22,3 +22,4 @@ Use `pip3 install <package_name>` to install each individual Python package (lib
     - source C:...\DB-Course\sql-scripts\mysql-library-insert-data.sql;
     - (or run the sql files through mysql workbench)
 - Run run.py in the dbdemo folder
+- Connect to [the website]http://localhost:5000/
