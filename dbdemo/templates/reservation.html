@@ -105,6 +105,12 @@
                                 <button type="submit">Review</button>
                             </form>
                         </td>
+                        <td>
+                            <form action="/user_read_review" method="POST">
+                                <input type="hidden" name="book_id" value="{{ book.book_id }}">
+                                <button type="submit">Read Reviews</button>
+                            </form>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
