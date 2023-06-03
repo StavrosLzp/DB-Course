@@ -1309,6 +1309,25 @@ def user_review(ID,book_id):
                            rev=reviews,
                            form=form)
     
+@app.route('/user_read_review', methods=['GET', 'POST'])
+def user_read_review():
+    book_id = request.form['book_id']
+    query = f"""SELECT r.review_rating, r.review_text, u.username from review r
+                LEFT JOIN library_user u ON u.user_id = r.library_user_user_id
+                WHERE r.book_book_id = 1
+                ;           
+            """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    print("hi")
+    print(results)
+    cur.close()
+        
+
+    return render_template("user_read_review.html", pageTitle="Review", results = results)
+    
 
 @app.errorhandler(404)
 def page_not_found(e):

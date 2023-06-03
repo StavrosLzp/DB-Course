@@ -18,30 +18,15 @@
                         </td>
                         {% endif %}
                     </p>
-                    <div class="mt-auto">
+                    {% for result in name %}
+                    <tr>
+                        <p class="card-text paragraph-custom">Name : {{ result.user_first_name }}</p> 
+                        <p class="card-text paragraph-custom">Surname : {{ result.user_last_name }} </p>
+                        <p class="card-text paragraph-custom">Date of Birth : {{ result.user_birthdate }}</p> 
+                        <p class="card-text paragraph-custom">School : {{ result.school_name }} </p>
+                    </tr>
+                    {% endfor %}
 
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Surname</th>
-                                    <th>Date of Birth</th>
-                                    <th>School</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for result in name %}
-                                <tr>
-                                    <td> {{ result.user_first_name }} </td>
-                                    <td> {{ result.user_last_name }} </td>
-                                    <td> {{ result.user_birthdate }} </td>
-                                    <td> {{ result.school_name }} </td>
-                                </tr>
-                                {% endfor %}
-
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
             </div>
         </div>

@@ -398,7 +398,7 @@ AFTER DELETE ON book_author
 FOR EACH ROW
 BEGIN
 	IF NOT EXISTS(SELECT * FROM book_author WHERE author_author_id = OLD.author_author_id) THEN
-		DELETE FROM author WHERE author_id = OLD.author_author_id;
+		DELETE FROM author WHERE author_author_id = OLD.author_author_id;
     END IF;
 END$$
 
