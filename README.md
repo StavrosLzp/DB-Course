@@ -11,3 +11,14 @@
 
 Use `pip3 install <package_name>` to install each individual Python package (library) directly for the entire system, or create a virtual environment with the [`venv`](https://docs.python.org/3/library/venv.html) module. The necessary packages for this app are listed in `requirements.txt` and can be installed all together via `pip install -r requirements.txt`.
 
+
+## Instalation guide
+
+- Clone repository through git or GitHub Desktop 
+- Make sure all dependenies are met
+- Run the following :
+ - myslq -u root -p
+ - source C:...\DB-Course\sql-scripts\mysql-library-schema.sql;
+ - source C:...\DB-Course\sql-scripts\mysql-library-insert-data.sql;
+ - (or run the sql files through mysql workbench)
+-
