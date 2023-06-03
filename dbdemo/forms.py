@@ -129,7 +129,7 @@ class change_info_form(FlaskForm):
 class add_book_form(FlaskForm):
     title = StringField(label = "Title", validators = [DataRequired(message = "Title is a required field.")])
 
-    ISBN = StringField(label = "ISBN", validators = [DataRequired(message = "ISBN is a required field.")])
+    isbn = StringField(label = "ISBN", validators = [DataRequired(message = "ISBN is a required field.")])
 
     pages = IntegerField(label = "Number of pages", validators = [DataRequired(message = "Number of pages is a required field.")])
 

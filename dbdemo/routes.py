@@ -511,10 +511,204 @@ def operator_show_books(user_ID):
         #return render_template("operator_show_books.html", pageTitle = "Create Grade", results=results)
     return render_template("operator_search_books.html", pageTitle = "Search", form = form , results=results)
 
-@app.route('/operator_dash/add_book/<int:school_id>', methods=['GET', 'POST'])
-def add_book(school_id):
+@app.route('/operator_dash/<int:ID>/add_book/<int:school_id>', methods=['GET', 'POST'])
+def add_book(ID,school_id):
     form = add_book_form()
-    return render_template("add_book.html", pageTitle = "Add Book",form=form )
+    if form.validate_on_submit():
+        try:
+            # Book table
+            title = form.title.data
+            isbn = form.isbn.data
+            pages = form.pages.data
+            language = form.language.data
+            # Author table
+            auth = form.authors.data
+            # Publisher table
+            publisher = form.publisher.data
+            # Category table
+            cat = form.categories.data
+            # Keywords table
+            keyw = form.keywords.data
+            # School Book table
+            copies = form.copies.data
+            #Book category, book author, book keyword
+            authors=convert_string_names_to_list_of_dictionaries(auth)
+            categories=cat.split(',')
+            for i in range(len(categories)):
+                categories[i] = categories[i].replace(" ", "")
+
+            keywords=keyw.split(',')
+            for i in range(len(keywords)):
+                keywords[i] = keywords[i].replace(" ", "")
+
+            print(categories)
+            print(keywords)
+
+            # Inserting book
+            query =f"""INSERT INTO book (book_ISBN, book_title, book_page_no, book_language)
+                    VALUES ('{isbn}','{title}','{pages}','{language}');        
+                    """
+            cur = db.connection.cursor()
+            cur.execute(query)
+            db.connection.commit()
+            cur.close()
+
+            # Checking for new authors to insert
+            query =f"""SELECT  author_first_name, author_last_name
+                        FROM author;         
+                    """
+            cur = db.connection.cursor()
+            cur.execute(query)
+            column_names = [i[0] for i in cur.description]
+            old_authors = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+            cur.close()
+            for a in authors:
+                if not is_item_in_table(a,old_authors):
+                    query =f"""INSERT INTO author (author_first_name, author_last_name)
+                                VALUES ('{a['author_first_name']}', '{a['author_last_name']}');        
+                            """
+                    cur = db.connection.cursor()
+                    cur.execute(query)
+                    db.connection.commit()
+                    cur.close()
+            
+            # Finding book_id
+            query =f"""SELECT book_id FROM book WHERE book_title = '{title}';        
+                    """
+            cur = db.connection.cursor()
+            cur.execute(query)
+            column_names = [i[0] for i in cur.description]
+            booid = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+            cur.close()
+            book_id=booid[0]['book_id']
+
+            # Inserting book-author relationship
+            for a in authors:
+                query =f"""SELECT author_id 
+                        FROM author 
+                        WHERE author_first_name='{a['author_first_name']}'
+                        AND author_last_name='{a['author_last_name']}';        
+                        """
+                cur = db.connection.cursor()
+                cur.execute(query)
+                column_names = [i[0] for i in cur.description]
+                autid = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+                cur.close()
+                author_id=autid[0]['author_id']
+                
+                query =f"""INSERT INTO book_author (book_book_id, author_author_id)
+                            VALUES ('{book_id}', '{author_id}');        
+                        """
+                cur = db.connection.cursor()
+                cur.execute(query)
+                db.connection.commit()
+                cur.close()
+
+            # Checking for new categories to insert
+            query =f"""SELECT  category_name
+                        FROM category;         
+                    """
+            cur = db.connection.cursor()
+            cur.execute(query)
+            column_names = [i[0] for i in cur.description]
+            old_cat = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+            old_categories=extract_field_values(old_cat, 'category_name')
+            cur.close()
+            for c in categories:
+                if not is_item_in_table(c,old_categories):
+                    query =f"""INSERT INTO category (category_name)
+                                VALUES ('{c}');        
+                            """
+                    cur = db.connection.cursor()
+                    cur.execute(query)
+                    db.connection.commit()
+                    cur.close()
+        
+            #  Inserting book-category relationship
+            for c in categories:
+                query =f"""SELECT category_id 
+                        FROM category 
+                        WHERE category_name='{c}';        
+                        """
+                cur = db.connection.cursor()
+                cur.execute(query)
+                column_names = [i[0] for i in cur.description]
+                cat_id = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+                cur.close()
+                category_id=cat_id[0]['category_id']
+                
+                query =f"""INSERT INTO book_category (book_book_id, category_category_id)
+                            VALUES ('{book_id}', '{category_id}');        
+                        """
+                cur = db.connection.cursor()
+                cur.execute(query)
+                db.connection.commit()
+                cur.close()
+
+            # Checking for new keywords to insert
+            query =f"""SELECT  keyword_name
+                        FROM keyword;         
+                    """
+            cur = db.connection.cursor()
+            cur.execute(query)
+            column_names = [i[0] for i in cur.description]
+            old_keyw = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+            old_keyword=extract_field_values(old_keyw, 'keyword_name')
+            cur.close()
+            for k in keywords:
+                if not is_item_in_table(k,old_keyword):
+                    query =f"""INSERT INTO keyword (keyword_name)
+                                VALUES ('{k}');        
+                            """
+                    cur = db.connection.cursor()
+                    cur.execute(query)
+                    db.connection.commit()
+                    cur.close()
+        
+            #  Inserting book-keyword relationship
+            for k in keywords:
+                query =f"""SELECT keyword_id 
+                        FROM keyword 
+                        WHERE keyword_name='{k}';        
+                        """
+                cur = db.connection.cursor()
+                cur.execute(query)
+                column_names = [i[0] for i in cur.description]
+                keyw_id = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+                cur.close()
+                keyword_id=keyw_id[0]['keyword_id']
+                
+                query =f"""INSERT INTO book_keyword (book_book_id, keyword_keyword_id)
+                            VALUES ('{book_id}', '{keyword_id}');        
+                        """
+                cur = db.connection.cursor()
+                cur.execute(query)
+                db.connection.commit()
+                cur.close()
+
+            # Inserting into publisher
+            query =f"""INSERT INTO publisher (publisher_name, book_book_id)
+                            VALUES ('{publisher}', '{book_id}');        
+                        """
+            cur = db.connection.cursor()
+            cur.execute(query)
+            db.connection.commit()
+            cur.close()
+
+            # Inserting into school_book
+            query =f"""INSERT INTO school_book (school_school_id, school_book_amount, book_book_id)
+                            VALUES ('{school_id}', '{copies}', '{book_id}');        
+                        """
+            cur = db.connection.cursor()
+            cur.execute(query)
+            db.connection.commit()
+            cur.close()
+            return redirect('/operator_dash/'+ str(ID))
+        except Exception as error:
+            error_message = str(error)
+            return render_template("add_book.html", pageTitle = "Add Book",form=form ,error_message=error_message,error=1)
+        
+    return render_template("add_book.html", pageTitle = "Add Book",form=form,error=0)
 
 
 @app.route("/operator_dash/<int:user_ID>/search_owed_returns", methods=['GET', 'POST'])
@@ -1084,7 +1278,7 @@ def consolidate(lst, field_name, *fields):
 # [{'first_name': 'John', 'last_name': 'Doe'}, 
 # {'first_name': 'Jane', 'last_name': 'Smith'}, 
 # {'first_name': 'Alice', 'last_name': 'Brown'}]
-def convert_string_to_list_of_dictionaries(input_string):
+def convert_string_names_to_list_of_dictionaries(input_string):
     result = []
     entries = input_string.split(',')
 
@@ -1092,6 +1286,21 @@ def convert_string_to_list_of_dictionaries(input_string):
         names = entry.strip().split(' ')
         if len(names) == 2:
             first_name, last_name = names
-            result.append({"first_name": first_name, "last_name": last_name})
+            result.append({"author_first_name": first_name, "author_last_name": last_name})
+
+    return result
+
+def is_item_in_table(item, table):
+    for i in table:
+        if i == item:
+            return True
+    return False
+
+def extract_field_values(dictionaries_list, field_name):
+    result = []
+
+    for dictionary in dictionaries_list:
+        if field_name in dictionary:
+            result.append(dictionary[field_name])
 
     return result

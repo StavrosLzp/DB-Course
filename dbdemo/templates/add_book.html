@@ -2,6 +2,20 @@
 {% block content %}
 <div class="container" id="row-container">
     {% include "flash_messages.html" %}
+
+    {% if error %}
+    <div class="col-md-12">
+        <div class="card" id="card-container-layout">
+            <div class="card-body" id="card">
+                <h4 class="card-title">ERROR</h4>
+                <div class="card-text paragraph-custom">
+                    {{error_message}}
+
+                </div>
+            </div>
+        </div>
+    </div>
+    {%endif%}
     <div class="row" id="row">
         <div class="card" id="card-container">
             <div class="card-body d-flex flex-column" id="card">
@@ -14,8 +28,8 @@
                         {{form.title.label(class="form-label")}}
                         {{form.title(class="form-control")}}
 
-                        {{form.ISBN.label(class="form-label")}}
-                        {{form.ISBN(class="form-control")}}
+                        {{form.isbn.label(class="form-label")}}
+                        {{form.isbn(class="form-control")}}
 
                         {{form.pages.label(class="form-label")}}
                         {{form.pages(class="form-control")}}
