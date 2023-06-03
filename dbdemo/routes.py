@@ -790,6 +790,18 @@ def user_edit_reviews(ID):
         
     return render_template("user_edit_review.html", pageTitle="Landing Page", form=form)
 
+@app.route('/delete_review_user/<int:ID>', methods=['GET', 'POST'])
+def delete_review_user(ID):
+    review_id = request.form['review_id']
+    query = f"""DELETE FROM review
+                WHERE review_id='{review_id}';           
+            """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    db.connection.commit()
+    cur.close()
+    return redirect(url_for('user_reviews', ID = ID))
+
 
 @app.route('/operator_dash/<int:ID>/edit_book/<int:book_id>', methods=['GET', 'POST'])
 def edit_book(ID,book_id):
