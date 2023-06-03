@@ -285,3 +285,14 @@ VALUES ('active', 1,(SELECT user_id FROM library_user WHERE username = "film"));
 
 select * from borrowing WHERE library_user_user_id = 9 order by borrowing_id desc;
 select * from library_user WHERE user_id = 9 ;
+
+-- book author delete test
+
+select * from author;
+select * from book_author WHERE author_author_id = 21;
+DELETE from book_author WHERE author_author_id = 21;
+
+
+
+
+

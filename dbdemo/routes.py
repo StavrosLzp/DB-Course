@@ -317,6 +317,18 @@ def admin_delete_user():
     cur.close()
     return redirect(url_for('admin_activate_users'))
 
+@app.route('/admin_backup', methods=['GET', 'POST'])
+def admin_backup():
+
+    return redirect(url_for('admin'))
+
+@app.route('/admin_restore', methods=['GET', 'POST'])
+def admin_backup():
+
+    return redirect(url_for('admin'))
+
+#########################################################
+
 @app.route("/operator_dash/<int:user_ID>")
 def operator(user_ID):
     query = f"""SELECT user_first_name, user_last_name, school_id, user_id

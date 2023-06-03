@@ -393,6 +393,16 @@ USE `library`;
 
 DELIMITER $$
 USE `library`$$
+CREATE TRIGGER delete_author_if_all_books_deleted
+AFTER DELETE ON book_author
+FOR EACH ROW
+BEGIN
+	IF NOT EXISTS(SELECT * FROM book_author WHERE author_author_id = OLD.author_author_id) THEN
+		DELETE FROM author WHERE author_id = OLD.author_author_id;
+    END IF;
+END$$
+
+USE `library`$$
 CREATE TRIGGER user_Role_default
 BEFORE INSERT ON library_user
 FOR EACH ROW
