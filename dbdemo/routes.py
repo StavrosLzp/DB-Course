@@ -804,9 +804,9 @@ def operator_reservations(user_ID):
     last_name = None
     form.borrowing_status.choices = [("---","---"),("active", "Active") ,("returned", "Returned")]
     query = f"""
-            SELECT br.borrowing_id, br.borrowing_date, br.borrowing_status, b.book_title, u.user_first_name, u.user_last_name FROM borrowing br
-            LEFT JOIN book b ON b.book_id = br.book_book_id
-            LEFT JOIN library_user u ON u.user_id = br.library_user_user_id
+            SELECT r.reservation_id, r.reservation_date, r.reservation_status, b.book_title, u.user_first_name, u.user_last_name FROM reservation r
+            LEFT JOIN book b ON b.book_id = r.book_book_id
+            LEFT JOIN library_user u ON u.user_id = r.library_user_user_id
             WHERE u.school_id = {school_id}
             """
     if form.validate_on_submit():
@@ -815,16 +815,16 @@ def operator_reservations(user_ID):
         borrowing_status = form.borrowing_status.data
         if first_name: query += f' AND u.user_first_name like "%{first_name}%" '
         if last_name: query += f' AND u.user_last_name like "%{last_name}%" '
-        if borrowing_status != "---" : query += f' AND borrowing_status = "{borrowing_status}" '
+        #if borrowing_status != "---" : query += f' AND borrowing_status = "{borrowing_status}" '
             
-    query += f"ORDER BY br.borrowing_date desc;"
+    query += f"ORDER BY r.reservation_date desc;"
     print (query)
     cur = db.connection.cursor()
     cur.execute(query)
     column_names = [i[0] for i in cur.description]
     results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     cur.close()
-    return render_template("operator_borrowings.html", pageTitle = "Search", form = form ,results=results, user_ID=user_ID)
+    return render_template("operator_reservations.html", pageTitle = "Search", form = form ,results=results, user_ID=user_ID)
 
 
 

@@ -261,12 +261,23 @@ select * from library_user WHERE role_id =2;
 
 
 -- borowing
-SELECT br.borrowing_date, br.borrowing_status, b.book_title, u.user_first_name, u.user_last_name FROM borrowing br
+SELECT br.borrowing_id, br.borrowing_date, br.borrowing_status, b.book_title, u.user_first_name, u.user_last_name FROM borrowing br
 LEFT JOIN book b ON b.book_id = br.book_book_id
 LEFT JOIN library_user u ON u.user_id = br.library_user_user_id
 WHERE u.school_id = 2 
 AND borrowing_status = "active"
 ;
+
+
+INSERT INTO reservation (reservation_date, book_book_id, library_user_user_id)
+VALUES (CURDATE(), 1, 11);
+INSERT INTO borrowing (borrowing_date, borrowing_status, book_book_id, library_user_user_id)
+VALUES (CURDATE(), 'active', 1, 11);
+select * from borrowing WHERE library_user_user_id = 11 order by borrowing_id desc;
+UPDATE borrowing
+SET borrowing_status = "returned"
+WHERE library_user_user_id = 11;
+
 
 
 
