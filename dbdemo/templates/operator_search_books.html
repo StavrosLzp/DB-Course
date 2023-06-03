@@ -3,7 +3,7 @@
 <div class="container" id="row-container">
     {% include "flash_messages.html" %}
     <div class="row" id="row">
-        <div class="col-md-12">
+        <div class="col-md-6">
             <div class="card" id="card-container-layout">
                 <div class="card-body" id="card">
                     <h4 class="card-title">Search Page</h4>
@@ -22,6 +22,26 @@
                         {{form.book_copies(class="form-control")}}
                         <br/>
                         {{ form.submit(class="btn btn-primary") }}
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card" id="card-container-layout">
+                <div class="card-body" id="card">
+                    <h4 class="card-title">Loan a book</h4>
+                    <p class="card-text" id="paragraph">Enter necessary data to loan a book</p>
+                    <div class="mt-auto">
+                    <form method="POST">
+                        {{ form2.hidden_tag() }}
+
+                        {{form2.book_id.label(class="form-label")}}
+                        {{form2.book_id(class="form-control")}}
+                        {{form2.username.label(class="form-label")}}
+                        {{form2.username(class="form-control")}}
+                        <br/>
+                        {{ form2.submit(class="btn btn-primary") }}
                     </form>
                     </div>
                 </div>

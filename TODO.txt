@@ -4,8 +4,4 @@ ADMIN:
 OPERATOR:
 	*Insert book
 	*Alter book
-	*See borrowings
-	*See reeservations
-	*Lend book
-	*Accept return of book
 USER

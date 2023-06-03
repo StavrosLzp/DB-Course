@@ -317,6 +317,41 @@ def admin_delete_user():
     cur.close()
     return redirect(url_for('admin_activate_users'))
 
+@app.route('/admin_backup', methods=['GET', 'POST'])
+def admin_backup():
+    cur = db.connection.cursor()
+    # Getting all the table names
+    cur.execute('SHOW TABLES;')
+    table_names = []
+    for record in cur.fetchall():
+        table_names.append(record[0])
+    
+    database = "library"
+    # Create new DB
+    backup_dbname = database + '_backup'
+    cur.execute(f'DROP SCHEMA IF EXISTS `{backup_dbname}` ;')
+    try:
+        cur.execute(f'CREATE DATABASE {backup_dbname}')
+    except Exception as e: ## OperationalError
+        flash(str(e), "danger")
+
+    cur.execute(f'USE {backup_dbname}')
+    
+    # Copy tables
+    for table_name in table_names:
+        cur.execute(f'CREATE TABLE {table_name} SELECT * FROM {database}.{table_name}')
+    
+    cur.close()
+    flash("Backup Succesfull" ,"success")
+    return redirect(url_for('admin'))
+
+@app.route('/admin_restore', methods=['GET', 'POST'])
+def admin_restore():
+
+    return redirect(url_for('admin'))
+
+#########################################################
+
 @app.route("/operator_dash/<int:user_ID>")
 def operator(user_ID):
     query = f"""SELECT user_first_name, user_last_name, school_id, user_id
@@ -474,42 +509,64 @@ def operator_show_books(user_ID):
     book_title = None
     book_category = None
     book_author = None  
+    book_copies = None
+    query=f"""
+             SELECT b.book_id, b.book_title, sb.school_book_amount, a.author_first_name, a.author_last_name FROM book b
+                left join school_book sb on b.book_id = sb.book_book_id 
+                left join book_category bc on b.book_id = bc.book_book_id 
+                left join category c on c.category_id = bc.category_category_id
+                left join book_author ba on b.book_id = ba.book_book_id 
+                left join author a on a.author_id = ba.author_author_id 
+                WHERE sb.school_school_id = {school_id}
+            """
     if form.validate_on_submit():
         book_title = form.book_title.data
         book_category = form.book_category.data
-        print(book_category)
         book_author = form.book_author.data
         book_copies = form.book_copies.data
-        query = f"""
-                SELECT b.book_id, b.book_title, sb.school_book_amount, a.author_first_name, a.author_last_name FROM book b
-                left join school_book sb on b.book_id = sb.book_book_id 
-                """
-        if book_category : 
-            query +="""left join book_category bc on b.book_id = bc.book_book_id 
-                left join category c on c.category_id = bc.category_category_id"""
-        query +="""left join book_author ba on b.book_id = ba.book_book_id 
-                left join author a on a.author_id = ba.author_author_id """         
-        query +=f"""
-                WHERE sb.school_school_id = {school_id}
-                AND b.book_title like "%{book_title}%" 
-                """
-        if book_author: query += f"AND ba.author_author_id = {book_author} \n"
+
+        if book_title:
+            query += f"""AND b.book_title like "%{book_title}%" """
+
+        if book_author: 
+            query += f"AND ba.author_author_id = {book_author} "
                 
-        if book_category : query += f"AND bc.category_category_id = {book_category} \n"
-        query += f"""
-                AND sb.school_book_amount >= {book_copies}
-                order by book_id;
+        if book_category : 
+            query += f"AND bc.category_category_id = {book_category} "
+            
+        if book_copies:
+            query += f"AND sb.school_book_amount >= {book_copies} "
+            
+    query += f"""order by book_id;"""
+    print(query)
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    newresults=merge_fields(results,'author_first_name','author_last_name','author_name')
+    results=consolidate(newresults,'book_id', 'book_title','author_name','category_name', 'school_book_amount')
+    cur.close()
+    
+    # Book Loan function
+    form2 = books_loan()
+    book_id = None
+    username = None
+    if form2.validate_on_submit():
+        book_id = form2.book_id.data
+        username = form2.username.data
+        query = f"""INSERT INTO borrowing (borrowing_status, book_book_id, library_user_user_id)
+                    VALUES ('active', {book_id},(SELECT user_id FROM library_user WHERE username = "{username}"));          
                 """
-        print(query)
-        cur = db.connection.cursor()
-        cur.execute(query)
-        column_names = [i[0] for i in cur.description]
-        results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
-        newresults=merge_fields(results,'author_first_name','author_last_name','author_name')
-        results=consolidate(newresults,'book_id', 'book_title','author_name','category_name', 'school_book_amount')
-        cur.close()
-        #return render_template("operator_show_books.html", pageTitle = "Create Grade", results=results)
-    return render_template("operator_search_books.html", pageTitle = "Search", form = form , results=results)
+        try:
+            cur = db.connection.cursor()
+            cur.execute(query)
+            db.connection.commit()
+            cur.close()
+        except Exception as e: ## OperationalError
+            flash(str(e), "danger")
+            print(str(e))
+        
+    return render_template("operator_search_books.html", pageTitle = "Search", form = form, form2 = form2 , results=results)
 
 @app.route('/operator_dash/<int:ID>/add_book/<int:school_id>', methods=['GET', 'POST'])
 def add_book(ID,school_id):
@@ -918,11 +975,128 @@ def operator_search_users_print_card(user_ID):
         column_names = [i[0] for i in cur.description]
         results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
         cur.close()
-        return render_template("user_card.html", pageTitle = "user_card", results=results)
+        return render_template("user_card.html", pageTitle = "user_card", results=results, user_ID=user_ID)
     except Exception as e: ## OperationalError
         flash(str(e), "danger")
         print(str(e))
         return redirect(url_for('operator_search_users', user_ID=user_ID))
+    
+    
+@app.route('/operator_dash/<int:user_ID>/borrowings', methods=['GET', 'POST'])
+def operator_borrowings(user_ID):
+    # Get operator school id 
+    query = f"""
+            SELECT school_id from library_user 
+            WHERE user_id = {user_ID};
+            """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    result = cur.fetchall()
+    school_id = result[0][0]
+    cur.close()
+    
+    form = borrowing_search_form()
+    first_name = None
+    last_name = None
+    form.borrowing_status.choices = [("---","---"),("active", "Active") ,("returned", "Returned")]
+    query = f"""
+            SELECT br.borrowing_id, br.borrowing_date, br.borrowing_status, b.book_title, u.user_first_name, u.user_last_name FROM borrowing br
+            LEFT JOIN book b ON b.book_id = br.book_book_id
+            LEFT JOIN library_user u ON u.user_id = br.library_user_user_id
+            WHERE u.school_id = {school_id}
+            """
+    if form.validate_on_submit():
+        first_name = form.first_name.data
+        last_name = form.last_name.data
+        borrowing_status = form.borrowing_status.data
+        if first_name: query += f' AND u.user_first_name like "%{first_name}%" '
+        if last_name: query += f' AND u.user_last_name like "%{last_name}%" '
+        if borrowing_status != "---" : query += f' AND borrowing_status = "{borrowing_status}" '
+            
+    query += f"ORDER BY br.borrowing_date desc;"
+    print (query)
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()
+    return render_template("operator_borrowings.html", pageTitle = "Search", form = form ,results=results, user_ID=user_ID)
+
+@app.route('/operator_verify_return/<int:user_ID>', methods=['GET', 'POST'])
+def operator_verify_return(user_ID):
+    borrowing_id = request.form['borrowing_id']
+    query = f"""UPDATE borrowing
+                SET borrowing_status = "returned"
+                WHERE borrowing_id='{borrowing_id}';           
+            """
+    try:
+        cur = db.connection.cursor()
+        cur.execute(query)
+        db.connection.commit()
+        cur.close()
+        return redirect(url_for('operator_borrowings', user_ID=user_ID))
+    except Exception as e: ## OperationalError
+        flash(str(e), "danger")
+        print(str(e))
+        return redirect(url_for('operator_borrowings', user_ID=user_ID))
+
+@app.route('/operator_dash/<int:user_ID>/reservations', methods=['GET', 'POST'])
+def operator_reservations(user_ID):
+    # Get operator school id 
+    query = f"""
+            SELECT school_id from library_user 
+            WHERE user_id = {user_ID};
+            """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    result = cur.fetchall()
+    school_id = result[0][0]
+    cur.close()
+    
+    form = borrowing_search_form()
+    first_name = None
+    last_name = None
+    form.borrowing_status.choices = [("---","---"),("active", "Active") ,("returned", "Returned")]
+    query = f"""
+            SELECT r.reservation_id, r.reservation_date, r.reservation_status, b.book_title, b.book_id, u.user_id, u.user_first_name, u.user_last_name FROM reservation r
+            LEFT JOIN book b ON b.book_id = r.book_book_id
+            LEFT JOIN library_user u ON u.user_id = r.library_user_user_id
+            WHERE u.school_id = {school_id}
+            """
+    if form.validate_on_submit():
+        first_name = form.first_name.data
+        last_name = form.last_name.data
+        borrowing_status = form.borrowing_status.data
+        if first_name: query += f' AND u.user_first_name like "%{first_name}%" '
+        if last_name: query += f' AND u.user_last_name like "%{last_name}%" '
+        #if borrowing_status != "---" : query += f' AND borrowing_status = "{borrowing_status}" '
+            
+    query += f"ORDER BY r.reservation_date desc;"
+    print (query)
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()
+    return render_template("operator_reservations.html", pageTitle = "Search", form = form ,results=results, user_ID=user_ID)
+
+@app.route('/operator_borrowing_from_reservation/<int:user_ID>', methods=['GET', 'POST'])
+def operator_borrowing_from_reservation(user_ID):
+    book_id = request.form['book_id']
+    user_id = request.form['user_id']
+    query = f"""INSERT INTO borrowing (borrowing_status, book_book_id, library_user_user_id)
+                VALUES ('active', {book_id}, {user_id});;           
+            """
+    try:
+        cur = db.connection.cursor()
+        cur.execute(query)
+        db.connection.commit()
+        cur.close()
+        return redirect(url_for('operator_reservations', user_ID=user_ID))
+    except Exception as e: ## OperationalError
+        flash(str(e), "danger")
+        print(str(e))
+        return redirect(url_for('operator_reservations', user_ID=user_ID))
 
 
 

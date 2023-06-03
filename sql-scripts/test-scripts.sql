@@ -205,6 +205,11 @@ Where b.borrowing_status = "active"
 group by u.user_id
 order by days_due desc;
 
+SELECT u.user_id, u.user_first_name, u.user_last_name, u.school_id from library_user u
+left join borrowing b ON b.library_user_user_id = u.user_id
+Where b.borrowing_status = "active"
+group by u.user_id
+order by days_due desc;
 
 
 SELECT user_id, user_first_name, user_last_name, currently_borrowed, days_due FROM library_user_days_due
@@ -252,4 +257,46 @@ WHERE u.school_id = '{school_id}'
 AND r.review_status = 'pending_validation';
 
 select * from library_user WHERE role_id =2;
+
+
+
+-- borowing
+SELECT br.borrowing_id, br.borrowing_date, br.borrowing_status, b.book_title, u.user_first_name, u.user_last_name FROM borrowing br
+LEFT JOIN book b ON b.book_id = br.book_book_id
+LEFT JOIN library_user u ON u.user_id = br.library_user_user_id
+WHERE u.school_id = 2 
+AND borrowing_status = "active"
+;
+
+
+INSERT INTO reservation (reservation_date, book_book_id, library_user_user_id)
+VALUES (CURDATE(), 1, 11);
+INSERT INTO borrowing (borrowing_status, book_book_id, library_user_user_id)
+VALUES ('active', 1, 11);
+select * from borrowing WHERE library_user_user_id = 9 order by borrowing_id desc;
+UPDATE borrowing
+SET borrowing_status = "returned"
+WHERE library_user_user_id = 11;
+
+Select * from school_book WHERE book_book_id =1;
+
+INSERT INTO borrowing (borrowing_status, book_book_id, library_user_user_id)
+VALUES ('active', 1,(SELECT user_id FROM library_user WHERE username = "film"));
+
+select * from borrowing WHERE library_user_user_id = 9 order by borrowing_id desc;
+select * from library_user WHERE user_id = 9 ;
+
+-- book author delete test
+
+select * from author;
+select * from book_author WHERE author_author_id = 20;
+DELETE from book_author WHERE book_book_id = 6;
+
+DELETE from book_author WHERE author_author_id = 21;
+
+
+USE library_backup;
+
+USE library;
+
 

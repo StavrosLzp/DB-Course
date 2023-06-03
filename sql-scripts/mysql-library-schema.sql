@@ -393,6 +393,16 @@ USE `library`;
 
 DELIMITER $$
 USE `library`$$
+CREATE TRIGGER delete_author_if_all_books_deleted
+AFTER DELETE ON book_author
+FOR EACH ROW
+BEGIN
+	IF NOT EXISTS(SELECT * FROM book_author WHERE author_author_id = OLD.author_author_id) THEN
+		DELETE FROM author WHERE author_id = OLD.author_author_id;
+    END IF;
+END$$
+
+USE `library`$$
 CREATE TRIGGER user_Role_default
 BEFORE INSERT ON library_user
 FOR EACH ROW
@@ -554,7 +564,8 @@ BEGIN
 	AND library_user_user_id = NEW.library_user_user_id) THEN 
 		DELETE FROM reservation WHERE book_book_id =  NEW.book_book_id 
 		AND library_user_user_id = NEW.library_user_user_id;
-	ElSEIF NEW.borrowing_status = 'active' THEN-- Remove one book from school 
+	END IF;
+    IF NEW.borrowing_status = 'active' THEN-- Remove one book from school 
 		UPDATE school_book set school_book_amount = school_book_amount - 1
 		WHERE school_school_id = (SELECT school_id from library_user WHERE user_id = NEW.library_user_user_id)
 		AND book_book_id = NEW.book_book_id;

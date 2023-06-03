@@ -63,9 +63,17 @@ class books_form(FlaskForm):
     
     book_author = SelectField(label = "Book Authors", coerce = int)
     
-    book_copies = IntegerField(label = "Book Copies", validators = [NumberRange(min = 0, max = 100, message = "Boooks Number")])
+    book_copies = StringField(label = "Book Copies")
 
     submit = SubmitField("Show")
+    
+    
+class books_loan(FlaskForm):
+    username = StringField(label = "Username", validators = [DataRequired(message = "Username is a required field.")])
+
+    book_id = StringField(label = "Book ID", validators = [DataRequired(message = "Book ID is a required field.")])
+
+    submit = SubmitField("Loan")
     
 class owed_returs_form(FlaskForm): #Όνομα, Επώνυμο, Ημέρες Καθυστέρησης
     first_name = StringField(label = "First Name")
@@ -83,6 +91,15 @@ class user_search(FlaskForm):
     
     last_name = StringField(label = "Last Name")
 
+    submit = SubmitField("Search")
+    
+class borrowing_search_form(FlaskForm):
+    first_name = StringField(label = "First Name")
+    
+    last_name = StringField(label = "Last Name")
+    
+    borrowing_status = SelectField(label = "Borrowing Status")
+    
     submit = SubmitField("Search")
     
     
