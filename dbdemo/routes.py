@@ -474,40 +474,43 @@ def operator_show_books(user_ID):
     book_title = None
     book_category = None
     book_author = None  
+    book_copies = None
+    query=f"""
+             SELECT b.book_id, b.book_title, sb.school_book_amount, a.author_first_name, a.author_last_name FROM book b
+                left join school_book sb on b.book_id = sb.book_book_id 
+                left join book_category bc on b.book_id = bc.book_book_id 
+                left join category c on c.category_id = bc.category_category_id
+                left join book_author ba on b.book_id = ba.book_book_id 
+                left join author a on a.author_id = ba.author_author_id 
+                WHERE sb.school_school_id = {school_id}
+            """
     if form.validate_on_submit():
         book_title = form.book_title.data
         book_category = form.book_category.data
-        print(book_category)
         book_author = form.book_author.data
         book_copies = form.book_copies.data
-        query = f"""
-                SELECT b.book_id, b.book_title, sb.school_book_amount, a.author_first_name, a.author_last_name FROM book b
-                left join school_book sb on b.book_id = sb.book_book_id 
-                """
-        if book_category : 
-            query +="""left join book_category bc on b.book_id = bc.book_book_id 
-                left join category c on c.category_id = bc.category_category_id"""
-        query +="""left join book_author ba on b.book_id = ba.book_book_id 
-                left join author a on a.author_id = ba.author_author_id """         
-        query +=f"""
-                WHERE sb.school_school_id = {school_id}
-                AND b.book_title like "%{book_title}%" 
-                """
-        if book_author: query += f"AND ba.author_author_id = {book_author} \n"
+
+        if book_title:
+            query += f"""AND b.book_title like "%{book_title}%" """
+
+        if book_author: 
+            query += f"AND ba.author_author_id = {book_author} "
                 
-        if book_category : query += f"AND bc.category_category_id = {book_category} \n"
-        query += f"""
-                AND sb.school_book_amount >= {book_copies}
-                order by book_id;
-                """
-        print(query)
-        cur = db.connection.cursor()
-        cur.execute(query)
-        column_names = [i[0] for i in cur.description]
-        results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
-        newresults=merge_fields(results,'author_first_name','author_last_name','author_name')
-        results=consolidate(newresults,'book_id', 'book_title','author_name','category_name', 'school_book_amount')
-        cur.close()
+        if book_category : 
+            query += f"AND bc.category_category_id = {book_category} "
+            
+        if book_copies:
+            query += f"AND sb.school_book_amount >= {book_copies} "
+            
+    query += f"""order by book_id;"""
+    print(query)
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    newresults=merge_fields(results,'author_first_name','author_last_name','author_name')
+    results=consolidate(newresults,'book_id', 'book_title','author_name','category_name', 'school_book_amount')
+    cur.close()
         #return render_template("operator_show_books.html", pageTitle = "Create Grade", results=results)
     return render_template("operator_search_books.html", pageTitle = "Search", form = form , results=results)
 
