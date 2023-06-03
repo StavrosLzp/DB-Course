@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, flash, redirect, url_for, abo
 from flask_mysqldb import MySQL
 from dbdemo import app, db  # initially created by __init__.py, need to be used here
 from dbdemo.forms import *
+import datetime
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
@@ -124,8 +125,12 @@ def admin():
     
     # 3.1.6 END
     
+    file = open("save_date.txt", "r")
+    last_backup_date = file.read()
+    file.close()
+    
     return render_template("dash_admin.html", pageTitle="Admin Dashboard", 
-        no_lend_authors = no_lend_authors, same_l_operators = same_l_operators, top3_cats = top3_cats)
+        no_lend_authors = no_lend_authors, same_l_operators = same_l_operators, top3_cats = top3_cats, last_backup_date=last_backup_date)
 
 @app.route("/admin_dash/loans", methods=['GET', 'POST'])
 def loans():
@@ -343,6 +348,11 @@ def admin_backup():
     
     cur.close()
     flash("Backup Succesfull" ,"success")
+    
+    print(datetime.datetime.now())
+    last_backup_date = open("save_date.txt", "w")
+    last_backup_date.write(str(datetime.datetime.now()))
+    last_backup_date.close()
     return redirect(url_for('admin'))
 
 @app.route('/admin_restore', methods=['GET', 'POST'])
