@@ -593,7 +593,10 @@ def add_book(ID,school_id):
             # School Book table
             copies = form.copies.data
             #Book category, book author, book keyword
+            check=auth.split()
             authors=convert_string_names_to_list_of_dictionaries(auth)
+            if len(check)<2:
+                raise Exception("Please enter at least one author's name and surname")
             categories=cat.split(',')
             for i in range(len(categories)):
                 categories[i] = categories[i].replace(" ", "")
@@ -601,9 +604,6 @@ def add_book(ID,school_id):
             keywords=keyw.split(',')
             for i in range(len(keywords)):
                 keywords[i] = keywords[i].replace(" ", "")
-
-            print(categories)
-            print(keywords)
 
             # Inserting book
             query =f"""INSERT INTO book (book_ISBN, book_title, book_page_no, book_language)
