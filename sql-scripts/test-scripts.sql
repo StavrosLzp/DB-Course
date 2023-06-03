@@ -251,3 +251,5 @@ LEFT JOIN library_user u ON u.user_id =  r.library_user_user_id
 WHERE u.school_id = '{school_id}'
 AND r.review_status = 'pending_validation';
 
+select * from library_user WHERE role_id =2;
+

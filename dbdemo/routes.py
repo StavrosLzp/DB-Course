@@ -331,7 +331,7 @@ def operator(user_ID):
     return render_template("dash_operator.html", pageTitle="Operator Dashboard", user_ID = user_ID, results = results)
 
 @app.route("/operator_dash/<int:user_ID>/activate_users", methods=['GET', 'POST'])
-def operator_activate_users(user_ID):
+def op_activate_users(user_ID):
     # Get operator school id 
     query = f"""
             SELECT school_id from library_user 
@@ -474,7 +474,6 @@ def operator_show_books(user_ID):
     book_title = None
     book_category = None
     book_author = None  
-    book_copies = None
     if form.validate_on_submit():
         book_title = form.book_title.data
         book_category = form.book_category.data
@@ -626,6 +625,105 @@ def operator_average_rating(user_ID):
     cur.close()
     
     return render_template("operator_average_rating.html", pageTitle = "average_rating", form = form ,results1=results1,results2=results2)
+
+
+@app.route("/operator_dash/<int:user_ID>/search_users", methods=['GET', 'POST'])
+def operator_search_users(user_ID):
+    # Get operator school id 
+    query = f"""
+            SELECT school_id from library_user 
+            WHERE user_id = {user_ID};
+            """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    result = cur.fetchall()
+    school_id = result[0][0]
+    cur.close()
+    
+    form = user_search()
+    first_name = None
+    last_name = None
+    username = None
+    query = f"""
+            SELECT u.user_id, u.username, u.user_first_name, u.user_last_name, r.role_name FROM library_user u
+            LEFT JOIN library_user_role r ON r.role_id = u.role_id
+            WHERE school_id = {school_id}
+            AND u.role_id <> 2
+            """
+    if form.validate_on_submit():
+        first_name = form.first_name.data
+        last_name = form.last_name.data
+        username = form.username.data
+        if first_name: query += f' AND user_first_name like "%{first_name}%" '
+        if last_name: query += f' AND user_last_name like "%{last_name}%" '
+        if username: query += f' AND username like "%{username}%" '
+            
+    query += f";"
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()
+    print(results)
+    
+    
+    return render_template("operator_search_users.html", pageTitle = "Search", form = form ,results=results, user_ID=user_ID)
+
+@app.route('/operator_search_users_delete/<int:user_ID>', methods=['GET', 'POST'])
+def operator_search_users_delete(user_ID):
+    user_id = request.form['user_id']
+    query = f"""DELETE FROM library_user
+                WHERE user_id='{user_id}';           
+            """
+    try:
+        cur = db.connection.cursor()
+        cur.execute(query)
+        db.connection.commit()
+        cur.close()
+        return redirect(url_for('operator_search_users', user_ID=user_ID))
+    except Exception as e: ## OperationalError
+        flash(str(e), "danger")
+        print(str(e))
+        return redirect(url_for('operator_search_users', user_ID=user_ID))
+    
+@app.route('/operator_search_users_deactivate/<int:user_ID>', methods=['GET', 'POST'])
+def operator_search_users_deactivate(user_ID):
+    user_id = request.form['user_id']
+    query = f"""UPDATE library_user
+                SET role_id = 5
+                WHERE user_id='{user_id}';           
+            """
+    try:
+        cur = db.connection.cursor()
+        cur.execute(query)
+        db.connection.commit()
+        cur.close()
+        return redirect(url_for('operator_search_users', user_ID=user_ID))
+    except Exception as e: ## OperationalError
+        flash(str(e), "danger")
+        print(str(e))
+        return redirect(url_for('operator_search_users', user_ID=user_ID))
+    
+@app.route('/operator_search_users_print_card/<int:user_ID>', methods=['GET', 'POST'])
+def operator_search_users_print_card(user_ID):
+    user_id = request.form['user_id']
+    query = f"""SELECT u.user_id, u.username, u.user_first_name, u.user_last_name, s.school_name, r.role_name FROM library_user u
+                LEFT JOIN library_user_role r ON r.role_id = u.role_id
+                LEFT JOIN school s ON s.school_id = u.school_id
+                WHERE u.user_id = {user_id};           
+            """
+    try:
+        cur = db.connection.cursor()
+        cur.execute(query)
+        column_names = [i[0] for i in cur.description]
+        results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+        cur.close()
+        return render_template("user_card.html", pageTitle = "user_card", results=results)
+    except Exception as e: ## OperationalError
+        flash(str(e), "danger")
+        print(str(e))
+        return redirect(url_for('operator_search_users', user_ID=user_ID))
+
 
 
 @app.route("/user_dash/<int:ID>")
