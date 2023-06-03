@@ -3,6 +3,7 @@ from flask_mysqldb import MySQL
 from dbdemo import app, db  # initially created by __init__.py, need to be used here
 from dbdemo.forms import *
 import datetime
+import os
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
@@ -324,31 +325,13 @@ def admin_delete_user():
 
 @app.route('/admin_backup', methods=['GET', 'POST'])
 def admin_backup():
-    cur = db.connection.cursor()
-    # Getting all the table names
-    cur.execute('SHOW TABLES;')
-    table_names = []
-    for record in cur.fetchall():
-        table_names.append(record[0])
-    
     database = "library"
-    # Create new DB
-    backup_dbname = database + '_backup'
-    cur.execute(f'DROP SCHEMA IF EXISTS `{backup_dbname}` ;')
-    try:
-        cur.execute(f'CREATE DATABASE {backup_dbname}')
-    except Exception as e: ## OperationalError
-        flash(str(e), "danger")
-
-    cur.execute(f'USE {backup_dbname}')
+    backup_dbname = database + '_backup.sql'
     
-    # Copy tables
-    for table_name in table_names:
-        cur.execute(f'CREATE TABLE {table_name} SELECT * FROM {database}.{table_name}')
+    mysqldump_cmd = f"mysqldump -h localhost -u root --routines {database} > {backup_dbname}"
+    os.popen(mysqldump_cmd)
     
-    cur.close()
     flash("Backup Succesfull" ,"success")
-    
     print(datetime.datetime.now())
     last_backup_date = open("save_date.txt", "w")
     last_backup_date.write(str(datetime.datetime.now()))
@@ -357,7 +340,18 @@ def admin_backup():
 
 @app.route('/admin_restore', methods=['GET', 'POST'])
 def admin_restore():
+    database = "library"
+    backup_dbname = database + '_backup.sql'
+    # cur = db.connection.cursor()
+    # cur.execute(f'DROP SCHEMA IF EXISTS `{database}` ;')
+    # cur.execute(f'CREATE DATABASE {database}')
+    # db.connection.commit()
+    # cur.close()
+    mysqldump_cmd = f"mysql -h localhost -u root {database} < {backup_dbname}"
+    os.popen(mysqldump_cmd)
+    
 
+    flash("Restore Succesfull" ,"success")
     return redirect(url_for('admin'))
 
 #########################################################
@@ -931,7 +925,6 @@ def operator_search_users(user_ID):
     column_names = [i[0] for i in cur.description]
     results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     cur.close()
-    print(results)
     
     
     return render_template("operator_search_users.html", pageTitle = "Search", form = form ,results=results, user_ID=user_ID)
