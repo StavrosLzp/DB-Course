@@ -967,6 +967,10 @@ def operator_verify_return(user_ID):
 
 @app.route('/operator_dash/<int:user_ID>/reservations', methods=['GET', 'POST'])
 def operator_reservations(user_ID):
+    cur = db.connection.cursor()
+    cur.execute("DELETE FROM reservation WHERE DATEDIFF(NOW(), reservation_date) > 7")
+    db.connection.commit()
+    cur.close()
     form = borrowing_search_form()
     first_name = None
     last_name = None
