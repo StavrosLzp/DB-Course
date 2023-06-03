@@ -63,7 +63,7 @@ class books_form(FlaskForm):
     
     book_author = SelectField(label = "Book Authors", coerce = int)
     
-    book_copies = IntegerField(label = "Book Copies", validators = [NumberRange(min = 0, max = 100, message = "Boooks Number")])
+    book_copies = StringField(label = "Book Copies")
 
     submit = SubmitField("Show")
     

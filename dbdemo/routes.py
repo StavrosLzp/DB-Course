@@ -499,8 +499,8 @@ def operator_show_books(user_ID):
         if book_category : 
             query += f"AND bc.category_category_id = {book_category} "
             
-        # if book_copies:
-        #     query += f"AND sb.school_book_amount >= {book_copies} "
+        if book_copies:
+            query += f"AND sb.school_book_amount >= {book_copies} "
             
     query += f"""order by book_id;"""
     print(query)
