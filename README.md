@@ -2,7 +2,7 @@
 
 ## Dependencies
 
- - [MySQL](https://www.mysql.com/) for Windows **IMPORTANT!!! " C:\Program Files\MySQL\MySQL Server 8.0\bin " NEEDS TO BE ADDED TO PATH FOR BACKUPS TO WORK**
+ - [MySQL](https://www.mysql.com/) for Windows. **IMPORTANT!!! " C:\Program Files\MySQL\MySQL Server 8.0\bin " NEEDS TO BE ADDED TO PATH FOR BACKUPS TO WORK**
  - [Python](https://www.python.org/downloads/), with the additional libraries:
     - [Flask](https://flask.palletsprojects.com/en/2.0.x/)
     - [Flask-MySQLdb](https://flask-mysqldb.readthedocs.io/en/latest/)
