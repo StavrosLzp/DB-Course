@@ -125,6 +125,8 @@ class user_review_form(FlaskForm):
     rating = IntegerField(label = "Rating", validators = [NumberRange(min = 1, max = 5, message = "1-5")])
     
     description = TextAreaField(label = "Review")
+    
+    review_id = IntegerField(label = "Review ID")
 
     submit = SubmitField("Submit")
 

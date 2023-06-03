@@ -68,7 +68,6 @@ def sign_up():
                     VALUES ("{username}", "{password}", "{first_name}", "{last_name}", "{school}", "{birthdate}", "5");
                     """
             cur.execute(query)
-           #  print(query)
             db.connection.commit()
             cur.close()
             flash("Sign up successfull. Your account will soon be reviewed for activation by your chool operator", "success")
@@ -737,6 +736,59 @@ def add_book(ID,school_id):
             return render_template("add_book.html", pageTitle = "Add Book",form=form ,error_message=error_message,error=1)
         
     return render_template("add_book.html", pageTitle = "Add Book",form=form,error=0)
+
+
+@app.route("/user_dash/reviews/<int:ID>", methods=['GET', 'POST'])
+def user_reviews(ID):
+
+    query = f"""SELECT r.review_id, r.book_book_id, r.review_rating, r.review_text, b.book_title, u.user_first_name, u.user_last_name
+                FROM review r
+                LEFT JOIN book b ON b.book_id = r.book_book_id
+                LEFT JOIN library_user u ON u.user_id =  r.library_user_user_id
+                WHERE r.library_user_user_id = {ID};
+                """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()
+
+    return render_template("user_view_reviews.html", pageTitle = "Search", results=results, ID=ID)
+
+@app.route("/edit_review/<int:ID>", methods=['GET', 'POST'])
+def user_edit_reviews(ID):
+    form = user_review_form()
+    if form.validate_on_submit():
+        rating = form.rating.data
+        description = form.description.data
+        review_id = form.review_id.data
+        query = f"""
+                UPDATE review 
+                SET review_rating = {rating}, review_text = '{description}', review_status = 'pending_validation'
+                WHERE review_id = {review_id};
+                """
+        cur = db.connection.cursor()
+        cur.execute(query)
+        db.connection.commit()
+        cur.close()
+        flash("Edit Succesfull" ,"success")
+        return redirect(url_for('user_reviews', ID = ID))
+    
+    
+    cur = db.connection.cursor()
+    review_id = request.form['review_id']
+    
+    cur.execute(f"SELECT review_rating, review_text, review_id FROM review WHERE review_id = {review_id}")
+    result = cur.fetchall()
+    cur.close()
+    if result:
+        rating = result[0][0]
+        description = result[0][1]
+        form.rating.data = rating
+        form.description.data = description
+        form.review_id.data = review_id
+        
+    return render_template("user_edit_review.html", pageTitle="Landing Page", form=form)
 
 
 @app.route('/operator_dash/<int:ID>/edit_book/<int:book_id>', methods=['GET', 'POST'])

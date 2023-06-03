@@ -1,0 +1,53 @@
+{% extends "global_layout.html" %}
+{% block content %}
+<div class="container" id="row-container">
+    {% include "flash_messages.html" %}
+    <div class="col-md-12">
+        <div class="col-md-12">
+            <div class="col-md-12">
+                <div class="card" id="card-container">
+                    <div class="card-body" id="card">
+                        <h4 class="card-title">My Reviews</h4>
+                        <div class="mt-auto">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Review ID</th>
+                                        <th>User real Name</th>
+                                        <th>Review Rating</th>
+                                        <th>Review Text</th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for result in results %}
+                                    <tr>
+                                        <td> {{ result.review_id }} </td>
+                                        <td> {{ result.user_first_name }} {{ result.user_last_name }} </td>
+                                        <td> {{ result.review_rating }} </td>
+                                        <td> {{ result.review_text }} </td>
+                                        <td>
+                                            <form action="/edit_review/{{ID}}" method="POST">
+                                                <input type="hidden" name="review_id" value="{{ result.review_id }}">
+                                                <button type="submit">Edit</button>
+                                            </form>
+                                        </td>
+                                        <td>
+                                            <form action="/delete_review/{{ID}}" method="POST">
+                                                <input type="hidden" name="review_id" value="{{ result.review_id }}">
+                                                <button type="submit">Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

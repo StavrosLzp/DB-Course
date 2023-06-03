@@ -1,0 +1,30 @@
+{% extends "global_layout.html" %}
+{% block content %}
+<div class="container" id="row">
+    {% include "flash_messages.html" %}
+    <div class="col-md-12">
+        <div class="card" id="card-container">
+            <div class="card-body" id="card">
+                <h4 class="card-title">Login Page</h4>
+                <p class="card-text" id="paragraph">Enter Username and Password</p>
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+
+                    {{form.rating.label(class="form-label")}}
+                    {{form.rating(class="form-control")}}
+                    {{form.description.label(class="form-label")}}
+                    {{form.description(class="form-control")}}
+                    <section hidden>
+                        {{form.review_id.label(class="form-label")}}
+                        {{form.review_id(class="form-control")}}
+                    </section>
+                    <br/>
+                    {{ form.submit(class="btn btn-primary") }}
+                </form>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock content %}

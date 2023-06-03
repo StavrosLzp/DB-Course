@@ -30,33 +30,33 @@
                 </div>
             </div>
         </div>
-        <div class="card" id="card-container-layout">
-            <div class="card-body d-flex flex-column" id="card">
-                <h4 class="card-title">Books I have Borrowed</h4>
-                <p class="card-text" id="paragraph"><br></p>
-                <div class="mt-auto">
+        <div class="col-md-8">
+            <div class="card" id="card-container">
+                <div class="card-body d-flex flex-column" id="card">
+                    <h4 class="card-title">Books I have Borrowed</h4>
+                    <p class="card-text" id="paragraph"><br></p>
 
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Status</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for result in book %}
-                            <tr>
-                                <td> {{ result.book_title }} </td>
-                                <td> {{ result.borrowing_status }} </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for result in book %}
+                                <tr>
+                                    <td> {{ result.book_title }} </td>
+                                    <td> {{ result.borrowing_status }} </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                 </div>
             </div>
         </div>
+    </div>
+    <div class="row" id="row"></div>
         <div class="col-md-4">
             <div class="card" id="card-container-layout">
                 <div class="card-body d-flex flex-column" id="card">
@@ -65,6 +65,17 @@
                         books<br></p>
                     <div class="mt-auto">
                         <a class="btn btn-primary" id="show-btn" href="/user_dash/reservation/{{ID}}">Show</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card" id="card-container-layout">
+                <div class="card-body d-flex flex-column" id="card">
+                    <h4 class="card-title">My reviews</h4>
+                    <p class="card-text" id="paragraph">View my reviews and edit/delete them<br></p>
+                    <div class="mt-auto">
+                        <a class="btn btn-primary" id="show-btn" href="/user_dash/reviews/{{ID}}">Show</a>
                     </div>
                 </div>
             </div>
