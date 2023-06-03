@@ -804,7 +804,7 @@ def operator_reservations(user_ID):
     last_name = None
     form.borrowing_status.choices = [("---","---"),("active", "Active") ,("returned", "Returned")]
     query = f"""
-            SELECT r.reservation_id, r.reservation_date, r.reservation_status, b.book_title, u.user_first_name, u.user_last_name FROM reservation r
+            SELECT r.reservation_id, r.reservation_date, r.reservation_status, b.book_title, b.book_id, u.user_id, u.user_first_name, u.user_last_name FROM reservation r
             LEFT JOIN book b ON b.book_id = r.book_book_id
             LEFT JOIN library_user u ON u.user_id = r.library_user_user_id
             WHERE u.school_id = {school_id}
@@ -826,8 +826,23 @@ def operator_reservations(user_ID):
     cur.close()
     return render_template("operator_reservations.html", pageTitle = "Search", form = form ,results=results, user_ID=user_ID)
 
-
-
+@app.route('/operator_borrowing_from_reservation/<int:user_ID>', methods=['GET', 'POST'])
+def operator_borrowing_from_reservation(user_ID):
+    book_id = request.form['book_id']
+    user_id = request.form['user_id']
+    query = f"""INSERT INTO borrowing (borrowing_status, book_book_id, library_user_user_id)
+                VALUES ('active', {book_id}, {user_id});;           
+            """
+    try:
+        cur = db.connection.cursor()
+        cur.execute(query)
+        db.connection.commit()
+        cur.close()
+        return redirect(url_for('operator_reservations', user_ID=user_ID))
+    except Exception as e: ## OperationalError
+        flash(str(e), "danger")
+        print(str(e))
+        return redirect(url_for('operator_reservations', user_ID=user_ID))
 
 
 

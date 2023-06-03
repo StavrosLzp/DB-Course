@@ -48,8 +48,9 @@
                                 <td> {{ result.user_first_name }}  {{ result.user_last_name }} </td>
                                 <td> {{ result.book_title }} </td>
                                 <td>
-                                    <form action="/operator_verify_return/{{user_ID}}" method="POST">
-                                        <input type="hidden" name="borrowing_id" value="{{ result.reservation_id }}">
+                                    <form action="/operator_borrowing_from_reservation/{{user_ID}}" method="POST">
+                                        <input type="hidden" name="book_id" value="{{ result.book_id }}">
+                                        <input type="hidden" name="user_id" value="{{ result.user_id }}">
                                         <button type="submit"> Loan </button>
                                     </form>
                                 </td>

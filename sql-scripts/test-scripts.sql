@@ -271,14 +271,14 @@ AND borrowing_status = "active"
 
 INSERT INTO reservation (reservation_date, book_book_id, library_user_user_id)
 VALUES (CURDATE(), 1, 11);
-INSERT INTO borrowing (borrowing_date, borrowing_status, book_book_id, library_user_user_id)
-VALUES (CURDATE(), 'active', 1, 11);
+INSERT INTO borrowing (borrowing_status, book_book_id, library_user_user_id)
+VALUES ('active', 1, 11);
 select * from borrowing WHERE library_user_user_id = 11 order by borrowing_id desc;
 UPDATE borrowing
 SET borrowing_status = "returned"
 WHERE library_user_user_id = 11;
 
-
+Select * from school_book WHERE book_book_id =1;
 
 
 
