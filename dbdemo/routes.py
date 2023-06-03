@@ -371,19 +371,9 @@ def operator(user_ID):
 
 @app.route("/operator_dash/<int:user_ID>/activate_users", methods=['GET', 'POST'])
 def op_activate_users(user_ID):
-    # Get operator school id 
-    query = f"""
-            SELECT school_id from library_user 
-            WHERE user_id = {user_ID};
-            """
-    cur = db.connection.cursor()
-    cur.execute(query)
-    school_id = cur.fetchall()[0][0]
-    cur.close()
-
     query = f"""SELECT user_id, username, user_first_name, user_last_name, user_birthdate
                 FROM library_user 
-                WHERE school_id = '{school_id}'
+                WHERE school_id = (SELECT school_id from library_user WHERE user_id = {user_ID})
                 AND role_id = 5;
                 """
     cur = db.connection.cursor()
@@ -428,21 +418,12 @@ def op_delete_user(user_ID):
 
 @app.route("/operator_dash/<int:user_ID>/activate_reviews", methods=['GET', 'POST'])
 def operator_activate_reviews(user_ID):
-    # Get operator school id 
-    query = f"""
-            SELECT school_id from library_user 
-            WHERE user_id = {user_ID};
-            """
-    cur = db.connection.cursor()
-    cur.execute(query)
-    school_id = cur.fetchall()[0][0]
-    cur.close()
 
     query = f"""SELECT r.review_id, r.book_book_id, r.review_rating, r.review_text, b.book_title, u.user_first_name, u.user_last_name
                 FROM review r
                 LEFT JOIN book b ON b.book_id = r.book_book_id
                 LEFT JOIN library_user u ON u.user_id =  r.library_user_user_id
-                WHERE u.school_id = '{school_id}'
+                WHERE u.school_id = (SELECT school_id from library_user WHERE user_id = {user_ID})
                 AND r.review_status = 'pending_validation';
                 """
     cur = db.connection.cursor()
@@ -485,19 +466,6 @@ def operator_delete_review(user_ID):
 
 @app.route("/operator_dash/<int:user_ID>/search_books", methods=['GET', 'POST'])
 def operator_show_books(user_ID):
-    
-    # Get operator school id 
-    query = f"""
-            SELECT school_id from library_user 
-            WHERE user_id = {user_ID};
-            """
-    cur = db.connection.cursor()
-    cur.execute(query)
-    result = cur.fetchall()
-    school_id = result[0][0]
-    cur.close()
-    results = []
-
     form = books_form()
     # Get categories for drop down list
     cur = db.connection.cursor()
@@ -521,7 +489,7 @@ def operator_show_books(user_ID):
                 left join category c on c.category_id = bc.category_category_id
                 left join book_author ba on b.book_id = ba.book_book_id 
                 left join author a on a.author_id = ba.author_author_id 
-                WHERE sb.school_school_id = {school_id}
+                WHERE sb.school_school_id = (SELECT school_id from library_user WHERE user_id = {user_ID})
             """
     if form.validate_on_submit():
         book_title = form.book_title.data
@@ -774,25 +742,13 @@ def add_book(ID,school_id):
 
 @app.route("/operator_dash/<int:user_ID>/search_owed_returns", methods=['GET', 'POST'])
 def operator_search_owed_returns(user_ID):
-    # Get Admin school id 
-    query = f"""
-            SELECT school_id from library_user 
-            WHERE user_id = {user_ID};
-            """
-    cur = db.connection.cursor()
-    cur.execute(query)
-    result = cur.fetchall()
-    school_id = result[0][0]
-    cur.close()
-    results = {}
-    
     form = owed_returs_form()
     first_name = None
     last_name = None
     days_due = 1
     query = f"""
             SELECT user_id, user_first_name, user_last_name, school_id, currently_borrowed, days_due FROM library_user_days_due
-            WHERE school_id = {school_id}
+            WHERE school_id = (SELECT school_id from library_user WHERE user_id = {user_ID})
             """
     if form.validate_on_submit():
         first_name = form.first_name.data
@@ -815,18 +771,6 @@ def operator_search_owed_returns(user_ID):
 
 @app.route("/operator_dash/<int:user_ID>/average_rating", methods=['GET', 'POST'])
 def operator_average_rating(user_ID):
-    # Get Admin school id 
-    query = f"""
-            SELECT school_id from library_user 
-            WHERE user_id = {user_ID};
-            """
-    cur = db.connection.cursor()
-    cur.execute(query)
-    result = cur.fetchall()
-    school_id = result[0][0]
-    cur.close()
-    
-    
     form = avg_review()
     # Get categories for drop down list
     cur = db.connection.cursor()
@@ -841,7 +785,7 @@ def operator_average_rating(user_ID):
             FROM review r
             left join library_user u ON u.user_id = r.library_user_user_id
             JOIN book_category bc ON bc.book_book_id = r.book_book_id
-            Where school_id = {school_id} AND review_status = 'validated'
+            Where school_id = (SELECT school_id from library_user WHERE user_id = {user_ID}) AND review_status = 'validated'
             """
     query2 = f"""
             SELECT c.category_name, AVG(r.review_rating) AS average_rating
@@ -890,17 +834,6 @@ def operator_average_rating(user_ID):
 
 @app.route("/operator_dash/<int:user_ID>/search_users", methods=['GET', 'POST'])
 def operator_search_users(user_ID):
-    # Get operator school id 
-    query = f"""
-            SELECT school_id from library_user 
-            WHERE user_id = {user_ID};
-            """
-    cur = db.connection.cursor()
-    cur.execute(query)
-    result = cur.fetchall()
-    school_id = result[0][0]
-    cur.close()
-    
     form = user_search()
     first_name = None
     last_name = None
@@ -908,7 +841,7 @@ def operator_search_users(user_ID):
     query = f"""
             SELECT u.user_id, u.username, u.user_first_name, u.user_last_name, r.role_name FROM library_user u
             LEFT JOIN library_user_role r ON r.role_id = u.role_id
-            WHERE school_id = {school_id}
+            WHERE school_id = (SELECT school_id from library_user WHERE user_id = {user_ID})
             AND u.role_id <> 2
             """
     if form.validate_on_submit():
@@ -987,17 +920,6 @@ def operator_search_users_print_card(user_ID):
     
 @app.route('/operator_dash/<int:user_ID>/borrowings', methods=['GET', 'POST'])
 def operator_borrowings(user_ID):
-    # Get operator school id 
-    query = f"""
-            SELECT school_id from library_user 
-            WHERE user_id = {user_ID};
-            """
-    cur = db.connection.cursor()
-    cur.execute(query)
-    result = cur.fetchall()
-    school_id = result[0][0]
-    cur.close()
-    
     form = borrowing_search_form()
     first_name = None
     last_name = None
@@ -1006,7 +928,7 @@ def operator_borrowings(user_ID):
             SELECT br.borrowing_id, br.borrowing_date, br.borrowing_status, b.book_title, u.user_first_name, u.user_last_name FROM borrowing br
             LEFT JOIN book b ON b.book_id = br.book_book_id
             LEFT JOIN library_user u ON u.user_id = br.library_user_user_id
-            WHERE u.school_id = {school_id}
+            WHERE u.school_id = (SELECT school_id from library_user WHERE user_id = {user_ID})
             """
     if form.validate_on_submit():
         first_name = form.first_name.data
@@ -1045,26 +967,15 @@ def operator_verify_return(user_ID):
 
 @app.route('/operator_dash/<int:user_ID>/reservations', methods=['GET', 'POST'])
 def operator_reservations(user_ID):
-    # Get operator school id 
-    query = f"""
-            SELECT school_id from library_user 
-            WHERE user_id = {user_ID};
-            """
-    cur = db.connection.cursor()
-    cur.execute(query)
-    result = cur.fetchall()
-    school_id = result[0][0]
-    cur.close()
-    
     form = borrowing_search_form()
     first_name = None
     last_name = None
-    form.borrowing_status.choices = [("---","---"),("active", "Active") ,("returned", "Returned")]
+    form.borrowing_status.choices = [("---","---"),("awaiting_pick_up", "Awaiting Pick Up") ,("on_hold", "On Hold")]
     query = f"""
             SELECT r.reservation_id, r.reservation_date, r.reservation_status, b.book_title, b.book_id, u.user_id, u.user_first_name, u.user_last_name FROM reservation r
             LEFT JOIN book b ON b.book_id = r.book_book_id
             LEFT JOIN library_user u ON u.user_id = r.library_user_user_id
-            WHERE u.school_id = {school_id}
+            WHERE u.school_id = (SELECT school_id from library_user WHERE user_id = {user_ID})
             """
     if form.validate_on_submit():
         first_name = form.first_name.data
@@ -1072,7 +983,7 @@ def operator_reservations(user_ID):
         borrowing_status = form.borrowing_status.data
         if first_name: query += f' AND u.user_first_name like "%{first_name}%" '
         if last_name: query += f' AND u.user_last_name like "%{last_name}%" '
-        #if borrowing_status != "---" : query += f' AND borrowing_status = "{borrowing_status}" '
+        if borrowing_status != "---" : query += f' AND reservation_status = "{borrowing_status}" '
             
     query += f"ORDER BY r.reservation_date desc;"
     print (query)
