@@ -9,20 +9,20 @@
                     <h4 class="card-title">Search Page</h4>
                     <p class="card-text" id="paragraph">Enter Search Criteria or leave blanc</p>
                     <div class="mt-auto">
-                    <form method="POST">
-                        {{ form.hidden_tag() }}
+                        <form method="POST">
+                            {{ form.hidden_tag() }}
 
-                        {{form.book_title.label(class="form-label")}}
-                        {{form.book_title(class="form-control")}}
-                        {{form.book_category.label(class="form-label")}}
-                        {{form.book_category(class="form-control")}}
-                        {{form.book_author.label(class="form-label")}}
-                        {{form.book_author(class="form-control")}}
-                        {{form.book_copies.label(class="form-label")}}
-                        {{form.book_copies(class="form-control")}}
-                        <br/>
-                        {{ form.submit(class="btn btn-primary") }}
-                    </form>
+                            {{form.book_title.label(class="form-label")}}
+                            {{form.book_title(class="form-control")}}
+                            {{form.book_category.label(class="form-label")}}
+                            {{form.book_category(class="form-control")}}
+                            {{form.book_author.label(class="form-label")}}
+                            {{form.book_author(class="form-control")}}
+                            {{form.book_copies.label(class="form-label")}}
+                            {{form.book_copies(class="form-control")}}
+                            <br />
+                            {{ form.submit(class="btn btn-primary") }}
+                        </form>
                     </div>
                 </div>
             </div>
@@ -33,16 +33,16 @@
                     <h4 class="card-title">Loan a book</h4>
                     <p class="card-text" id="paragraph">Enter necessary data to loan a book</p>
                     <div class="mt-auto">
-                    <form method="POST">
-                        {{ form2.hidden_tag() }}
+                        <form method="POST">
+                            {{ form2.hidden_tag() }}
 
-                        {{form2.book_id.label(class="form-label")}}
-                        {{form2.book_id(class="form-control")}}
-                        {{form2.username.label(class="form-label")}}
-                        {{form2.username(class="form-control")}}
-                        <br/>
-                        {{ form2.submit(class="btn btn-primary") }}
-                    </form>
+                            {{form2.book_id.label(class="form-label")}}
+                            {{form2.book_id(class="form-control")}}
+                            {{form2.username.label(class="form-label")}}
+                            {{form2.username(class="form-control")}}
+                            <br />
+                            {{ form2.submit(class="btn btn-primary") }}
+                        </form>
                     </div>
                 </div>
             </div>
@@ -69,6 +69,12 @@
                                 <td> {{ result.book_title }} </td>
                                 <td> {{ result.author_name }} </td>
                                 <td> {{ result.school_book_amount }} </td>
+                                <td>
+                                    <form action="/operator_dash/{{user_ID}}/edit_book/{{result.book_id}}"
+                                        method="POST">
+                                        <button type="submit">Edit</button>
+                                    </form>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
