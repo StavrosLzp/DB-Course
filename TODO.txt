@@ -6,5 +6,4 @@ OPERATOR:
 	*Alter book
 	*See reeservations
 	*Lend book
-	*Accept return of book
 USER
