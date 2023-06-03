@@ -1,0 +1,53 @@
+{% extends "global_layout.html" %}
+{% block content %}
+<div class="container" id="row-container">
+    {% include "flash_messages.html" %}
+    <div class="row" id="row">
+        <div class="card" id="card-container">
+            <div class="card-body d-flex flex-column" id="card">
+                <h4 class="card-title">Add Book</h4>
+                <p class="card-text" id="paragraph">Enter Book info</p>
+                <div class="mt-auto">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+
+                        {{form.title.label(class="form-label")}}
+                        {{form.title(class="form-control")}}
+
+                        {{form.ISBN.label(class="form-label")}}
+                        {{form.ISBN(class="form-control")}}
+
+                        {{form.pages.label(class="form-label")}}
+                        {{form.pages(class="form-control")}}
+
+                        {{form.language.label(class="form-label")}}
+                        {{form.language(class="form-control")}}
+
+                        {{form.authors.label(class="form-label")}}
+                        {{form.authors(class="form-control")}}
+
+                        {{form.publisher.label(class="form-label")}}
+                        {{form.publisher(class="form-control")}}
+
+                        {{form.categories.label(class="form-label")}}
+                        {{form.categories(class="form-control")}}
+
+                        {{form.copies.label(class="form-label")}}
+                        {{form.copies(class="form-control")}}
+
+                        {{form.keywords.label(class="form-label")}}
+                        {{form.keywords(class="form-control")}}
+                        <br />
+                        {{ form.submit(class="btn btn-primary") }}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="row">
+
+        <p class="card-text" id="paragraph">{{ message }}</p>
+
+    </div>
+</div>
+{% endblock content %}

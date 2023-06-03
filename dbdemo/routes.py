@@ -511,6 +511,12 @@ def operator_show_books(user_ID):
         #return render_template("operator_show_books.html", pageTitle = "Create Grade", results=results)
     return render_template("operator_search_books.html", pageTitle = "Search", form = form , results=results)
 
+@app.route('/operator_dash/add_book/<int:school_id>', methods=['GET', 'POST'])
+def add_book(school_id):
+    form = add_book_form()
+    return render_template("add_book.html", pageTitle = "Add Book",form=form )
+
+
 @app.route("/operator_dash/<int:user_ID>/search_owed_returns", methods=['GET', 'POST'])
 def operator_search_owed_returns(user_ID):
     # Get Admin school id 
@@ -1073,3 +1079,19 @@ def consolidate(lst, field_name, *fields):
         consolidated_list.append(consolidated_dict)
     
     return consolidated_list
+
+# "John Doe, Jane Smith, Alice Brown" --->
+# [{'first_name': 'John', 'last_name': 'Doe'}, 
+# {'first_name': 'Jane', 'last_name': 'Smith'}, 
+# {'first_name': 'Alice', 'last_name': 'Brown'}]
+def convert_string_to_list_of_dictionaries(input_string):
+    result = []
+    entries = input_string.split(',')
+
+    for entry in entries:
+        names = entry.strip().split(' ')
+        if len(names) == 2:
+            first_name, last_name = names
+            result.append({"first_name": first_name, "last_name": last_name})
+
+    return result
