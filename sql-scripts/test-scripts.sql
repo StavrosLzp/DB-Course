@@ -300,3 +300,12 @@ USE library_backup;
 USE library;
 
 
+
+show full tables where Table_Type = 'BASE TABLE';
+
+select * from library_user;
+
+SELECT r.review_rating, r.review_text, u.username from review r
+LEFT JOIN library_user u ON u.user_id = r.library_user_user_id
+WHERE r.book_book_id = 2;
+
