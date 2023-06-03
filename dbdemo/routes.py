@@ -319,11 +319,34 @@ def admin_delete_user():
 
 @app.route('/admin_backup', methods=['GET', 'POST'])
 def admin_backup():
+    cur = db.connection.cursor()
+    # Getting all the table names
+    cur.execute('SHOW TABLES;')
+    table_names = []
+    for record in cur.fetchall():
+        table_names.append(record[0])
+    
+    database = "library"
+    # Create new DB
+    backup_dbname = database + '_backup'
+    cur.execute(f'DROP SCHEMA IF EXISTS `{backup_dbname}` ;')
+    try:
+        cur.execute(f'CREATE DATABASE {backup_dbname}')
+    except Exception as e: ## OperationalError
+        flash(str(e), "danger")
 
+    cur.execute(f'USE {backup_dbname}')
+    
+    # Copy tables
+    for table_name in table_names:
+        cur.execute(f'CREATE TABLE {table_name} SELECT * FROM {database}.{table_name}')
+    
+    cur.close()
+    flash("Backup Succesfull" ,"success")
     return redirect(url_for('admin'))
 
 @app.route('/admin_restore', methods=['GET', 'POST'])
-def admin_backup():
+def admin_restore():
 
     return redirect(url_for('admin'))
 

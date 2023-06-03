@@ -289,10 +289,14 @@ select * from library_user WHERE user_id = 9 ;
 -- book author delete test
 
 select * from author;
-select * from book_author WHERE author_author_id = 21;
+select * from book_author WHERE author_author_id = 20;
+DELETE from book_author WHERE book_book_id = 6;
+
 DELETE from book_author WHERE author_author_id = 21;
 
 
+USE library_backup;
 
+USE library;
 
 
