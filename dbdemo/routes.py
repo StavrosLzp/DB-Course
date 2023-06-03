@@ -794,7 +794,7 @@ def operator_average_rating(user_ID):
             JOIN book b ON bc.book_book_id = b.book_id
             LEFT JOIN review r ON b.book_id = r.book_book_id
             left join library_user u ON u.user_id = r.library_user_user_id
-            WHERE u.school_id = {school_id} AND review_status = 'validated'
+            WHERE u.school_id = (SELECT school_id from library_user WHERE user_id = {user_ID}) AND review_status = 'validated'
             """
             
     if form.validate_on_submit():
