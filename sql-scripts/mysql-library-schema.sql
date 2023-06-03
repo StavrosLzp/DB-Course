@@ -241,8 +241,8 @@ CREATE TABLE IF NOT EXISTS `review` (
   CONSTRAINT `fk_review_library_user1`
     FOREIGN KEY (`library_user_user_id`)
     REFERENCES `library_user` (`user_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
@@ -326,7 +326,7 @@ CREATE TABLE IF NOT EXISTS `borrowing` (
   CONSTRAINT `fk_borrowing_library_user1`
     FOREIGN KEY (`library_user_user_id`)
     REFERENCES `library_user` (`user_id`)
-    ON DELETE RESTRICT
+    ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;

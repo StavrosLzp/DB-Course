@@ -41,9 +41,9 @@
         <div class="col-md-4">
             <div class="card" id="card-container-layout">
                 <div class="card-body" id="card">
-                    <h4 class="card-title">Search Pending Acounts</h4>
+                    <h4 class="card-title">Activate Pending Acounts</h4>
                     <p class="card-text paragraph-custom">
-                        Find all user accounts waiting to be activated.
+                        Find all user accounts waiting to be activated to assign a role to them.
                     </p>
                     <a class="btn btn-primary btn-submit-custom" href="/operator_dash/{{user_ID}}/activate_users">Search</a>
                 </div>
@@ -69,6 +69,30 @@
                     <p class="card-text paragraph-custom">School ID : {{ result.school_id }} </p>
                     <p class="card-text paragraph-custom">Name : {{ result.user_first_name }} {{ result.user_last_name }} </p>
                     {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="row-2">
+        <div class="col-md-4">
+            <div class="card" id="card-container-layout">
+                <div class="card-body" id="card">
+                    <h4 class="card-title">Search Users</h4>
+                    <p class="card-text paragraph-custom">
+                        Find all user accounts
+                    </p>
+                    <a class="btn btn-primary btn-submit-custom" href="/operator_dash/{{user_ID}}/search_users">Search</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card" id="card-container-layout">
+                <div class="card-body" id="card">
+                    <h4 class="card-title">Search borrowings</h4>
+                    <p class="card-text paragraph-custom">
+                        Find all user borrowings/loans
+                    </p>
+                    <a class="btn btn-primary btn-submit-custom" href="/operator_dash/{{user_ID}}/borrowings">Search</a>
                 </div>
             </div>
         </div>

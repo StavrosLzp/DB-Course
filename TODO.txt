@@ -2,13 +2,8 @@ ADMIN:
 	*backup
 	*restore
 OPERATOR:
-	*Register user-print card
-	*Delete user
-	*Deactivate user account
 	*Insert book
 	*Alter book
-	*See borrowings
 	*See reeservations
 	*Lend book
-	*Accept return of book
 USER
