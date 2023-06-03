@@ -68,14 +68,14 @@ def sign_up():
                     VALUES ("{username}", "{password}", "{first_name}", "{last_name}", "{school}", "{birthdate}", "5");
                     """
             cur.execute(query)
-            print(query)
+           #  print(query)
             db.connection.commit()
             cur.close()
             flash("Sign up successfull. Your account will soon be reviewed for activation by your chool operator", "success")
             return redirect("/")
         except Exception as e: ## OperationalError
             flash(str(e), "danger")
-            print(str(e))
+           #  print(str(e))
             message = "Something Failed please try again later"
     return render_template("sign_up.html", pageTitle="Landing Page", form=form, message=message)
 
@@ -141,7 +141,7 @@ def loans():
     month = None
     year = None
     form = loans_view()
-    print("1Not")
+   #  print("1Not")
     query = """
         SELECT s.school_id, s.school_name, COUNT(b.borrowing_id) AS borrowings_count
         FROM school s
@@ -152,7 +152,7 @@ def loans():
 
     cur = db.connection.cursor()
     if form.validate_on_submit():
-        print("start")
+       #  print("start")
         month = form.month.data
         form.month.data = ""
         year = form.year.data
@@ -268,7 +268,7 @@ def add_school():
                     VALUES ("{school_name}", "{school_principal_name}","{school_mail_address}", "{school_city}", "{school_phone_number}", "{school_email}");
                     """
             cur = db.connection.cursor()
-            print(query)
+           #  print(query)
             cur.execute(query)
             db.connection.commit()
             cur.close()
@@ -276,7 +276,7 @@ def add_school():
             return redirect("/admin_dash")
         except Exception as e: ## OperationalError
             flash(str(e), "danger")
-            print(str(e))
+           #  print(str(e))
     return render_template("add_school.html", pageTitle="Landing Page", form=form)
 
 @app.route("/admin_dash/activate_users", methods=['GET', 'POST'])
@@ -332,7 +332,6 @@ def admin_backup():
     os.popen(mysqldump_cmd)
     
     flash("Backup Succesfull" ,"success")
-    print(datetime.datetime.now())
     last_backup_date = open("save_date.txt", "w")
     last_backup_date.write(str(datetime.datetime.now()))
     last_backup_date.close()
@@ -510,7 +509,7 @@ def operator_show_books(user_ID):
             query += f"AND sb.school_book_amount >= {book_copies} "
             
     query += f"""order by book_id;"""
-    print(query)
+   #  print(query)
     cur = db.connection.cursor()
     cur.execute(query)
     column_names = [i[0] for i in cur.description]
@@ -536,9 +535,9 @@ def operator_show_books(user_ID):
             cur.close()
         except Exception as e: ## OperationalError
             flash(str(e), "danger")
-            print(str(e))
+           #  print(str(e))
         
-    return render_template("operator_search_books.html", pageTitle = "Search", form = form, form2 = form2 , results=results)
+    return render_template("operator_search_books.html", pageTitle = "Search", form = form, form2 = form2 , results=results,user_ID=user_ID)
 
 @app.route('/operator_dash/<int:ID>/add_book/<int:school_id>', methods=['GET', 'POST'])
 def add_book(ID,school_id):
@@ -563,7 +562,7 @@ def add_book(ID,school_id):
             #Book category, book author, book keyword
             check=auth.split()
             authors=convert_string_names_to_list_of_dictionaries(auth)
-            if len(check)<2:
+            if (len(check)%2)!=0:
                 raise Exception("Please enter at least one author's name and surname")
             categories=cat.split(',')
             for i in range(len(categories)):
@@ -740,6 +739,365 @@ def add_book(ID,school_id):
     return render_template("add_book.html", pageTitle = "Add Book",form=form,error=0)
 
 
+@app.route('/operator_dash/<int:ID>/edit_book/<int:book_id>', methods=['GET', 'POST'])
+def edit_book(ID,book_id):
+    form = edit_book_form()
+    query =f"SELECT school_id FROM library_user WHERE user_id={ID};"
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    schid = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()
+    school_id=schid[0]['school_id']
+
+
+    query =f"""SELECT book_id, book_title, book_ISBN, book_page_no, book_language, author_first_name, author_last_name, publisher_name, category_name, keyword_name, school_book_amount
+            FROM book JOIN book_author ON book.book_id=book_author.book_book_id
+            JOIN author ON book_author.author_author_id=author.author_id
+            JOIN publisher ON book.book_id=publisher.book_book_id
+            JOIN book_category ON book.book_id=book_category.book_book_id
+            JOIN category ON category.category_id=book_category.category_category_id
+            JOIN book_keyword ON book.book_id=book_keyword.book_book_id
+            JOIN keyword ON keyword_keyword_id=book_keyword.keyword_keyword_id
+            JOIN school_book ON school_book.book_book_id=book.book_id
+            where book_id='{book_id}'
+            AND school_school_id='{school_id}'
+            ORDER BY book_id;
+            """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    column_names = [i[0] for i in cur.description]
+    defa = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()
+    defaul=merge_fields(defa,'author_first_name','author_last_name','author_name')
+    defaults=consolidate(defaul,'book_id')
+
+
+    prev_title= form.title.default=defaults[0]['book_title']
+    prev_isbn=form.isbn.default=defaults[0]['book_ISBN']
+    prev_pages=form.pages.default=defaults[0]['book_page_no']
+    prev_language=form.language.default=defaults[0]['book_language']
+    prev_authors=form.authors.default=', '.join(defaults[0]['author_name'])
+    prev_publisher=form.publisher.default=defaults[0]['publisher_name']
+    prev_cat=form.categories.default=', '.join(defaults[0]['category_name'])
+    prev_keyw=form.keywords.default=', '.join(defaults[0]['keyword_name'])
+    prev_copies=form.copies.default=defaults[0]['school_book_amount']
+
+    # prev_authors=prev_aut.split(",").sort()
+    prev_categories=prev_cat.split(",")
+    for i in range(len(prev_categories)):
+        prev_categories[i] = prev_categories[i].replace(" ", "")
+
+    prev_keywords=prev_keyw.split(",")
+    for i in range(len(prev_keywords)):
+        prev_keywords[i] = prev_keywords[i].replace(" ", "")
+
+
+    if form.validate_on_submit():
+        try:
+            # Book table
+            title = form.title.data
+            isbn = form.isbn.data
+            pages = form.pages.data
+            language = form.language.data
+            # Author table
+            authors = form.authors.data
+            # Publisher table
+            publisher = form.publisher.data
+            # Category table
+            cat = form.categories.data
+            # Keywords table
+            keyw = form.keywords.data
+            # School Book table
+            copies = form.copies.data
+            #Book category, book author, book keyword
+            check=authors.split()
+            if (len(check)%2)!=0:
+                raise Exception("Please enter authors' names and surnames")
+            categories=cat.split(',')
+            for i in range(len(categories)):
+                categories[i] = categories[i].replace(" ", "")
+
+            keywords=keyw.split(',')
+            for i in range(len(keywords)):
+                keywords[i] = keywords[i].replace(" ", "")
+
+
+            # Updating book
+            changebook=0
+            sets=" "
+
+            if title!=prev_title:
+                changebook+=1
+                sets+=f"""book_title= '{title}', """
+
+            if isbn!=prev_isbn:
+                changebook+=1
+                sets+=f"""book_ISBN= '{isbn}', """
+
+            if pages!=prev_pages:
+                changebook+=1
+                sets+=f"""book_page_no= '{pages}', """
+            
+            if language!=prev_language:
+                changebook+=1
+                sets+=f"""book_language= '{language}', """
+            
+            if changebook>0:
+                query =f"""UPDATE book
+                            SET {sets[:-2]}
+                            WHERE book_id= '{book_id}';        
+                        """
+                cur = db.connection.cursor()
+                cur.execute(query)
+                db.connection.commit()
+                cur.close()
+
+            # Checking for new authors to insert
+            authors=authors.split(',')
+            for i in range(len(authors)):
+                authors[i] = authors[i].strip()
+            prev_authors=prev_authors.split(',')
+            for i in range(len(prev_authors)):
+                prev_authors[i] = prev_authors[i].strip()
+            if authors!= prev_authors:
+                addedaut=[]
+                removedaut=[]
+                find_added_and_removed_strings(prev_authors,authors,addedaut,removedaut)
+                addedauth=', '.join(addedaut)
+                removedauth=', '.join(removedaut)
+                addedauthors=convert_string_names_to_list_of_dictionaries(addedauth)
+                removedauthors=convert_string_names_to_list_of_dictionaries(removedauth)
+                query =f"""SELECT  author_first_name, author_last_name
+                            FROM author;         
+                        """
+                cur = db.connection.cursor()
+                cur.execute(query)
+                column_names = [i[0] for i in cur.description]
+                old_authors = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+                cur.close()
+                for a in addedauthors:
+                    if not is_item_in_table(a,old_authors):
+                        query =f"""INSERT INTO author (author_first_name, author_last_name)
+                                    VALUES ('{a['author_first_name']}', '{a['author_last_name']}');        
+                                """
+                        cur = db.connection.cursor()
+                        cur.execute(query)
+                        db.connection.commit()
+                        cur.close()
+                
+                # Inserting book-author relationship
+                for a in addedauthors:
+                    query =f"""SELECT author_id 
+                            FROM author 
+                            WHERE author_first_name='{a['author_first_name']}'
+                            AND author_last_name='{a['author_last_name']}';        
+                            """
+                    cur = db.connection.cursor()
+                    cur.execute(query)
+                    column_names = [i[0] for i in cur.description]
+                    autid = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+                    cur.close()
+                    author_id=autid[0]['author_id']
+                    
+                    query =f"""INSERT INTO book_author (book_book_id, author_author_id)
+                                VALUES ('{book_id}', '{author_id}');        
+                            """
+                    cur = db.connection.cursor()
+                    cur.execute(query)
+                    db.connection.commit()
+                    cur.close()
+                
+                # Deleting from book-author relationship
+                for r in removedauthors:
+                    query =f"""SELECT author_id 
+                            FROM author 
+                            WHERE author_first_name='{r['author_first_name']}'
+                            AND author_last_name='{r['author_last_name']}';        
+                            """
+                    cur = db.connection.cursor()
+                    cur.execute(query)
+                    column_names = [i[0] for i in cur.description]
+                    autid = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+                    cur.close()
+                    author_id=autid[0]['author_id']
+                    print('trying to delete',r )
+                    query =f"""DELETE FROM book_author 
+                                WHERE book_book_id='{book_id}'
+                                AND author_author_id='{author_id}';        
+                            """
+                    cur = db.connection.cursor()
+                    cur.execute(query)
+                    db.connection.commit()
+                    cur.close()
+
+            #Updating categories
+            if sorted(categories)!= sorted(prev_categories):
+                addedcat=[]
+                removedcat=[]
+                find_added_and_removed_strings(prev_categories,categories,addedcat,removedcat)            
+                query =f"""SELECT  category_name
+                            FROM category;         
+                        """
+                cur = db.connection.cursor()
+                cur.execute(query)
+                column_names = [i[0] for i in cur.description]
+                old_cat = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+                old_categories=extract_field_values(old_cat, 'category_name')
+                cur.close()
+                for c in addedcat:
+                    if not is_item_in_table(c,old_categories):
+                        query =f"""INSERT INTO category (category_name)
+                                    VALUES ('{c}');        
+                                """
+                        cur = db.connection.cursor()
+                        cur.execute(query)
+                        db.connection.commit()
+                        cur.close()
+            
+                #  Inserting book-category relationship
+                for c in addedcat:
+                    query =f"""SELECT category_id 
+                            FROM category 
+                            WHERE category_name='{c}';        
+                            """
+                    cur = db.connection.cursor()
+                    cur.execute(query)
+                    column_names = [i[0] for i in cur.description]
+                    cat_id = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+                    cur.close()
+                    category_id=cat_id[0]['category_id']
+                    
+                    query =f"""INSERT INTO book_category (book_book_id, category_category_id)
+                                VALUES ('{book_id}', '{category_id}');        
+                            """
+                    cur = db.connection.cursor()
+                    cur.execute(query)
+                    db.connection.commit()
+                    cur.close()
+
+                # Deleting book_category realationship
+                for c in removedcat:
+                    query =f"""SELECT category_id 
+                            FROM category 
+                            WHERE category_name='{c}';        
+                            """
+                    cur = db.connection.cursor()
+                    cur.execute(query)
+                    column_names = [i[0] for i in cur.description]
+                    cat_id = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+                    cur.close()
+                    category_id=cat_id[0]['category_id']
+                    
+                    query =f"""DELETE FROM book_category 
+                                WHERE book_id= '{book_id}' 
+                                AND  category_id= '{category_id}' );        
+                            """
+                    cur = db.connection.cursor()
+                    cur.execute(query)
+                    db.connection.commit()
+                    cur.close()
+
+            # Checking for new keywords to insert
+            if sorted(keywords)!=sorted(prev_keywords):
+                addedkw=[]
+                removedkw=[]
+                find_added_and_removed_strings(prev_keywords,keywords,addedkw,removedkw)            
+                query =f"""SELECT  keyword_name
+                            FROM keyword;         
+                        """
+                cur = db.connection.cursor()
+                cur.execute(query)
+                column_names = [i[0] for i in cur.description]
+                old_keyw = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+                old_keyword=extract_field_values(old_keyw, 'keyword_name')
+                cur.close()
+                for k in addedkw:
+                    if not is_item_in_table(k,old_keyword):
+                        query =f"""INSERT INTO keyword (keyword_name)
+                                    VALUES ('{k}');        
+                                """
+                        cur = db.connection.cursor()
+                        cur.execute(query)
+                        db.connection.commit()
+                        cur.close()
+            
+                #  Inserting book-keyword relationship
+                for k in addedkw:
+                   #  print('Adding',k )
+                    query =f"""SELECT keyword_id 
+                            FROM keyword 
+                            WHERE keyword_name='{k}';        
+                            """
+                    cur = db.connection.cursor()
+                    cur.execute(query)
+                    column_names = [i[0] for i in cur.description]
+                    keyw_id = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+                    cur.close()
+                    keyword_id=keyw_id[0]['keyword_id']
+                    
+                    query =f"""INSERT INTO book_keyword (book_book_id, keyword_keyword_id)
+                                VALUES ('{book_id}', '{keyword_id}');        
+                            """
+                    cur = db.connection.cursor()
+                    cur.execute(query)
+                    db.connection.commit()
+                    cur.close()
+            
+                #  Deleting from book-keyword relationship
+                for k in removedkw:
+                    query =f"""SELECT keyword_id 
+                            FROM keyword 
+                            WHERE keyword_name='{k}';        
+                            """
+                    cur = db.connection.cursor()
+                    cur.execute(query)
+                    column_names = [i[0] for i in cur.description]
+                    keyw_id = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+                    cur.close()
+                    keyword_id=keyw_id[0]['keyword_id']
+                    
+                    query =f"""DELETE FROM book_keyword 
+                            WHERE book_id= '{book_id}' 
+                            AND keyword_id= '{keyword_id}');        
+                            """
+                    cur = db.connection.cursor()
+                    cur.execute(query)
+                    db.connection.commit()
+                    cur.close()
+
+            # Updating publisher
+            if publisher!=prev_publisher:
+                query =f"""UPDATE publisher
+                            SET publisher_name= '{publisher}'
+                            WHERE book_book_id= '{book_id}';        
+                        """
+                cur = db.connection.cursor()
+                cur.execute(query)
+                db.connection.commit()
+                cur.close()
+
+            # Updating school_book
+            if copies!=prev_copies:
+                query =f"""UPDATE school_book
+                            SET school_book_amount= '{copies}'
+                            WHERE book_book_id= '{book_id}';        
+                        """
+                cur = db.connection.cursor()
+                cur.execute(query)
+                db.connection.commit()
+                cur.close()
+
+            return redirect(f"/operator_dash/{ID}/search_books")
+        except Exception as error:
+            error_message = str(error)
+            return render_template("edit_book.html", pageTitle = "Edit Book",form=form ,error_message=error_message,error=1)
+    form.process()   
+    return render_template("edit_book.html", pageTitle = "Edit Book",form=form,error=0)
+
+
+
+
 @app.route("/operator_dash/<int:user_ID>/search_owed_returns", methods=['GET', 'POST'])
 def operator_search_owed_returns(user_ID):
     form = owed_returs_form()
@@ -764,8 +1122,8 @@ def operator_search_owed_returns(user_ID):
     column_names = [i[0] for i in cur.description]
     results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     cur.close()
-    print(results)
-    print("Hi")
+   #  print(results)
+   #  print("Hi")
     
     return render_template("operator_search_owed_returns.html", pageTitle = "Search", form = form ,results=results)
 
@@ -857,8 +1215,7 @@ def operator_search_users(user_ID):
     cur.execute(query)
     column_names = [i[0] for i in cur.description]
     results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
-    cur.close()
-    
+    cur.close()   
     
     return render_template("operator_search_users.html", pageTitle = "Search", form = form ,results=results, user_ID=user_ID)
 
@@ -876,7 +1233,7 @@ def operator_search_users_delete(user_ID):
         return redirect(url_for('operator_search_users', user_ID=user_ID))
     except Exception as e: ## OperationalError
         flash(str(e), "danger")
-        print(str(e))
+       #  print(str(e))
         return redirect(url_for('operator_search_users', user_ID=user_ID))
     
 @app.route('/operator_search_users_deactivate/<int:user_ID>', methods=['GET', 'POST'])
@@ -894,7 +1251,7 @@ def operator_search_users_deactivate(user_ID):
         return redirect(url_for('operator_search_users', user_ID=user_ID))
     except Exception as e: ## OperationalError
         flash(str(e), "danger")
-        print(str(e))
+       #  print(str(e))
         return redirect(url_for('operator_search_users', user_ID=user_ID))
     
 @app.route('/operator_search_users_print_card/<int:user_ID>', methods=['GET', 'POST'])
@@ -914,7 +1271,7 @@ def operator_search_users_print_card(user_ID):
         return render_template("user_card.html", pageTitle = "user_card", results=results, user_ID=user_ID)
     except Exception as e: ## OperationalError
         flash(str(e), "danger")
-        print(str(e))
+       #  print(str(e))
         return redirect(url_for('operator_search_users', user_ID=user_ID))
     
     
@@ -939,7 +1296,7 @@ def operator_borrowings(user_ID):
         if borrowing_status != "---" : query += f' AND borrowing_status = "{borrowing_status}" '
             
     query += f"ORDER BY br.borrowing_date desc;"
-    print (query)
+   #  print (query)
     cur = db.connection.cursor()
     cur.execute(query)
     column_names = [i[0] for i in cur.description]
@@ -962,7 +1319,7 @@ def operator_verify_return(user_ID):
         return redirect(url_for('operator_borrowings', user_ID=user_ID))
     except Exception as e: ## OperationalError
         flash(str(e), "danger")
-        print(str(e))
+       #  print(str(e))
         return redirect(url_for('operator_borrowings', user_ID=user_ID))
 
 @app.route('/operator_dash/<int:user_ID>/reservations', methods=['GET', 'POST'])
@@ -990,7 +1347,7 @@ def operator_reservations(user_ID):
         if borrowing_status != "---" : query += f' AND reservation_status = "{borrowing_status}" '
             
     query += f"ORDER BY r.reservation_date desc;"
-    print (query)
+   #  print (query)
     cur = db.connection.cursor()
     cur.execute(query)
     column_names = [i[0] for i in cur.description]
@@ -1013,7 +1370,7 @@ def operator_borrowing_from_reservation(user_ID):
         return redirect(url_for('operator_reservations', user_ID=user_ID))
     except Exception as e: ## OperationalError
         flash(str(e), "danger")
-        print(str(e))
+       #  print(str(e))
         return redirect(url_for('operator_reservations', user_ID=user_ID))
 
 
@@ -1077,7 +1434,7 @@ def teacher_update_info(ID):
     cur.close()
 
     old_username = form.username.default = info[0]['username']
-    print(old_username)
+   #  print(old_username)
     old_password = form.password.default = info[0]['user_password']
     old_first_name = form.first_name.default = info[0]['user_first_name']
     old_last_name = form.last_name.default = info[0]['user_last_name']
@@ -1129,7 +1486,7 @@ def teacher_update_info(ID):
             colum=col.split()
             value=val.split()
             result = ", ".join([f"{c} = '{v}'" for c, v in zip(colum, value)])
-            print(result)
+           #  print(result)
             query = f"""
                     UPDATE library_user
                     SET {result}
@@ -1386,9 +1743,9 @@ def consolidate(lst, field_name, *fields):
     return consolidated_list
 
 # "John Doe, Jane Smith, Alice Brown" --->
-# [{'first_name': 'John', 'last_name': 'Doe'}, 
-# {'first_name': 'Jane', 'last_name': 'Smith'}, 
-# {'first_name': 'Alice', 'last_name': 'Brown'}]
+# [{'author_first_name': 'John', 'author_last_name': 'Doe'}, 
+# {'author_first_name': 'Jane', 'author_last_name': 'Smith'}, 
+# {'author_first_name': 'Alice', 'author_last_name': 'Brown'}]
 def convert_string_names_to_list_of_dictionaries(input_string):
     result = []
     entries = input_string.split(',')
@@ -1415,3 +1772,23 @@ def extract_field_values(dictionaries_list, field_name):
             result.append(dictionary[field_name])
 
     return result
+
+def find_added_and_removed_strings(Old, New, Added, Removed):
+    for string in New:
+        if string not in Old:
+            Added.append(string)
+
+    for string in Old:
+        if string not in New:
+            Removed.append(string)
+
+def find_added_and_removed_dicts(Old, New, Added, Removed):
+    for new_dict in New:
+        if all(new_dict.get(field) == old_dict.get(field) for field in ['author_first_name', 'author_last_name'] for old_dict in Old):
+            continue
+        Added.append(new_dict)
+
+    for old_dict in Old:
+        if all(old_dict.get(field) == new_dict.get(field) for field in ['author_first_name', 'author_last_name'] for new_dict in New):
+            continue
+        Removed.append(old_dict)

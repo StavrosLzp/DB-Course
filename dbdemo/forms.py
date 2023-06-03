@@ -164,3 +164,25 @@ class add_book_form(FlaskForm):
 
     
     submit = SubmitField("ADD")
+
+class edit_book_form(FlaskForm):
+    title = StringField(label = "Title", validators = [DataRequired(message = "Title is a required field.")])
+
+    isbn = StringField(label = "ISBN", validators = [DataRequired(message = "ISBN is a required field.")])
+
+    pages = IntegerField(label = "Number of pages", validators = [DataRequired(message = "Number of pages is a required field.")])
+
+    language = StringField(label = "Language", validators = [DataRequired(message = "Language name is a required field.")])
+    
+    authors = StringField(label = "Authors\n (Separated with commas)", validators = [DataRequired(message = "Authors is a required field.")])
+   
+    publisher = StringField(label = "Publisher", validators = [DataRequired(message = "Publisher name is a required field.")])
+    
+    categories = StringField(label = "Categories\n (Separated with commas)", validators = [DataRequired(message = "Categories is a required field.")])
+    
+    keywords = StringField(label = "Keywords\n (Separated with commas)", validators = [DataRequired(message = "Keywords is a required field.")])
+
+    copies = IntegerField(label = "Copies", validators = [DataRequired(message = "Copies is a required field.")])
+
+    
+    submit = SubmitField("Save")
