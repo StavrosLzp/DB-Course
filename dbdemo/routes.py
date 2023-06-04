@@ -1871,7 +1871,7 @@ def user_read_review():
     book_id = request.form['book_id']
     query = f"""SELECT r.review_rating, r.review_text, u.username from review r
                 LEFT JOIN library_user u ON u.user_id = r.library_user_user_id
-                WHERE r.book_book_id = 1
+                WHERE r.book_book_id = {book_id}
                 ;           
             """
     cur = db.connection.cursor()
