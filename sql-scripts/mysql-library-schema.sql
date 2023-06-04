@@ -26,8 +26,6 @@ CREATE TABLE IF NOT EXISTS `author` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
-CREATE INDEX `idx_author_last_name` ON `author` (`author_last_name` ASC) VISIBLE;
-
 
 -- -----------------------------------------------------
 -- Table `publisher`
@@ -56,8 +54,8 @@ CREATE TABLE IF NOT EXISTS `book` (
   CONSTRAINT `fk_book_publisher1`
     FOREIGN KEY (`publisher_publisher_id`)
     REFERENCES `publisher` (`publisher_id`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
@@ -88,8 +86,6 @@ DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
 CREATE INDEX `fk_book_author_author1_idx` ON `book_author` (`author_author_id` ASC) VISIBLE;
-
-CREATE INDEX `fk_book_author_book1_idx` ON `book_author` (`book_book_id` ASC) VISIBLE;
 
 
 -- -----------------------------------------------------
@@ -124,8 +120,6 @@ CREATE TABLE IF NOT EXISTS `book_category` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
-
-CREATE INDEX `fk_book_category_category1_idx` ON `book_category` (`category_category_id` ASC) VISIBLE;
 
 CREATE INDEX `fk_book_category_book1_idx` ON `book_category` (`book_book_id` ASC) VISIBLE;
 
@@ -190,10 +184,6 @@ DEFAULT CHARACTER SET = utf8mb3;
 CREATE INDEX `fk_user_role_id` ON `library_user` (`role_id` ASC) VISIBLE;
 
 CREATE INDEX `fk_user_school_id` ON `library_user` (`school_id` ASC) VISIBLE;
-
-CREATE UNIQUE INDEX `username_UNIQUE` ON `library_user` (`username` ASC) VISIBLE;
-
-CREATE UNIQUE INDEX `user_password_UNIQUE` ON `library_user` (`user_password` ASC) VISIBLE;
 
 
 -- -----------------------------------------------------
