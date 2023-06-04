@@ -120,11 +120,12 @@ def admin():
     
     # 3.1.6 START
     query =  f"""
-                    Select c1.category_name, c2.category_name AS category2_name, count(*) AS comb_amount from book b
+                    Select c1.category_name, c2.category_name AS category2_name, count(br.borrowing_id) AS comb_amount from book b
                     join book_category bc1 ON bc1.book_book_id = b.book_id
                     join book_category bc2 ON bc2.book_book_id = b.book_id AND bc1.category_category_id < bc2.category_category_id
                     join category c1 ON bc1.category_category_id = c1.category_id
                     join category c2 ON bc2.category_category_id = c2.category_id
+                    Join borrowing br ON b.book_id = br.book_book_id
                     group by c1.category_id, c2.category_id
                     order by comb_amount Desc;
                 """
@@ -172,6 +173,7 @@ def loans():
             query += f" AND YEAR(b.borrowing_date) = {year}  "
 
     query += "GROUP BY s.school_id;"
+    print(query)
     cur.execute(query)
     column_names = [i[0] for i in cur.description]
     loans = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
@@ -182,6 +184,7 @@ def loans():
 
 @app.route("/admin_dash/category_info", methods=['GET', 'POST'])
 def category_info():
+    #3.1.2
     query = "select category.category_name from category;"
     cur = db.connection.cursor()
     cur.execute(query)
@@ -217,12 +220,14 @@ def category_info():
                 """
 
     cur = db.connection.cursor()
+    print(query1)
     cur.execute(query1)
     column_names = [i[0] for i in cur.description]
     authors = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     cur.close()
 
     cur = db.connection.cursor()
+    print(query2)
     cur.execute(query2)
     column_names = [i[0] for i in cur.description]
     users = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
@@ -243,6 +248,7 @@ def top_teach_borrowers():
                 ORDER BY num_books_borrowed DESC;
                 """
     cur = db.connection.cursor()
+    print(query)
     cur.execute(query)
     column_names = [i[0] for i in cur.description]
     results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
@@ -549,6 +555,7 @@ def operator_show_books(user_ID):
     query += f"""order by book_id;"""
    #  print(query)
     cur = db.connection.cursor()
+    print(query)
     cur.execute(query)
     column_names = [i[0] for i in cur.description]
     results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
@@ -1305,6 +1312,7 @@ def operator_search_owed_returns(user_ID):
     query += f' AND days_due >= {days_due} '           
     query += f";"
     cur = db.connection.cursor()
+    print(query)
     cur.execute(query)
     column_names = [i[0] for i in cur.description]
     results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
@@ -1365,11 +1373,13 @@ def operator_average_rating(user_ID):
             """
             
     cur = db.connection.cursor()
+    print(query1)
     cur.execute(query1)
     column_names = [i[0] for i in cur.description]
     results1 = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     
     cur.execute(query2)
+    print(query2)
     column_names = [i[0] for i in cur.description]
     results2 = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     cur.close()
@@ -1768,13 +1778,14 @@ def reservation(ID):
             query += f""" AND book_title = '{titl}'  """
         if aut:
             query += f""" AND author_first_name='{aut.split()[0]}'
-                        AND author_last_name='{aut.split()[1]}'; """
+                        AND author_last_name='{aut.split()[1]}'"""
         if cat:
              query += f""" AND category_name = '{cat}'  """
         
          
     query += f"ORDER BY book_title;"
     cur = db.connection.cursor()
+    print(query)
     cur.execute(query)
     column_names = [i[0] for i in cur.description]
     books = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
