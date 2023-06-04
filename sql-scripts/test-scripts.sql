@@ -320,4 +320,26 @@ WHERE op.role_id = 2;
 
 select * from school_book;
 
-select * from reservation;
+select * from borrowing WHERE borrowing_status = "active";
+
+select * from publisher;
+
+select * from Loans_per_school_admin_year;
+
+
+
+SELECT op.user_id, op.user_first_name, op.user_last_name, COUNT(b.borrowing_id) AS approved_borrowings_count, YEAR(b.borrowing_date) AS borrowing_year
+FROM library_user op
+JOIN borrowing b ON op.user_id = b.operator_user_id
+WHERE op.role_id = 2
+GROUP BY op.user_id, YEAR(b.borrowing_date);
+
+select l1.user_id, l1.user_first_name, l1.user_last_name,
+l2.user_id AS user2_user_id, l2.user_first_name AS user2_first_name, l2.user_last_name AS user2_last_name, 
+l1.borrowing_year , l2.approved_borrowings_count AS borrowings_count
+from Loans_per_school_admin_year l1
+join Loans_per_school_admin_year l2 ON l1.user_id < l2.user_id
+WHERE l1.borrowing_year = l2.borrowing_year
+AND l1.approved_borrowings_count = l2.approved_borrowings_count;
+
+

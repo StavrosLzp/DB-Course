@@ -97,10 +97,13 @@ def admin():
     # 3.1.4 END
     # 3.1.5 START
     query =  f"""
-                SELECT op1.user_id, op1.user_first_name, op1.user_last_name, op2.user_id AS user2_user_id, op2.user_first_name AS user2_first_name, op2.user_last_name AS user2_last_name, op2.borrowings_count
-                FROM Loans_per_school_admin_this_year op1
-                Join Loans_per_school_admin_this_year op2 ON op1.user_id < op2.user_id AND op1.borrowings_count = op2.borrowings_count
-                WHERE op1.borrowings_count > 20;
+                select l1.user_id, l1.user_first_name, l1.user_last_name,
+                l2.user_id AS user2_user_id, l2.user_first_name AS user2_first_name, l2.user_last_name AS user2_last_name, 
+                l1.borrowing_year , l2.approved_borrowings_count AS borrowings_count
+                from Loans_per_school_admin_year l1
+                join Loans_per_school_admin_year l2 ON l1.user_id < l2.user_id
+                WHERE l1.borrowing_year = l2.borrowing_year
+                AND l1.approved_borrowings_count = l2.approved_borrowings_count;
                 """
     cur = db.connection.cursor()
     cur.execute(query)

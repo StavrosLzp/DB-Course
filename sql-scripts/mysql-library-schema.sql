@@ -348,7 +348,7 @@ USE `library` ;
 -- -----------------------------------------------------
 -- Placeholder table for view `Loans_per_school_admin_year`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Loans_per_school_admin_year` (`user_id` INT, `user_first_name` INT, `user_last_name` INT, `borrowings_count` INT, `b_year` INT);
+CREATE TABLE IF NOT EXISTS `Loans_per_school_admin_year` (`user_id` INT, `user_first_name` INT, `user_last_name` INT, `approved_borrowings_count` INT, `borrowing_year` INT);
 
 -- -----------------------------------------------------
 -- Placeholder table for view `books_written_per_author`
@@ -366,12 +366,11 @@ CREATE TABLE IF NOT EXISTS `library_user_days_due` (`user_id` INT, `user_first_n
 DROP TABLE IF EXISTS `Loans_per_school_admin_year`;
 USE `library`;
 CREATE  OR REPLACE VIEW `Loans_per_school_admin_year` AS
-SELECT op.user_id, op.user_first_name, op.user_last_name, COUNT(b.borrowing_id) AS borrowings_count, YEAR(b.borrowing_date) AS b_year from library_user op
-LEFT JOIN school s ON s.school_id = op.school_id
-LEFT JOIN library_user u ON s.school_id = u.school_id
-LEFT JOIN borrowing b ON u.user_id = b.library_user_user_id
+SELECT op.user_id, op.user_first_name, op.user_last_name, COUNT(b.borrowing_id) AS approved_borrowings_count, YEAR(b.borrowing_date) AS borrowing_year
+FROM library_user op
+JOIN borrowing b ON op.user_id = b.operator_user_id
 WHERE op.role_id = 2
-GROUP BY op.user_id;
+GROUP BY op.user_id, YEAR(b.borrowing_date);
 
 -- -----------------------------------------------------
 -- View `books_written_per_author`
