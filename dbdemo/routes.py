@@ -802,6 +802,17 @@ def delete_review_user(ID):
     cur.close()
     return redirect(url_for('user_reviews', ID = ID))
 
+@app.route('/operator_dash/<int:ID>/delete_book/<int:book_id>', methods=['GET', 'POST'])
+def delete_book(ID,book_id):
+    query = f"""DELETE FROM book
+                WHERE book_id='{book_id}';           
+            """
+    cur = db.connection.cursor()
+    cur.execute(query)
+    db.connection.commit()
+    cur.close()
+    return redirect(f"/operator_dash/{ID}/search_books")
+
 
 @app.route('/operator_dash/<int:ID>/edit_book/<int:book_id>', methods=['GET', 'POST'])
 def edit_book(ID,book_id):
