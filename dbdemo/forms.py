@@ -166,6 +166,9 @@ class add_book_form(FlaskForm):
 
     copies = IntegerField(label = "Copies", validators = [DataRequired(message = "Copies is a required field.")])
 
+    image = StringField(label = "Image Link", validators = [DataRequired(message = "Image Link is a required field.")])
+   
+    description = StringField(label = "Description", validators = [DataRequired(message = "Description is a required field.")])
     
     submit = SubmitField("ADD")
 
@@ -188,5 +191,8 @@ class edit_book_form(FlaskForm):
 
     copies = IntegerField(label = "Copies", validators = [DataRequired(message = "Copies is a required field.")])
 
+    image = StringField(label = "Image Link", validators = [DataRequired(message = "Image Link is a required field.")])
+   
+    description = StringField(label = "Description", validators = [DataRequired(message = "Description is a required field.")])
     
     submit = SubmitField("Save")

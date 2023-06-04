@@ -19,7 +19,7 @@
     <div class="row" id="row">
         <div class="card" id="card-container">
             <div class="card-body d-flex flex-column" id="card">
-                <h4 class="card-title">Add Book</h4>
+                <h4 class="card-title">Edit Book</h4>
                 <p class="card-text" id="paragraph">Enter Book info</p>
                 <div class="mt-auto">
                     <form method="POST">
@@ -51,6 +51,12 @@
 
                         {{form.keywords.label(class="form-label")}}
                         {{form.keywords(class="form-control")}}
+
+                        {{form.image.label(class="form-label")}}
+                        {{form.image(class="form-control")}}
+
+                        {{form.description.label(class="form-label")}}
+                        {{form.description(class="form-control")}}
                         <br />
                         {{ form.submit(class="btn btn-primary") }}
                     </form>
