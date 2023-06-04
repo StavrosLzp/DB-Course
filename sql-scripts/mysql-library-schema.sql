@@ -246,6 +246,8 @@ CREATE TABLE IF NOT EXISTS `review` (
     REFERENCES `library_user` (`user_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
+  CONSTRAINT `chk_review_rating_range`
+    CHECK (`review_rating` >= 0 AND `review_rating` <= 5)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
