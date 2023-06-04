@@ -1364,7 +1364,7 @@ def operator_search_users(user_ID):
     last_name = None
     username = None
     query = f"""
-            SELECT u.user_id, u.username, u.user_first_name, u.user_last_name, r.role_name FROM library_user u
+            SELECT u.user_id, u.username, u.user_first_name, u.user_last_name, u.img_link, r.role_name FROM library_user u
             LEFT JOIN library_user_role r ON r.role_id = u.role_id
             WHERE school_id = (SELECT school_id from library_user WHERE user_id = {user_ID})
             AND u.role_id <> 2
@@ -1424,7 +1424,7 @@ def operator_search_users_deactivate(user_ID):
 @app.route('/operator_search_users_print_card/<int:user_ID>', methods=['GET', 'POST'])
 def operator_search_users_print_card(user_ID):
     user_id = request.form['user_id']
-    query = f"""SELECT u.user_id, u.username, u.user_first_name, u.user_last_name, s.school_name, r.role_name FROM library_user u
+    query = f"""SELECT u.user_id, u.username, u.user_first_name, u.user_last_name, s.school_name, r.role_name, u.img_link FROM library_user u
                 LEFT JOIN library_user_role r ON r.role_id = u.role_id
                 LEFT JOIN school s ON s.school_id = u.school_id
                 WHERE u.user_id = {user_id};           
