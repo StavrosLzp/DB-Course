@@ -545,7 +545,7 @@ def operator_show_books(user_ID):
 def add_book(ID,school_id):
     form = add_book_form()
     if form.validate_on_submit():
-        # try:
+        try:
             # Book table
             title = form.title.data
             isbn = form.isbn.data
@@ -757,7 +757,7 @@ def add_book(ID,school_id):
             db.connection.commit()
             cur.close()
             return redirect('/operator_dash/'+ str(ID))
-        # except Exception as error:
+        except Exception as error:
             error_message = str(error)
             return render_template("add_book.html", pageTitle = "Add Book",form=form ,error_message=error_message,error=1)
         
@@ -1048,7 +1048,7 @@ def edit_book(ID,book_id):
                     author_id=autid[0]['author_id']
                     
                     query =f"""INSERT INTO book_author (book_book_id, author_author_id)
-                                VALUES ('{book_id}', '{author_id}');        
+                                VALUES ('{book_id}', '{author_id}';        
                             """
                     cur = db.connection.cursor()
                     cur.execute(query)
