@@ -25,5 +25,7 @@ Use `pip3 install <package_name>` to install each individual Python package (lib
 - Connect to [the website](http://localhost:5000/)
 
 
-![image](https://github.com/StavrosLzp/DB-Course/assets/73658190/281b9d2b-dd0f-4a48-84ab-1e320163298d)
+![image](https://github.com/StavrosLzp/DB-Course/assets/73658190/e14e13b8-6a7f-48af-acb9-53fb8db80c6d)
+
+
 
