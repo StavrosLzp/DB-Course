@@ -598,6 +598,11 @@ def add_book(ID,school_id):
             keyw = form.keywords.data
             # School Book table
             copies = form.copies.data
+            
+            image=form.image.data
+
+            description=form.description.data
+
             #Book category, book author, book keyword
             check=auth.split()
             authors=convert_string_names_to_list_of_dictionaries(auth)
@@ -643,8 +648,8 @@ def add_book(ID,school_id):
             publisher_id=pub_id[0]['publisher_id']
 
             # Inserting book
-            query =f"""INSERT INTO book (book_ISBN, book_title, book_page_no, book_language, publisher_publisher_id)
-                    VALUES ('{isbn}','{title}','{pages}','{language}','{publisher_id}');        
+            query =f"""INSERT INTO book (book_ISBN, book_title, book_page_no, book_language, publisher_publisher_id, img_link, description)
+                    VALUES ('{isbn}','{title}','{pages}','{language}','{publisher_id}','{image}','{description}');        
                     """
             cur = db.connection.cursor()
             cur.execute(query)
@@ -888,7 +893,9 @@ def edit_book(ID,book_id):
     school_id=schid[0]['school_id']
 
 
-    query =f"""SELECT book_id, book_title, book_ISBN, book_page_no, book_language, author_first_name, author_last_name, publisher_name, category_name, keyword_name, school_book_amount
+    query =f"""SELECT book_id, book_title, book_ISBN, book_page_no, book_language, 
+            author_first_name, author_last_name, publisher_name, category_name, 
+            keyword_name, school_book_amount, img_link, description
             FROM book JOIN book_author ON book.book_id=book_author.book_book_id
             JOIN author ON book_author.author_author_id=author.author_id
             JOIN publisher ON publisher.publisher_id=book.publisher_publisher_id
@@ -919,7 +926,8 @@ def edit_book(ID,book_id):
     prev_cat=form.categories.default=', '.join(defaults[0]['category_name'])
     prev_keyw=form.keywords.default=', '.join(defaults[0]['keyword_name'])
     prev_copies=form.copies.default=defaults[0]['school_book_amount']
-
+    prev_image=form.image.default=defaults[0]['img_link']
+    prev_description=form.description.default=defaults[0]['description']
 
     if type(prev_authors)==list:
         prev_authors=form.authors.default=', '.join(defaults[0]['author_name'])
@@ -953,6 +961,10 @@ def edit_book(ID,book_id):
             keyw = form.keywords.data
             # School Book table
             copies = form.copies.data
+            image=form.image.data
+
+            description=form.description.data
+
             #Book category, book author, book keyword
             check=authors.split()
             if (len(check)%2)!=0:
@@ -1021,6 +1033,14 @@ def edit_book(ID,book_id):
             if publisher!=prev_publisher:
                 changebook+=1
                 sets+=f"""publisher_publisher_id= '{publisher_id}', """
+            
+            if image!=prev_image:
+                changebook+=1
+                sets+=f"""img_link= '{image}', """
+            
+            if description!=prev_description:
+                changebook+=1
+                sets+=f"""description= '{description}', """
             
             if changebook>0:
                 query =f"""UPDATE book
