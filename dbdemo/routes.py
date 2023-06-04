@@ -545,7 +545,7 @@ def operator_show_books(user_ID):
 def add_book(ID,school_id):
     form = add_book_form()
     if form.validate_on_submit():
-        try:
+        # try:
             # Book table
             title = form.title.data
             isbn = form.isbn.data
@@ -757,7 +757,7 @@ def add_book(ID,school_id):
             db.connection.commit()
             cur.close()
             return redirect('/operator_dash/'+ str(ID))
-        except Exception as error:
+        # except Exception as error:
             error_message = str(error)
             return render_template("add_book.html", pageTitle = "Add Book",form=form ,error_message=error_message,error=1)
         
@@ -884,25 +884,23 @@ def edit_book(ID,book_id):
     prev_keyw=form.keywords.default=', '.join(defaults[0]['keyword_name'])
     prev_copies=form.copies.default=defaults[0]['school_book_amount']
 
-    print(prev_authors)
 
     if type(prev_authors)==list:
         prev_authors=form.authors.default=', '.join(defaults[0]['author_name'])
     form.authors.default=prev_authors
-    print(prev_authors)
 
     # prev_authors=prev_aut.split(",").sort()
     prev_categories=prev_cat.split(",")
     for i in range(len(prev_categories)):
-        prev_categories[i] = prev_categories[i].replace(" ", "")
+        prev_categories[i] = prev_categories[i].strip()
 
     prev_keywords=prev_keyw.split(",")
     for i in range(len(prev_keywords)):
-        prev_keywords[i] = prev_keywords[i].replace(" ", "")
+        prev_keywords[i] = prev_keywords[i].strip()
 
 
     if form.validate_on_submit():
-        try:
+        # try:
             # Book table
             title = form.title.data
             isbn = form.isbn.data
@@ -925,14 +923,12 @@ def edit_book(ID,book_id):
                 raise Exception("Please enter authors' names and surnames")
             categories=cat.split(',')
             for i in range(len(categories)):
-                categories[i] = categories[i].replace(" ", "")
-
+                categories[i] = categories[i].strip()
+            print(categories)
             keywords=keyw.split(',')
             for i in range(len(keywords)):
-                keywords[i] = keywords[i].replace(" ", "")
+                keywords[i] = keywords[i].strip()
 
-            print(publisher)
-            print(prev_publisher)
 
             # Checking for new publisher to insert
             if prev_publisher!=publisher:
@@ -1048,7 +1044,7 @@ def edit_book(ID,book_id):
                     author_id=autid[0]['author_id']
                     
                     query =f"""INSERT INTO book_author (book_book_id, author_author_id)
-                                VALUES ('{book_id}', '{author_id}';        
+                                VALUES ('{book_id}', '{author_id}');        
                             """
                     cur = db.connection.cursor()
                     cur.execute(query)
@@ -1068,7 +1064,6 @@ def edit_book(ID,book_id):
                     autid = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
                     cur.close()
                     author_id=autid[0]['author_id']
-                    print('trying to delete',r )
                     query =f"""DELETE FROM book_author 
                                 WHERE book_book_id='{book_id}'
                                 AND author_author_id='{author_id}';        
@@ -1137,8 +1132,8 @@ def edit_book(ID,book_id):
                     category_id=cat_id[0]['category_id']
                     
                     query =f"""DELETE FROM book_category 
-                                WHERE book_id= '{book_id}' 
-                                AND  category_id= '{category_id}' );        
+                                WHERE book_book_id= '{book_id}' 
+                                AND  category_category_id= '{category_id}';        
                             """
                     cur = db.connection.cursor()
                     cur.execute(query)
@@ -1205,8 +1200,8 @@ def edit_book(ID,book_id):
                     keyword_id=keyw_id[0]['keyword_id']
                     
                     query =f"""DELETE FROM book_keyword 
-                            WHERE book_id= '{book_id}' 
-                            AND keyword_id= '{keyword_id}');        
+                            WHERE book_book_id= '{book_id}' 
+                            AND keyword_keyword_id= '{keyword_id}';        
                             """
                     cur = db.connection.cursor()
                     cur.execute(query)
@@ -1225,7 +1220,7 @@ def edit_book(ID,book_id):
                 cur.close()
 
             return redirect(f"/operator_dash/{ID}/search_books")
-        except Exception as error:
+        # except Exception as error:
             error_message = str(error)
             return render_template("edit_book.html", pageTitle = "Edit Book",form=form ,error_message=error_message,error=1)
     form.process()   
