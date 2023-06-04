@@ -56,8 +56,8 @@ CREATE TABLE IF NOT EXISTS `book` (
   CONSTRAINT `fk_book_publisher1`
     FOREIGN KEY (`publisher_publisher_id`)
     REFERENCES `publisher` (`publisher_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 

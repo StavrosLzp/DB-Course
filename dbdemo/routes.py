@@ -1897,6 +1897,7 @@ def user_read_review():
                 ;           
             """
     cur = db.connection.cursor()
+    print(query)
     cur.execute(query)
     column_names = [i[0] for i in cur.description]
     results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
