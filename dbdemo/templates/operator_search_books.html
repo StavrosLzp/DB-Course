@@ -75,6 +75,12 @@
                                         <button type="submit">Edit</button>
                                     </form>
                                 </td>
+                                <td>
+                                    <form action="/operator_dash/{{user_ID}}/delete_book/{{result.book_id}}"
+                                        method="POST">
+                                        <button type="submit">Delete</button>
+                                    </form>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
