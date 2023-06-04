@@ -1450,6 +1450,23 @@ def operator_borrowing_from_reservation(user_ID):
         flash(str(e), "danger")
        #  print(str(e))
         return redirect(url_for('operator_reservations', user_ID=user_ID))
+    
+@app.route('/operator_delete_reservation/<int:user_ID>', methods=['GET', 'POST'])
+def operator_delete_reservation(user_ID):
+    reservation_id = request.form['reservation_id']
+    query = f"""DELETE FROM reservation
+                WHERE reservation_id ='{reservation_id}';           
+            """
+    try:
+        cur = db.connection.cursor()
+        cur.execute(query)
+        db.connection.commit()
+        cur.close()
+        return redirect(url_for('operator_reservations', user_ID=user_ID))
+    except Exception as e: ## OperationalError
+        flash(str(e), "danger")
+       #  print(str(e))
+        return redirect(url_for('operator_reservations', user_ID=user_ID))
 
 
 

@@ -54,6 +54,12 @@
                                         <button type="submit"> Loan </button>
                                     </form>
                                 </td>
+                                <td>
+                                    <form action="/operator_delete_reservation/{{user_ID}}" method="POST">
+                                        <input type="hidden" name="reservation_id" value="{{ result.reservation_id }}">
+                                        <button type="submit"> Delete </button>
+                                    </form>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
