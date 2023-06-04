@@ -542,7 +542,7 @@ def operator_show_books(user_ID):
 def add_book(ID,school_id):
     form = add_book_form()
     if form.validate_on_submit():
-        try:
+        # try:
             # Book table
             title = form.title.data
             isbn = form.isbn.data
@@ -552,6 +552,7 @@ def add_book(ID,school_id):
             auth = form.authors.data
             # Publisher table
             publisher = form.publisher.data
+            publisher=publisher.strip()
             # Category table
             cat = form.categories.data
             # Keywords table
@@ -571,9 +572,40 @@ def add_book(ID,school_id):
             for i in range(len(keywords)):
                 keywords[i] = keywords[i].replace(" ", "")
 
+            # Checking for new publisher to insert
+            query =f"""SELECT  publisher_name
+                        FROM publisher;         
+                    """
+            cur = db.connection.cursor()
+            cur.execute(query)
+            column_names = [i[0] for i in cur.description]
+            old_pub = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+            old_publisher=extract_field_values(old_pub, 'keyword_name')
+            cur.close()
+            if not is_item_in_table(publisher,old_publisher):
+                query =f"""INSERT INTO publisher (publisher_name)
+                            VALUES ('{publisher}');        
+                        """
+                cur = db.connection.cursor()
+                cur.execute(query)
+                db.connection.commit()
+                cur.close()
+
+            # Finding new publisher id
+            query =f"""SELECT publisher_id 
+                        FROM publisher 
+                        WHERE publisher_name='{publisher}';        
+                        """
+            cur = db.connection.cursor()
+            cur.execute(query)
+            column_names = [i[0] for i in cur.description]
+            pub_id = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+            cur.close()
+            publisher_id=pub_id[0]['publisher_id']
+
             # Inserting book
-            query =f"""INSERT INTO book (book_ISBN, book_title, book_page_no, book_language)
-                    VALUES ('{isbn}','{title}','{pages}','{language}');        
+            query =f"""INSERT INTO book (book_ISBN, book_title, book_page_no, book_language, publisher_publisher_id)
+                    VALUES ('{isbn}','{title}','{pages}','{language}','{publisher_id}');        
                     """
             cur = db.connection.cursor()
             cur.execute(query)
@@ -713,15 +745,6 @@ def add_book(ID,school_id):
                 db.connection.commit()
                 cur.close()
 
-            # Inserting into publisher
-            query =f"""INSERT INTO publisher (publisher_name, book_book_id)
-                            VALUES ('{publisher}', '{book_id}');        
-                        """
-            cur = db.connection.cursor()
-            cur.execute(query)
-            db.connection.commit()
-            cur.close()
-
             # Inserting into school_book
             query =f"""INSERT INTO school_book (school_school_id, school_book_amount, book_book_id)
                             VALUES ('{school_id}', '{copies}', '{book_id}');        
@@ -731,7 +754,7 @@ def add_book(ID,school_id):
             db.connection.commit()
             cur.close()
             return redirect('/operator_dash/'+ str(ID))
-        except Exception as error:
+        # except Exception as error:
             error_message = str(error)
             return render_template("add_book.html", pageTitle = "Add Book",form=form ,error_message=error_message,error=1)
         
@@ -829,7 +852,7 @@ def edit_book(ID,book_id):
     query =f"""SELECT book_id, book_title, book_ISBN, book_page_no, book_language, author_first_name, author_last_name, publisher_name, category_name, keyword_name, school_book_amount
             FROM book JOIN book_author ON book.book_id=book_author.book_book_id
             JOIN author ON book_author.author_author_id=author.author_id
-            JOIN publisher ON book.book_id=publisher.book_book_id
+            JOIN publisher ON publisher.publisher_id=book.publisher_publisher_id
             JOIN book_category ON book.book_id=book_category.book_book_id
             JOIN category ON category.category_id=book_category.category_category_id
             JOIN book_keyword ON book.book_id=book_keyword.book_book_id
@@ -852,11 +875,18 @@ def edit_book(ID,book_id):
     prev_isbn=form.isbn.default=defaults[0]['book_ISBN']
     prev_pages=form.pages.default=defaults[0]['book_page_no']
     prev_language=form.language.default=defaults[0]['book_language']
-    prev_authors=form.authors.default=', '.join(defaults[0]['author_name'])
+    prev_authors=defaults[0]['author_name']
     prev_publisher=form.publisher.default=defaults[0]['publisher_name']
     prev_cat=form.categories.default=', '.join(defaults[0]['category_name'])
     prev_keyw=form.keywords.default=', '.join(defaults[0]['keyword_name'])
     prev_copies=form.copies.default=defaults[0]['school_book_amount']
+
+    print(prev_authors)
+
+    if type(prev_authors)==list:
+        prev_authors=form.authors.default=', '.join(defaults[0]['author_name'])
+    form.authors.default=prev_authors
+    print(prev_authors)
 
     # prev_authors=prev_aut.split(",").sort()
     prev_categories=prev_cat.split(",")
@@ -879,6 +909,7 @@ def edit_book(ID,book_id):
             authors = form.authors.data
             # Publisher table
             publisher = form.publisher.data
+            publisher=publisher.strip()
             # Category table
             cat = form.categories.data
             # Keywords table
@@ -897,6 +928,40 @@ def edit_book(ID,book_id):
             for i in range(len(keywords)):
                 keywords[i] = keywords[i].replace(" ", "")
 
+            print(publisher)
+            print(prev_publisher)
+
+            # Checking for new publisher to insert
+            if prev_publisher!=publisher:
+                query =f"""SELECT  publisher_name
+                            FROM publisher;         
+                        """
+                cur = db.connection.cursor()
+                cur.execute(query)
+                column_names = [i[0] for i in cur.description]
+                old_pub = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+                old_publisher=extract_field_values(old_pub, 'keyword_name')
+                cur.close()
+                if not is_item_in_table(publisher,old_publisher):
+                    query =f"""INSERT INTO publisher (publisher_name)
+                                VALUES ('{publisher}');        
+                            """
+                    cur = db.connection.cursor()
+                    cur.execute(query)
+                    db.connection.commit()
+                    cur.close()
+
+                # Finding new publisher id
+                query =f"""SELECT publisher_id 
+                            FROM publisher 
+                            WHERE publisher_name='{publisher}';        
+                            """
+                cur = db.connection.cursor()
+                cur.execute(query)
+                column_names = [i[0] for i in cur.description]
+                pub_id = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+                cur.close()
+                publisher_id=pub_id[0]['publisher_id']
 
             # Updating book
             changebook=0
@@ -917,6 +982,10 @@ def edit_book(ID,book_id):
             if language!=prev_language:
                 changebook+=1
                 sets+=f"""book_language= '{language}', """
+            
+            if publisher!=prev_publisher:
+                changebook+=1
+                sets+=f"""publisher_publisher_id= '{publisher_id}', """
             
             if changebook>0:
                 query =f"""UPDATE book
@@ -1140,17 +1209,6 @@ def edit_book(ID,book_id):
                     cur.execute(query)
                     db.connection.commit()
                     cur.close()
-
-            # Updating publisher
-            if publisher!=prev_publisher:
-                query =f"""UPDATE publisher
-                            SET publisher_name= '{publisher}'
-                            WHERE book_book_id= '{book_id}';        
-                        """
-                cur = db.connection.cursor()
-                cur.execute(query)
-                db.connection.commit()
-                cur.close()
 
             # Updating school_book
             if copies!=prev_copies:
