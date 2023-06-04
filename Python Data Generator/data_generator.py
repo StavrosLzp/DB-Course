@@ -16,6 +16,19 @@ Faker.seed(2)
 content = ""
 content += f"USE library;\n"
 
+
+# publisher ------------------------ 
+
+DUMMY_DATA_NUMBER = 20
+table_name = "publisher"
+table_columns = ["publisher_name"]
+content += f"\n"
+
+for i in range(DUMMY_DATA_NUMBER):
+    Name = fake.sentence(nb_words=2).replace(".","")
+    content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
+        VALUES ("{Name}");\n'
+
 # Author ---------------------------
 
 DUMMY_DATA_NUMBER = 20
@@ -36,7 +49,7 @@ content += 'INSERT INTO author (author_first_name,author_last_name)        VALUE
 
 DUMMY_DATA_NUMBER_BOOKS = 100
 table_name = "book"
-table_columns = ["book_ISBN", "book_title","book_page_no","book_language"]
+table_columns = ["book_ISBN", "book_title","book_page_no","book_language","publisher_publisher_id"]
 lang = ["English", "Greek", "German", "Frech"]
 content += f"\n"
 
@@ -45,10 +58,11 @@ for i in range(DUMMY_DATA_NUMBER_BOOKS):
     title = fake.sentence(nb_words=5, variable_nb_words=True).replace(".","")
     page_no = random.randint(50, 5000)
     language = random.choice(lang)
+    publisher_id = random.randint(1, 20)
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-        VALUES ("{isbn_var}", "{title}", "{page_no}", "{language}");\n'
+        VALUES ("{isbn_var}", "{title}", "{page_no}", "{language}", "{publisher_id}");\n'
 # 3.1.4:        
-content += 'INSERT INTO book (book_ISBN,book_title,book_page_no,book_language)        VALUES ("5-57237-837-7", "Understand government", "445", "Greek");'
+content += 'INSERT INTO book (book_ISBN,book_title,book_page_no,book_language,publisher_publisher_id)        VALUES ("5-57237-837-7", "Understand government", "445", "Greek", "15");'
 
 # Book_Author ---------------------------
 
@@ -237,19 +251,6 @@ for i in range(DUMMY_DATA_NUMBER):
 
 
 
-# publisher ------------------------ 
-
-DUMMY_DATA_NUMBER = DUMMY_DATA_NUMBER_BOOKS
-table_name = "publisher"
-table_columns = ["publisher_name", "book_book_id"]
-content += f"\n"
-
-for i in range(DUMMY_DATA_NUMBER):
-    Name = fake.sentence(nb_words=2).replace(".","")
-    book_id = i+1
-    content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-        VALUES ("{Name}", "{book_id}");\n'
-
 
 
 # school_book -----------------------------------
@@ -271,61 +272,69 @@ for i in range(SchoolNum):
 # borrowing  OLD ------------------------ 
 DUMMY_DATA_NUMBER = DUMMY_DATA_NUMBER_BOOKS
 table_name = "borrowing"
-table_columns = ["book_book_id", "library_user_user_id", "borrowing_date", "borrowing_status"]
+table_columns = ["book_book_id", "library_user_user_id", "borrowing_date", "borrowing_status", "operator_user_id"]
 content += f"\n"
 
 for i in range (5):
     for  student in range(1,SchoolNum * studentsPerSchool+1):
         user_id = SchoolNum + 1 + student
+        operator_id = floor(student / (studentsPerSchool+1)) + 2
+        #print(str(user_id)+ " " + str(operator_id))
         book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
         date = fake.date_between_dates(datetime.date.today() - timedelta(days = 900),datetime.date.today() - timedelta(days = 15))
         status = "returned"
         
         content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-            VALUES ("{book_id}", "{user_id}", "{date}", "{status}");\n'
+            VALUES ("{book_id}", "{user_id}", "{date}", "{status}", "{operator_id}");\n'
 
     for teacher in range(SchoolNum * studentsPerSchool+1,SchoolNum * studentsPerSchool+1+SchoolNum*TeachersPerSchool):
         user_id = SchoolNum + 1 +  teacher
+        operator_id = floor(teacher / (TeachersPerSchool)) + -17
+        #print(str(user_id)+ " " + str(operator_id))
         book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
         date = fake.date_between_dates(datetime.date.today() - timedelta(days = 900),datetime.date.today() - timedelta(days = 15))
         status = "returned"
         content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-            VALUES ("{book_id}", "{user_id}", "{date}", "{status}");\n'
+            VALUES ("{book_id}", "{user_id}", "{date}", "{status}", "{operator_id}" );\n'
 
 
-random.seed(1) 
+random.seed(2) 
 # borrowing ------------------------ 
 
 DUMMY_DATA_NUMBER = DUMMY_DATA_NUMBER_BOOKS
 table_name = "borrowing"
-table_columns = ["book_book_id", "library_user_user_id", "borrowing_date", "borrowing_status"]
+table_columns = ["book_book_id", "library_user_user_id", "borrowing_date", "borrowing_status", "operator_user_id"]
 content += f"\n"
+list = []
 
 # school_id = floor(i / studentsPerSchool) +1
 for i in range(2):
     for  student in range(1,SchoolNum * studentsPerSchool+1):
         user_id = SchoolNum + 1 + student
+        operator_id = floor(student / (studentsPerSchool+1)) + 2
         book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
         date = fake.date_between_dates(datetime.date.today() - timedelta(days = 15),datetime.date.today())
         if date > datetime.date.today() - timedelta(days = 11) : status = "active"
         else : status = "returned"
-        
+        list.append(user_id*100 + book_id)
         content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-            VALUES ("{book_id}", "{user_id}", "{date}", "{status}");\n'
+            VALUES ("{book_id}", "{user_id}", "{date}", "{status}", "{operator_id}");\n'
 
 for teacher in range(SchoolNum * studentsPerSchool+1,SchoolNum * studentsPerSchool+1+SchoolNum*TeachersPerSchool):
     user_id = SchoolNum + 1 +  teacher
+    operator_id = floor(teacher / (TeachersPerSchool)) + -17
     book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
     date = fake.date_between_dates(datetime.date.today() - timedelta(days = 15),datetime.date.today())
     if date > datetime.date.today() - timedelta(days = 11) : status = "active"
     else : status = "returned"
+    list.append(user_id*100 + book_id)
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
-        VALUES ("{book_id}", "{user_id}", "{date}", "{status}");\n'
+        VALUES ("{book_id}", "{user_id}", "{date}", "{status}", "{operator_id}");\n'
 
     
 
 
-
+random.seed(43) 
 # reservation ------------------------ 
 
 DUMMY_DATA_NUMBER = DUMMY_DATA_NUMBER_BOOKS
@@ -337,6 +346,8 @@ content += f"\n"
 for  student in range(1,SchoolNum * studentsPerSchool+1):
     user_id = SchoolNum + 1 + student
     book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
+    if((user_id*100 + book_id) in list):
+        continue
     date = fake.date_between_dates(datetime.date.today() - timedelta(days = 7),datetime.date.today())
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
         VALUES ("{book_id}", "{user_id}", "{date}");\n'
@@ -345,6 +356,8 @@ for  student in range(1,SchoolNum * studentsPerSchool+1):
 for teacher in range(SchoolNum * studentsPerSchool+1,SchoolNum * studentsPerSchool+1+SchoolNum*TeachersPerSchool):
     user_id = SchoolNum + 1 + teacher
     book_id = random.randint(1,DUMMY_DATA_NUMBER_BOOKS)
+    if((user_id*100 + book_id) in list):
+        continue
     date = fake.date_between_dates(datetime.date.today() - timedelta(days = 7),datetime.date.today())
     content += f'INSERT INTO {table_name} ({",".join(table_columns)})\
         VALUES ("{book_id}", "{user_id}", "{date}");\n'

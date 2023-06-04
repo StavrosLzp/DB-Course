@@ -30,6 +30,17 @@ CREATE INDEX `idx_author_last_name` ON `author` (`author_last_name` ASC) VISIBLE
 
 
 -- -----------------------------------------------------
+-- Table `publisher`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `publisher` (
+  `publisher_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `publisher_name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`publisher_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
+
+
+-- -----------------------------------------------------
 -- Table `book`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `book` (
@@ -38,11 +49,19 @@ CREATE TABLE IF NOT EXISTS `book` (
   `book_title` VARCHAR(60) NOT NULL,
   `book_page_no` INT UNSIGNED NOT NULL,
   `book_language` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`book_id`))
+  `publisher_publisher_id` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`book_id`),
+  CONSTRAINT `fk_book_publisher1`
+    FOREIGN KEY (`publisher_publisher_id`)
+    REFERENCES `publisher` (`publisher_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
 CREATE INDEX `idx_book_title` ON `book` (`book_title` ASC) VISIBLE;
+
+CREATE INDEX `fk_book_publisher1_idx` ON `book` (`publisher_publisher_id` ASC) VISIBLE;
 
 
 -- -----------------------------------------------------
@@ -60,7 +79,7 @@ CREATE TABLE IF NOT EXISTS `book_author` (
   CONSTRAINT `fk_book_author_book1`
     FOREIGN KEY (`book_book_id`)
     REFERENCES `book` (`book_id`)
-    ON DELETE RESTRICT
+    ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
@@ -98,7 +117,7 @@ CREATE TABLE IF NOT EXISTS `book_category` (
   CONSTRAINT `fk_book_category_book1`
     FOREIGN KEY (`book_book_id`)
     REFERENCES `book` (`book_id`)
-    ON DELETE RESTRICT
+    ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
@@ -175,25 +194,6 @@ CREATE UNIQUE INDEX `user_password_UNIQUE` ON `library_user` (`user_password` AS
 
 
 -- -----------------------------------------------------
--- Table `publisher`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `publisher` (
-  `publisher_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `publisher_name` VARCHAR(45) NOT NULL,
-  `book_book_id` INT NOT NULL,
-  PRIMARY KEY (`publisher_id`),
-  CONSTRAINT `fk_publisher_book1`
-    FOREIGN KEY (`book_book_id`)
-    REFERENCES `book` (`book_id`)
-    ON DELETE RESTRICT
-    ON UPDATE CASCADE)
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb3;
-
-CREATE INDEX `fk_publisher_book1_idx` ON `publisher` (`book_book_id` ASC) VISIBLE;
-
-
--- -----------------------------------------------------
 -- Table `reservation`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `reservation` (
@@ -236,7 +236,7 @@ CREATE TABLE IF NOT EXISTS `review` (
   CONSTRAINT `fk_review_book1`
     FOREIGN KEY (`book_book_id`)
     REFERENCES `book` (`book_id`)
-    ON DELETE RESTRICT
+    ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_review_library_user1`
     FOREIGN KEY (`library_user_user_id`)
@@ -301,7 +301,7 @@ CREATE TABLE IF NOT EXISTS `book_keyword` (
   CONSTRAINT `fk_table1_book1`
     FOREIGN KEY (`book_book_id`)
     REFERENCES `book` (`book_id`)
-    ON DELETE RESTRICT
+    ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
@@ -317,17 +317,23 @@ CREATE TABLE IF NOT EXISTS `borrowing` (
   `borrowing_status` ENUM('active', 'returned') NOT NULL,
   `book_book_id` INT NOT NULL,
   `library_user_user_id` INT UNSIGNED NOT NULL,
+  `operator_user_id` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`borrowing_id`),
   CONSTRAINT `fk_borrowing_book1`
     FOREIGN KEY (`book_book_id`)
     REFERENCES `book` (`book_id`)
-    ON DELETE RESTRICT
+    ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `fk_borrowing_library_user1`
     FOREIGN KEY (`library_user_user_id`)
     REFERENCES `library_user` (`user_id`)
     ON DELETE CASCADE
-    ON UPDATE CASCADE)
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_borrowing_library_user2`
+    FOREIGN KEY (`operator_user_id`)
+    REFERENCES `library_user` (`user_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
@@ -335,12 +341,14 @@ CREATE INDEX `fk_borrowing_book1_idx` ON `borrowing` (`book_book_id` ASC) VISIBL
 
 CREATE INDEX `fk_borrowing_library_user1_idx` ON `borrowing` (`library_user_user_id` ASC) VISIBLE;
 
+CREATE INDEX `fk_borrowing_library_user2_idx` ON `borrowing` (`operator_user_id` ASC) VISIBLE;
+
 USE `library` ;
 
 -- -----------------------------------------------------
--- Placeholder table for view `Loans_per_school_admin_this_year`
+-- Placeholder table for view `Loans_per_school_admin_year`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Loans_per_school_admin_this_year` (`user_id` INT, `user_first_name` INT, `user_last_name` INT, `borrowings_count` INT);
+CREATE TABLE IF NOT EXISTS `Loans_per_school_admin_year` (`user_id` INT, `user_first_name` INT, `user_last_name` INT, `borrowings_count` INT, `b_year` INT);
 
 -- -----------------------------------------------------
 -- Placeholder table for view `books_written_per_author`
@@ -353,17 +361,16 @@ CREATE TABLE IF NOT EXISTS `books_written_per_author` (`author_id` INT, `author_
 CREATE TABLE IF NOT EXISTS `library_user_days_due` (`user_id` INT, `user_first_name` INT, `user_last_name` INT, `school_id` INT, `currently_borrowed` INT, `days_due` INT);
 
 -- -----------------------------------------------------
--- View `Loans_per_school_admin_this_year`
+-- View `Loans_per_school_admin_year`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `Loans_per_school_admin_this_year`;
+DROP TABLE IF EXISTS `Loans_per_school_admin_year`;
 USE `library`;
-CREATE  OR REPLACE VIEW `Loans_per_school_admin_this_year` AS
-SELECT op.user_id, op.user_first_name, op.user_last_name, COUNT(b.borrowing_id) AS borrowings_count from library_user op
+CREATE  OR REPLACE VIEW `Loans_per_school_admin_year` AS
+SELECT op.user_id, op.user_first_name, op.user_last_name, COUNT(b.borrowing_id) AS borrowings_count, YEAR(b.borrowing_date) AS b_year from library_user op
 LEFT JOIN school s ON s.school_id = op.school_id
 LEFT JOIN library_user u ON s.school_id = u.school_id
 LEFT JOIN borrowing b ON u.user_id = b.library_user_user_id
 WHERE op.role_id = 2
-AND YEAR(b.borrowing_date) = YEAR(NOW())
 GROUP BY op.user_id;
 
 -- -----------------------------------------------------

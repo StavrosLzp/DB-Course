@@ -25,7 +25,7 @@ def index():
             role_id = result[0][0]
             user_id = result[0][1]
         cur.close()
-        # form.username.data = ""
+        form.username.data = ""
         form.password.data = ""
     if role_id == 1:
         return redirect('/admin_dash')

@@ -309,3 +309,15 @@ SELECT r.review_rating, r.review_text, u.username from review r
 LEFT JOIN library_user u ON u.user_id = r.library_user_user_id
 WHERE r.book_book_id = 2;
 
+
+
+
+SELECT op.user_id, op.user_first_name, op.user_last_name, COUNT(b.borrowing_id) AS borrowings_count, YEAR(b.borrowing_date) AS b_year from library_user op
+LEFT JOIN school s ON s.school_id = op.school_id
+LEFT JOIN library_user u ON s.school_id = u.school_id
+LEFT JOIN borrowing b ON u.user_id = b.library_user_user_id
+WHERE op.role_id = 2;
+
+select * from school_book;
+
+select * from reservation;
