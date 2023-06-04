@@ -62,11 +62,18 @@ def sign_up():
             last_name = form.last_name.data
             school = form.school.data
             birthdate = form.birthdate.data
+            img_link = form.img_link.data
             cur = db.connection.cursor()
-            query = f"""
-                    INSERT INTO library_user (username,user_password,user_first_name,user_last_name,school_id,user_birthdate,role_id)
-                    VALUES ("{username}", "{password}", "{first_name}", "{last_name}", "{school}", "{birthdate}", "5");
+            if img_link:
+                query = f"""
+                    INSERT INTO library_user (username,user_password,user_first_name,user_last_name,school_id,user_birthdate,role_id,img_link)
+                    VALUES ("{username}", "{password}", "{first_name}", "{last_name}", "{school}", "{birthdate}", "5", "{img_link}");
                     """
+            else:
+                query = f"""
+                        INSERT INTO library_user (username,user_password,user_first_name,user_last_name,school_id,user_birthdate,role_id)
+                        VALUES ("{username}", "{password}", "{first_name}", "{last_name}", "{school}", "{birthdate}", "5");
+                        """
             cur.execute(query)
             db.connection.commit()
             cur.close()

@@ -50,6 +50,8 @@ CREATE TABLE IF NOT EXISTS `book` (
   `book_page_no` INT UNSIGNED NOT NULL,
   `book_language` VARCHAR(45) NOT NULL,
   `publisher_publisher_id` INT UNSIGNED NOT NULL,
+  `img_link` VARCHAR(45) NOT NULL DEFAULT 'https://picsum.photos/200/300',
+  `description` VARCHAR(500) NOT NULL DEFAULT 'A book description',
   PRIMARY KEY (`book_id`),
   CONSTRAINT `fk_book_publisher1`
     FOREIGN KEY (`publisher_publisher_id`)
@@ -170,6 +172,7 @@ CREATE TABLE IF NOT EXISTS `library_user` (
   `user_birthdate` DATE NOT NULL,
   `role_id` INT UNSIGNED NOT NULL,
   `school_id` INT UNSIGNED NULL,
+  `img_link` VARCHAR(45) NOT NULL DEFAULT 'https://picsum.photos/200/300',
   PRIMARY KEY (`user_id`),
   CONSTRAINT `fk_user_role_id`
     FOREIGN KEY (`role_id`)

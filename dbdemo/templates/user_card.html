@@ -2,6 +2,7 @@
 {% block content %}
 <div class="container" id="row-container">
     {% include "flash_messages.html" %}
+
     <div class="row" id="row">
         <div class="col-md-4">
             <div class="card" id="card-container-layout">
@@ -13,6 +14,7 @@
                     <p class="card-text paragraph-custom">Name : {{ result.user_first_name }} {{ result.user_last_name }} </p>
                     <p class="card-text paragraph-custom">Username : {{ result.username }} </p>
                     <p class="card-text paragraph-custom"> {{ result.role_name }} </p>
+                    <img src="https://picsum.photos/200/300" />
                     {% endfor %}
                 </div>
             </div>

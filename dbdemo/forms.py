@@ -26,6 +26,8 @@ class sign_up_form(FlaskForm):
     
     birthdate = DateField(label = "Birth Date", validators = [DataRequired(message = "Birth Date is a required field.")])
     
+    img_link = StringField(label = "img_link")
+    
     submit = SubmitField("Login")
     
 class loans_view(FlaskForm):
