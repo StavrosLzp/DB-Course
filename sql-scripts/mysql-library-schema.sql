@@ -183,7 +183,11 @@ DEFAULT CHARACTER SET = utf8mb3;
 
 CREATE INDEX `fk_user_role_id` ON `library_user` (`role_id` ASC) VISIBLE;
 
-CREATE INDEX `fk_user_school_id` ON `library_user` (`school_id` ASC) VISIBLE;
+CREATE INDEX `fk_user_school_id` ON `library_user` (`school_id` ASC) INVISIBLE;
+
+CREATE INDEX `idx_first_name` ON `library_user` (`user_first_name` ASC) INVISIBLE;
+
+CREATE INDEX `idx_last_name` ON `library_user` (`user_last_name` ASC) VISIBLE;
 
 
 -- -----------------------------------------------------
@@ -225,6 +229,7 @@ CREATE TABLE IF NOT EXISTS `review` (
   `review_status` ENUM('validated', 'pending_validation') NOT NULL DEFAULT 'validated',
   `book_book_id` INT NOT NULL,
   `library_user_user_id` INT UNSIGNED NOT NULL,
+  CHECK (`review_rating` >= 0 AND `review_rating` <= 5),
   PRIMARY KEY (`review_id`),
   CONSTRAINT `fk_review_book1`
     FOREIGN KEY (`book_book_id`)
@@ -236,8 +241,6 @@ CREATE TABLE IF NOT EXISTS `review` (
     REFERENCES `library_user` (`user_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
-  CONSTRAINT `chk_review_rating_range`
-    CHECK (`review_rating` >= 0 AND `review_rating` <= 5)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
