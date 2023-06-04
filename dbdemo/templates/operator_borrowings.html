@@ -38,6 +38,7 @@
                                 <th>Borrower Name</th>
                                 <th>Book Title</th>
                                 <th></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -51,6 +52,12 @@
                                     <form action="/operator_verify_return/{{user_ID}}" method="POST">
                                         <input type="hidden" name="borrowing_id" value="{{ result.borrowing_id }}">
                                         <button type="submit"> Verify Return </button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form action="/operator_delete_borrowings/{{user_ID}}" method="POST">
+                                        <input type="hidden" name="borrowing_id" value="{{ result.borrowing_id }}">
+                                        <button type="submit"> Delete </button>
                                     </form>
                                 </td>
                             </tr>

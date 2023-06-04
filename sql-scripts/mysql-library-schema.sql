@@ -592,6 +592,18 @@ BEGIN
   END IF;
 END;$$
 
+USE `library`$$
+CREATE TRIGGER IncreaseBookAmountTriggerAfterDel AFTER DELETE ON borrowing
+FOR EACH ROW
+BEGIN
+  -- Check if the borrowing status has changed to "returned"
+  IF OLD.borrowing_status = 'active' THEN
+	UPDATE school_book SET school_book_amount = school_book_amount + 1 
+	WHERE school_school_id = (SELECT school_id from library_user WHERE user_id = OLD.library_user_user_id)
+	AND book_book_id = OLD.book_book_id;
+  END IF;
+END;$$
+
 
 DELIMITER ;
 

@@ -293,8 +293,18 @@ def admin_activate_users():
     column_names = [i[0] for i in cur.description]
     results = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
     cur.close()
+    
+    query2 = f"""SELECT user_id, username, user_first_name, user_last_name, user_birthdate
+                FROM library_user 
+                WHERE role_id = 2
+                """
+    cur = db.connection.cursor()
+    cur.execute(query2)
+    column_names = [i[0] for i in cur.description]
+    results2 = [dict(zip(column_names, entry)) for entry in cur.fetchall()]
+    cur.close()
 
-    return render_template("admin_activate_operator.html", pageTitle = "Search", results=results)
+    return render_template("admin_activate_operator.html", pageTitle = "Search", results=results, results2 = results2)
 
 @app.route('/admin_activate_user', methods=['GET', 'POST'])
 def admin_activate_user():
@@ -312,6 +322,25 @@ def admin_activate_user():
         error_message = str(error)
         return render_template("reserve_error.html", pageTitle="Error During Reservation",
                            error=error_message)
+        
+        
+@app.route('/admin_deactivate_user', methods=['GET', 'POST'])
+def admin_deactivate_user():
+    user_id = request.form['user_id']
+    query = f"""UPDATE library_user
+                SET role_id = 5
+                WHERE user_id='{user_id}';           
+            """
+    try:
+        cur = db.connection.cursor()
+        cur.execute(query)
+        db.connection.commit()
+        cur.close()
+        return redirect(url_for('admin_activate_users'))
+    except Exception as e: ## OperationalError
+        flash(str(e), "danger")
+       #  print(str(e))
+        return redirect(url_for('admin_activate_users'))
         
 @app.route('/admin_delete_user', methods=['GET', 'POST'])
 def admin_delete_user():
@@ -1446,6 +1475,24 @@ def operator_verify_return(user_ID):
     query = f"""UPDATE borrowing
                 SET borrowing_status = "returned"
                 WHERE borrowing_id='{borrowing_id}';           
+            """
+    try:
+        cur = db.connection.cursor()
+        cur.execute(query)
+        db.connection.commit()
+        cur.close()
+        return redirect(url_for('operator_borrowings', user_ID=user_ID))
+    except Exception as e: ## OperationalError
+        flash(str(e), "danger")
+       #  print(str(e))
+        return redirect(url_for('operator_borrowings', user_ID=user_ID))
+    
+    
+@app.route('/operator_delete_borrowings/<int:user_ID>', methods=['GET', 'POST'])
+def operator_delete_borrowings(user_ID):
+    borrowing_id = request.form['borrowing_id']
+    query = f"""DELETE FROM borrowing
+                WHERE borrowing_id ='{borrowing_id}';           
             """
     try:
         cur = db.connection.cursor()
