@@ -267,7 +267,7 @@ CREATE TABLE IF NOT EXISTS `school_book` (
   CONSTRAINT `fk_school_book_book1`
     FOREIGN KEY (`book_book_id`)
     REFERENCES `book` (`book_id`)
-    ON DELETE RESTRICT
+    ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
