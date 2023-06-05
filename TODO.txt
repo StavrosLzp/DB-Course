@@ -1,7 +1,0 @@
-ADMIN:
-	*backup
-	*restore
-OPERATOR:
-	*Insert book
-	*Alter book
-USER
